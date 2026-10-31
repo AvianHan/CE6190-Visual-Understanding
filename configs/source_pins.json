@@ -1,0 +1,15 @@
+{
+  "audit_date": "2026-11-01",
+  "sources": {
+    "INSID3": {"url": "https://github.com/visinf/INSID3.git", "commit": "0c165a10cf52ab91f335883d06260de86854adbe"},
+    "CG-ICS": {"url": "https://github.com/Kakarot1103/CG-ICS.git", "commit": "8da845743f15c18ec490567fbd86dba58c8a388f"},
+    "dinov3": {"url": "https://github.com/facebookresearch/dinov3.git", "commit": "6876159a11b4df116f30f667f8c9888617df0751"},
+    "dinov2": {"url": "https://github.com/facebookresearch/dinov2.git", "commit": "7764ea0f912e53c92e82eb78a2a1631e92725fc8"}
+  },
+  "weights": {
+    "sam3": {"repo": "facebook/sam3", "revision": "3c879f39826c281e95690f02c7821c4de09afae7", "filename": "sam3.pt", "target": "sam3.pt", "gated": true},
+    "qwen": {"repo": "Qwen/Qwen3-VL-4B-Instruct", "revision": "ebb281ec70b05090aa6165b016eac8ec08e71b17", "target": "Qwen3-VL-4B-Instruct", "gated": false},
+    "dinov3": {"target": "dinov3_L.pth", "original_filename": "dinov3_vitl16_pretrain_lvd1689m-8aa4cbdd.pth", "url_env": "ICS_DINOV3_URL", "note": "Official PyTorch checkpoint after access approval; HF Transformers safetensors are not interchangeable."},
+    "dinov2": {"target": "dinov2_L.pth", "url": "https://dl.fbaipublicfiles.com/dinov2/dinov2_vitl14/dinov2_vitl14_pretrain.pth"}
+  }
+}

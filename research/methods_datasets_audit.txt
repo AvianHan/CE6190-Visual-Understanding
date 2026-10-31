@@ -1,0 +1,56 @@
+PRIMARY-SOURCE AUDIT — 2026-10-22 — methods_datasets subagent
+Status: source audit only. No checkpoints downloaded, no model inference run. All readiness means code/links observed, not execution validated.
+
+METHOD POOL (expandable, not a cap)
+1. Matcher (ICLR2024; repo now also mentions IJCV2025): frozen DINOv2-L + SAM-H; optional Semantic-SAM for parts. Official inference code and model download links exist. Training-free downstream, but SAM has mask-supervised pretraining. Semantic category and part protocols available; 1/5-shot commands. https://github.com/aim-uofa/Matcher ; https://github.com/aim-uofa/Matcher/blob/main/GETTING_STARTED.md ; https://github.com/aim-uofa/Matcher/blob/main/datasets/README.md
+2. GF-SAM (NeurIPS2024 Spotlight): Positive-Negative Alignment, Point-Mask Clustering, post-gating. Frozen DINOv2-L + SAM-H; model links, main_eval.py, scripts present. Directly relevant category/part/CD-FSS control and potentially shared CG-ICS backend. https://andyzaq.github.io/GF-SAM/ ; https://github.com/ANDYZAQ/GF-SAM/blob/master/GETTING_STARTED.md
+3. SINE (NeurIPS2024): DINOv2 + trained matching/segmentation decoder; distinguishes ID/instance/semantic outputs. Official trained weight link (ADE20K+COCO+Objects365), training/evaluation code exist. Freeze at target evaluation is not equivalent to no segmentation supervision. https://github.com/aim-uofa/SINE ; https://arxiv.org/abs/2410.04842
+4. SegGPT (ICCV2023): trained generalist coloring/in-context model. Official ViT-L checkpoint and inference script support prompt image/mask and multiple prompts. Output RGB/mask conversion and task mode must be fixed. https://github.com/baaivision/Painter/blob/main/SegGPT/SegGPT_inference/README.md ; https://arxiv.org/html/2304.03284v1
+5. PerSAM / PerSAM-F (ICLR2024): SAM-only personalization; no-training PerSAM versus 2 learned mask-weight parameters in PerSAM-F. Official PerSeg/SAM-H downloads and eval_miou.py exist. Main interpretation is same personalized object, not all category instances; report separate track. https://github.com/ZrrSkywalker/Personalize-SAM
+6. FoRIS (arXiv2609.03384v1, 2026-09-03): frozen DINOv3-only; foreground purification -> localization -> consolidation. Official real code (models, minimal.py, inference.py), DINOv3 L/B/S weight names, CRF, data docs. Python3.10; requirements torch>=2.7 torchvision>=0.22 with cu126 index, numpy>=2.0 sklearn>=1.5. Not yet executed. https://github.com/Xi-Mu-Yu/FoRIS ; https://arxiv.org/html/2609.03384v1
+   Novelty correction: FoRIS Tables1/8 already compare INSID3; Table9 already tests INSID3/GF-SAM on slender Fundus vessels and DeepGlobe roads. Full HTML literal search CG-ICS returned no match; this supports only paper-version-specific absence, not field-wide novelty.
+   Fairness/code caveat: inference.py passes query GT to set_target, documented as debug/dataflow-only. Trace use/remove from prediction adapter before accepting benchmark. No demonstrated leakage yet. https://github.com/Xi-Mu-Yu/FoRIS/blob/main/inference.py
+7. RSRM (ECCV2026, arxiv2606.24297v1): training-free DINOv3 CD-FSS, semantic-aware feature re-fusion + adaptive support enhancement + hybrid prototype matching. Official code (test.py/run.sh/model/dinov3) exists. Default example size480/shot1; DINOv3 checkpoint needed, exact backbone/weight and deps to audit. Supports DeepGlobe land-cover, ISIC, Chest X-ray, FSS1000 via PATNet protocol. https://github.com/Sparkling-Water/RSRM ; https://arxiv.org/html/2606.24297v1
+   Full HTML literal searches INSID3 and CG-ICS returned no matches. Cross-check anchor paper tables before labeling absent from either paper.
+8. REBASE (ACCV2026 Oral per authors; arxiv2607.09082v2 Oct3): reference-background subspace projection + DINOv2/SAM. Interesting same budget/feature bias comparator, but repo currently README+figures only and explicitly code coming soon. Already compares INSID3 in own results. https://github.com/ai-and-lab/rebase ; https://arxiv.org/html/2607.09082v2
+9. DC-SAM (TPAMI acceptance Dec2025 per official repo; arxiv2504.12080): learned SAM prompt system / dual consistency, image and video versions. Code/train scripts exist; image training recommended on4 GPUs and uses folds. Trained checkpoint needed, not confirmed in README. Do not call training-free. https://github.com/zaplm/DC-SAM
+10. VRP-SAM (CVPR2024): visual reference prompt encoder; official repo/paper confirmed; deeper training/checkpoint audit pending. https://github.com/syp2ysy/VRP-SAM ; https://openaccess.thecvf.com/content/CVPR2024/papers/Sun_VRP-SAM_SAM_with_Visual_Reference_Prompt_CVPR_2024_paper.pdf
+11. HERA-CDFSS (CVPR2026): official code found, CD-FSS target-domain comparison candidate; full adaptation/training audit pending. https://github.com/Zhiyuan624/HERA-CDFSS
+12. MPA (CVPR2026): source-training-free is claimed, but target adaptation must be audited; DO NOT classify fully training-free. Official code/pretrained ResNet links. https://github.com/niejiahao1998/MPA
+Additional discovery-only (not cleared for main table): ProSAM ICCV2025; VLP-SAM needs text-condition track; GFR-SAM ACM-MM2026 camouflaged-reference task; UniPro medical; do not conflate referring text input with visual-only category ICS.
+
+DATASET POOL / PROTOCOL NOTES
+The anchor auditors own exact anchor split audit. These are independent verified source paths and extension notes.
+Natural category:
+- COCO-20i: COCO2014 train/val images + prepared semantic masks/splits, 80 classes/4 folds. Matcher setup verified. Need freeze same episodes not just seed.
+- LVIS-92i: Matcher-derived 920-class /10-fold benchmark using COCO2017 images and lvis_train/val.pkl. Not identical to full official LVIS instance AP benchmark.
+- FSS-1000: original 1000-category binary-mask dataset official HKUSTCV repo; Matcher includes train/val/test class list files. Exact downloaded split list must be frozen. https://github.com/HKUSTCV/FSS-1000
+- PASCAL-5i: VOC2012 plus SDS extended masks, four class folds; DC-SAM repo provides protocol preparation but training-dependent baselines need fold-specific checkpoints. https://github.com/zaplm/DC-SAM
+Parts:
+- PASCAL-Part: Matcher-prepared part masks on VOC2010. FoRIS/INSID3-type setup reports56 parts across15 categories, four folds. Must use prepared category mapping rather than raw full annotation definitions.
+- PACO-Part: Matcher-prepared part subset on COCO2017,303 parts across75 categories, four folds; not full PACO attributes benchmark. Reuse image files with LVIS but don't claim independent image domains.
+Cross-domain category:
+- ISIC2018: lesion masks; official benchmark adapters regroup challenge training images by diagnostic classes; FoRIS docs report2594 pairs/3 groups of208,1867,519. Must not equate those folders with untouched official train/val/test. Validate patient leakage when redesigning support/query.
+- Chest X-ray: lung masks; distribution referred via PATNet/INSID3 has800 images but704 masks. Evaluate valid mask intersection; declare source collection(s). Do not call disease segmentation.
+- SUIM: official source1525 train/validation +110 test with8 labels including background/waterbody. Anchor-style merged release1635 images differs from untouched official held-out110. Must label merged episodic protocol vs official-split extension. https://github.com/IRVLab/SUIM
+- iSAID-5i: aerial15 classes/3 folds; preprocessed val patch distribution used in FoRIS docs has6363 patches. Group by source scene if adding own splits, avoid adjacent crops crossing support/query holdout accidentally.
+- DeepGlobe LAND COVER: PATNet established CD-FSS extension; keep preprocessing/land-cover label map exact. https://github.com/slei109/PATNet
+Personalized:
+- PerSeg: original PerSAM release links; preserve identity-specific references and evaluation behavior. https://github.com/ZrrSkywalker/Personalize-SAM
+- PerMIS/PerMIRS: FoRIS inherited data docs refer Where's Waldo/PDM from BURST test,216 folders each3 frames and masks.npz. Useful same-instance with distractors; exact anchor name/mapping to be confirmed by INSID3 auditor. https://github.com/dvirsamuel/PDM
+Stress-test extensions (not protocol-ready yet):
+- Fundus retinal vessels from FoRIS AppendixF; exact underlying release and splits unresolved; do not advertise generic Fundus as a finished reproducible dataset.
+- DeepGlobe ROAD EXTRACTION from FoRIS AppendixF is different task/labels from PATNet land-cover. Separate task IDs, not casually two independent domain datasets.
+- Further candidates can add Kvasir-SEG/CVC-ClinicDB/polyp datasets, MoNuSeg/nuclei, Oxford-IIIT Pet, ADE20K, Cityscapes, LoveDA etc only after primary annotation/split/adaptation audit. No counts or readiness asserted here.
+
+COMMON FAILURE/FAIRNESS OPPORTUNITIES (proposed not results)
+- Training-free downstream != no mask supervision in foundation pretraining. Stratify supervision history and target-time updates.
+- Same-image resolution and same-backbone controlled comparisons are ablations; paper-default method comparison also needed.
+- Resizing ground truth to model output (FoRIS example) can distort small-object/boundary comparisons; production evaluator should restore predictions to original GT grid with fixed declared interpolation and ignore handling.
+- Independent support selection manifests; same query/reference pairs; separate support-selection variance from model stochastic variance.
+- Category union masks, identity masks and part-category masks require separate leaderboards.
+- Sample-level latency warm/cold, cache policies, end-to-end vs model-only; no GT in prediction callable.
+- No baseline tables spliced across papers as own results. REBASE/FoRIS published numbers only metadata, not experimental output.
+
+SOURCE ACCESS LIMITS
+Read official pages and code files through web; raw.githubusercontent intermittently disabled. No complete audit of all candidate source code. Primary source discovery confirms code presence, not that checkpoints/download links still transfer correctly. No claims of field-wide absence.

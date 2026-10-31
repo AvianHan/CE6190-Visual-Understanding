@@ -1,0 +1,491 @@
+{
+  "schema_version": 1,
+  "description": "Phase2 separately gated transfer study. FSS,SUIM,ISIC,iSAID enabled; PASCAL manifests disabled as standard-coverage option. Requested sample counts are explicit initial study workloads, not claims of exact author protocol. Requires phase2 data preparation and official source split audit described in DATA_PROTOCOLS. Does not gate initial COCO/LVIS suite.",
+  "prepare_missing_manifests": true,
+  "smoke_episodes": 2,
+  "manifests": [
+    {
+      "id": "fss_fold0_phase2_standard",
+      "enabled": true,
+      "cohort": "standard",
+      "path": "${ICS_RUNTIME}/manifests/fss_fold0_phase2_standard.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "fss",
+        "fold": 0,
+        "queries": 2400,
+        "references_per_query": 1,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": false
+      }
+    },
+    {
+      "id": "fss_fold0_phase2_component",
+      "enabled": true,
+      "cohort": "component",
+      "path": "${ICS_RUNTIME}/manifests/fss_fold0_phase2_component.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "fss",
+        "fold": 0,
+        "queries": 100,
+        "references_per_query": 3,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": false
+      }
+    },
+    {
+      "id": "suim_fold0_phase2_standard",
+      "enabled": true,
+      "cohort": "standard",
+      "path": "${ICS_RUNTIME}/manifests/suim_fold0_phase2_standard.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "suim",
+        "fold": 0,
+        "queries": 1000,
+        "references_per_query": 1,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": false
+      }
+    },
+    {
+      "id": "suim_fold0_phase2_component",
+      "enabled": true,
+      "cohort": "component",
+      "path": "${ICS_RUNTIME}/manifests/suim_fold0_phase2_component.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "suim",
+        "fold": 0,
+        "queries": 100,
+        "references_per_query": 3,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": false
+      }
+    },
+    {
+      "id": "isic_fold0_phase2_standard",
+      "enabled": true,
+      "cohort": "standard",
+      "path": "${ICS_RUNTIME}/manifests/isic_fold0_phase2_standard.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "isic",
+        "fold": 0,
+        "queries": 1000,
+        "references_per_query": 1,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": false
+      }
+    },
+    {
+      "id": "isic_fold0_phase2_component",
+      "enabled": true,
+      "cohort": "component",
+      "path": "${ICS_RUNTIME}/manifests/isic_fold0_phase2_component.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "isic",
+        "fold": 0,
+        "queries": 100,
+        "references_per_query": 3,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": false
+      }
+    },
+    {
+      "id": "isaid_fold0_phase2_standard",
+      "enabled": true,
+      "cohort": "standard",
+      "path": "${ICS_RUNTIME}/manifests/isaid_fold0_phase2_standard.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "isaid",
+        "fold": 0,
+        "queries": 1000,
+        "references_per_query": 1,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": false
+      }
+    },
+    {
+      "id": "isaid_fold0_phase2_component",
+      "enabled": true,
+      "cohort": "component",
+      "path": "${ICS_RUNTIME}/manifests/isaid_fold0_phase2_component.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "isaid",
+        "fold": 0,
+        "queries": 100,
+        "references_per_query": 3,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": false
+      }
+    },
+    {
+      "id": "isaid_fold1_phase2_standard",
+      "enabled": true,
+      "cohort": "standard",
+      "path": "${ICS_RUNTIME}/manifests/isaid_fold1_phase2_standard.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "isaid",
+        "fold": 1,
+        "queries": 1000,
+        "references_per_query": 1,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": false
+      }
+    },
+    {
+      "id": "isaid_fold1_phase2_component",
+      "enabled": true,
+      "cohort": "component",
+      "path": "${ICS_RUNTIME}/manifests/isaid_fold1_phase2_component.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "isaid",
+        "fold": 1,
+        "queries": 100,
+        "references_per_query": 3,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": false
+      }
+    },
+    {
+      "id": "isaid_fold2_phase2_standard",
+      "enabled": true,
+      "cohort": "standard",
+      "path": "${ICS_RUNTIME}/manifests/isaid_fold2_phase2_standard.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "isaid",
+        "fold": 2,
+        "queries": 1000,
+        "references_per_query": 1,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": false
+      }
+    },
+    {
+      "id": "isaid_fold2_phase2_component",
+      "enabled": true,
+      "cohort": "component",
+      "path": "${ICS_RUNTIME}/manifests/isaid_fold2_phase2_component.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "isaid",
+        "fold": 2,
+        "queries": 100,
+        "references_per_query": 3,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": false
+      }
+    },
+    {
+      "id": "pascal_fold0_phase2_standard",
+      "enabled": false,
+      "cohort": "standard",
+      "path": "${ICS_RUNTIME}/manifests/pascal_fold0_phase2_standard.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "pascal",
+        "fold": 0,
+        "queries": 1000,
+        "references_per_query": 1,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": false
+      }
+    },
+    {
+      "id": "pascal_fold0_phase2_component",
+      "enabled": false,
+      "cohort": "component",
+      "path": "${ICS_RUNTIME}/manifests/pascal_fold0_phase2_component.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "pascal",
+        "fold": 0,
+        "queries": 100,
+        "references_per_query": 3,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": false
+      }
+    },
+    {
+      "id": "pascal_fold1_phase2_standard",
+      "enabled": false,
+      "cohort": "standard",
+      "path": "${ICS_RUNTIME}/manifests/pascal_fold1_phase2_standard.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "pascal",
+        "fold": 1,
+        "queries": 1000,
+        "references_per_query": 1,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": false
+      }
+    },
+    {
+      "id": "pascal_fold1_phase2_component",
+      "enabled": false,
+      "cohort": "component",
+      "path": "${ICS_RUNTIME}/manifests/pascal_fold1_phase2_component.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "pascal",
+        "fold": 1,
+        "queries": 100,
+        "references_per_query": 3,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": false
+      }
+    },
+    {
+      "id": "pascal_fold2_phase2_standard",
+      "enabled": false,
+      "cohort": "standard",
+      "path": "${ICS_RUNTIME}/manifests/pascal_fold2_phase2_standard.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "pascal",
+        "fold": 2,
+        "queries": 1000,
+        "references_per_query": 1,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": false
+      }
+    },
+    {
+      "id": "pascal_fold2_phase2_component",
+      "enabled": false,
+      "cohort": "component",
+      "path": "${ICS_RUNTIME}/manifests/pascal_fold2_phase2_component.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "pascal",
+        "fold": 2,
+        "queries": 100,
+        "references_per_query": 3,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": false
+      }
+    },
+    {
+      "id": "pascal_fold3_phase2_standard",
+      "enabled": false,
+      "cohort": "standard",
+      "path": "${ICS_RUNTIME}/manifests/pascal_fold3_phase2_standard.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "pascal",
+        "fold": 3,
+        "queries": 1000,
+        "references_per_query": 1,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": false
+      }
+    },
+    {
+      "id": "pascal_fold3_phase2_component",
+      "enabled": false,
+      "cohort": "component",
+      "path": "${ICS_RUNTIME}/manifests/pascal_fold3_phase2_component.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "pascal",
+        "fold": 3,
+        "queries": 100,
+        "references_per_query": 3,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": false
+      }
+    }
+  ],
+  "experiments": [
+    {
+      "config": "configs/experiments/cgics_component_full.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "fss_fold0_phase2_component",
+        "suim_fold0_phase2_component",
+        "isic_fold0_phase2_component",
+        "isaid_fold0_phase2_component",
+        "isaid_fold1_phase2_component",
+        "isaid_fold2_phase2_component",
+        "pascal_fold0_phase2_component",
+        "pascal_fold1_phase2_component",
+        "pascal_fold2_phase2_component",
+        "pascal_fold3_phase2_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_full.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "fss_fold0_phase2_standard",
+        "suim_fold0_phase2_standard",
+        "isic_fold0_phase2_standard",
+        "isaid_fold0_phase2_standard",
+        "isaid_fold1_phase2_standard",
+        "isaid_fold2_phase2_standard",
+        "pascal_fold0_phase2_standard",
+        "pascal_fold1_phase2_standard",
+        "pascal_fold2_phase2_standard",
+        "pascal_fold3_phase2_standard"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_no_search.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "fss_fold0_phase2_component",
+        "suim_fold0_phase2_component",
+        "isic_fold0_phase2_component",
+        "isaid_fold0_phase2_component",
+        "isaid_fold1_phase2_component",
+        "isaid_fold2_phase2_component",
+        "pascal_fold0_phase2_component",
+        "pascal_fold1_phase2_component",
+        "pascal_fold2_phase2_component",
+        "pascal_fold3_phase2_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_text_only.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "fss_fold0_phase2_component",
+        "suim_fold0_phase2_component",
+        "isic_fold0_phase2_component",
+        "isaid_fold0_phase2_component",
+        "isaid_fold1_phase2_component",
+        "isaid_fold2_phase2_component",
+        "pascal_fold0_phase2_component",
+        "pascal_fold1_phase2_component",
+        "pascal_fold2_phase2_component",
+        "pascal_fold3_phase2_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_visual_only.json",
+      "resource": "cgics_visual",
+      "manifest_ids": [
+        "fss_fold0_phase2_component",
+        "suim_fold0_phase2_component",
+        "isic_fold0_phase2_component",
+        "isaid_fold0_phase2_component",
+        "isaid_fold1_phase2_component",
+        "isaid_fold2_phase2_component",
+        "pascal_fold0_phase2_component",
+        "pascal_fold1_phase2_component",
+        "pascal_fold2_phase2_component",
+        "pascal_fold3_phase2_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/insid3_component_full.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "fss_fold0_phase2_component",
+        "suim_fold0_phase2_component",
+        "isic_fold0_phase2_component",
+        "isaid_fold0_phase2_component",
+        "isaid_fold1_phase2_component",
+        "isaid_fold2_phase2_component",
+        "pascal_fold0_phase2_component",
+        "pascal_fold1_phase2_component",
+        "pascal_fold2_phase2_component",
+        "pascal_fold3_phase2_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/insid3_full.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "fss_fold0_phase2_standard",
+        "suim_fold0_phase2_standard",
+        "isic_fold0_phase2_standard",
+        "isaid_fold0_phase2_standard",
+        "isaid_fold1_phase2_standard",
+        "isaid_fold2_phase2_standard",
+        "pascal_fold0_phase2_standard",
+        "pascal_fold1_phase2_standard",
+        "pascal_fold2_phase2_standard",
+        "pascal_fold3_phase2_standard"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/insid3_no_debias.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "fss_fold0_phase2_component",
+        "suim_fold0_phase2_component",
+        "isic_fold0_phase2_component",
+        "isaid_fold0_phase2_component",
+        "isaid_fold1_phase2_component",
+        "isaid_fold2_phase2_component",
+        "pascal_fold0_phase2_component",
+        "pascal_fold1_phase2_component",
+        "pascal_fold2_phase2_component",
+        "pascal_fold3_phase2_component"
+      ],
+      "enabled": true
+    }
+  ],
+  "shards_by_cohort": {
+    "standard": 4,
+    "reference": 32,
+    "component": 1
+  }
+}

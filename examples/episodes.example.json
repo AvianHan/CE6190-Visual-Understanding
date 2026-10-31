@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "status": "example_only",
+  "protocol_id": "EXAMPLE-NOT-AN-EXPERIMENT",
+  "episodes": [
+    {
+      "episode_id": "synthetic-example-0001",
+      "dataset": "PLACEHOLDER_DATASET",
+      "dataset_version": "UNVERIFIED",
+      "split": "test",
+      "fold": 0,
+      "track": "semantic",
+      "concept_id": "EVALUATION_ONLY_CLASS_ID",
+      "reference_seed": 0,
+      "query": {
+        "image": "query/example.jpg",
+        "image_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "mask": "query_labels/hidden-ground-truth.png",
+        "mask_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      "references": [
+        {
+          "image": "reference/example.jpg",
+          "image_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "mask": "reference/example-mask.png",
+          "mask_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        }
+      ],
+      "mask_semantics": "EXAMPLE: union of all target-class instances; actual dataset mapping unverified",
+      "ignore_label": 255
+    }
+  ]
+}

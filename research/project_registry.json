@@ -1,0 +1,379 @@
+{
+  "project": "CE6190 Individual Project — In-Context Segmentation",
+  "checked_date": "2026-10-22",
+  "status": "source_audit_and_scaffold_only",
+  "scope_cap": null,
+  "own_model_results": [],
+  "anchors": [
+    {
+      "name": "INSID3",
+      "paper_version": "2603.28480v1",
+      "main_and_supplement_read": true,
+      "commit": "0c165a10cf52ab91f335883d06260de86854adbe"
+    },
+    {
+      "name": "CG-ICS",
+      "paper_version": "2606.28149v2 + ECCV proceedings crosscheck",
+      "supplement_status": "No separate public supplement located; not claimed read",
+      "commit": "8da845743f15c18ec490567fbd86dba58c8a388f"
+    }
+  ],
+  "sources": {
+    "insid3_paper": "https://arxiv.org/html/2603.28480v1",
+    "insid3_repo": "https://github.com/visinf/INSID3/tree/0c165a10cf52ab91f335883d06260de86854adbe",
+    "insid3_data": "https://github.com/visinf/INSID3/blob/0c165a10cf52ab91f335883d06260de86854adbe/docs/data.md",
+    "cgics_paper": "https://arxiv.org/pdf/2606.28149v2",
+    "cgics_eccv": "https://media.eventhosts.cc/Conferences/ECCV2026/pdfs/9601.pdf",
+    "cgics_repo": "https://github.com/Kakarot1103/CG-ICS/tree/8da845743f15c18ec490567fbd86dba58c8a388f",
+    "cgics_metrics": "https://github.com/Kakarot1103/CG-ICS/blob/8da845743f15c18ec490567fbd86dba58c8a388f/main.py",
+    "insid3_metrics": "https://github.com/visinf/INSID3/blob/0c165a10cf52ab91f335883d06260de86854adbe/utils/metrics.py",
+    "sam3": "https://github.com/facebookresearch/sam3",
+    "dinov3": "https://github.com/facebookresearch/dinov3",
+    "qwen3vl": "https://github.com/QwenLM/Qwen3-VL",
+    "matcher": "https://github.com/aim-uofa/Matcher",
+    "gfsam": "https://github.com/ANDYZAQ/GF-SAM",
+    "sine": "https://github.com/aim-uofa/SINE",
+    "seggpt": "https://github.com/baaivision/Painter/tree/main/SegGPT",
+    "persam": "https://github.com/ZrrSkywalker/Personalize-SAM",
+    "foris_paper": "https://arxiv.org/html/2609.03384v1",
+    "foris_repo": "https://github.com/Xi-Mu-Yu/FoRIS",
+    "rsrm_paper": "https://arxiv.org/html/2606.24297v1",
+    "rsrm_repo": "https://github.com/Sparkling-Water/RSRM",
+    "rebase": "https://github.com/ai-and-lab/rebase",
+    "dcsam": "https://github.com/zaplm/DC-SAM",
+    "vrpsam": "https://github.com/syp2ysy/VRP-SAM",
+    "patnet": "https://github.com/slei109/PATNet",
+    "suim": "https://github.com/IRVLab/SUIM",
+    "fss": "https://github.com/HKUSTCV/FSS-1000",
+    "permis": "https://github.com/dvirsamuel/PDM",
+    "extension_dataset_1": "https://github.com/Junjue-Wang/LoveDA",
+    "extension_dataset_2": "https://www.cityscapes-dataset.com/dataset-overview/",
+    "extension_dataset_3": "https://github.com/CSAILVision/ADE20K",
+    "extension_dataset_4": "https://github.com/DebeshJha/Kvasir-SEG",
+    "extension_dataset_5": "https://monuseg.grand-challenge.org/Data/",
+    "extension_dataset_6": "https://davischallenge.org/davis2017/code.html"
+  },
+  "methods_columns": [
+    "method",
+    "mechanism_supervision",
+    "readiness",
+    "caveat",
+    "source_key"
+  ],
+  "methods": [
+    [
+      "INSID3",
+      "DINOv3；无 task-specific training",
+      "核心；代码与官方权重入口已找到",
+      "原文覆盖 semantic / part / personalized",
+      "insid3_repo"
+    ],
+    [
+      "CG-ICS",
+      "SAM3 + Qwen3-VL；参数 frozen",
+      "核心；代码与模型入口已找到，MLLM server 尚未部署",
+      "原文主要验证 semantic；repo 有额外 loaders",
+      "cgics_repo"
+    ],
+    [
+      "Matcher",
+      "DINOv2 + SAM；downstream training-free",
+      "代码、模型链接已确认",
+      "semantic / part；SAM 有 mask pretraining",
+      "matcher"
+    ],
+    [
+      "GF-SAM",
+      "DINOv2 + SAM；graph / point-mask pipeline",
+      "代码、模型链接已确认",
+      "两篇共同重要 baseline",
+      "gfsam"
+    ],
+    [
+      "SINE",
+      "DINOv2 + trained decoder",
+      "代码、trained checkpoint 链接已确认",
+      "训练监督及 ID / semantic 输出需逐配置记录",
+      "sine"
+    ],
+    [
+      "SegGPT",
+      "trained generalist ICS model",
+      "代码、ViT-L checkpoint 链接已确认",
+      "输出颜色到 mask 的转换必须锁定",
+      "seggpt"
+    ],
+    [
+      "PerSAM / PerSAM-F",
+      "SAM；F 版本学习两个 mask weights",
+      "代码、SAM / PerSeg 链接已确认",
+      "personalized 优先；两版本分开",
+      "persam"
+    ],
+    [
+      "SegIC / Painter / DiffewS",
+      "训练过的 decoder / generalist / diffusion-based 方法",
+      "已核对原文数值比较；尚待逐仓库深审",
+      "监督数据和 target-time adaptation 独立记录",
+      "insid3_paper"
+    ],
+    [
+      "UNICL-SAM / SANSA",
+      "training-based ICS",
+      "CG-ICS 原文比较；尚待逐仓库深审",
+      "reference corruption / SAM2 是有价值对照",
+      "cgics_paper"
+    ],
+    [
+      "SAM3 visual adaptations",
+      "冻结 SAM3；拼接或 video-style transfer",
+      "INSID3 supp C.3 已比较；统一 adapter 待实现",
+      "不能声称是原文未有的 INSID3–SAM3 比较",
+      "insid3_paper"
+    ],
+    [
+      "FoRIS (2026-09 preprint)",
+      "frozen DINOv3；渐进 foreground refinement",
+      "实际源码与模型指引存在；未执行",
+      "已在其原文比较 INSID3；CG-ICS 覆盖未见",
+      "foris_repo"
+    ],
+    [
+      "RSRM (ECCV 2026)",
+      "frozen DINOv3；CD-FSS",
+      "实际源码存在；具体 checkpoint / deps 待锁定",
+      "跨域任务对齐后加入；不可直接拼论文分数",
+      "rsrm_repo"
+    ],
+    [
+      "REBASE",
+      "DINOv2 + SAM；reference-background subspace",
+      "公开仓库仍写 code coming soon",
+      "已在其原文比较 INSID3；候补",
+      "rebase"
+    ],
+    [
+      "DC-SAM / VRP-SAM",
+      "learned visual prompting",
+      "代码存在；完整 checkpoint / protocol 待审",
+      "不能归类为完全 training-free",
+      "dcsam"
+    ]
+  ],
+  "dataset_columns": [
+    "dataset",
+    "track_domain",
+    "protocol",
+    "caveat",
+    "readiness",
+    "source_key"
+  ],
+  "datasets": [
+    [
+      "COCO-20i",
+      "semantic / natural",
+      "80 类，4 folds；作者采样协议",
+      "COCO2014 + prepared masks/splits；固定 episode，不能只固定 seed",
+      "已审 loader；未下载",
+      "insid3_data"
+    ],
+    [
+      "LVIS-92i",
+      "semantic / long tail",
+      "Matcher-derived 920 类，10 folds（论文定义）",
+      "不是完整 LVIS AP；实际 eligible 类随 shot 可能改变；SAM3 有 partial LVIS training",
+      "已审 loader；需锁类列表",
+      "insid3_data"
+    ],
+    [
+      "PASCAL-5i",
+      "semantic / natural",
+      "VOC2012 + SDS/SBD；20 类，4 folds",
+      "CG-ICS 官方支持；INSID3 需统一 adapter；原始 void pixels 保留",
+      "已审 CG-ICS loader",
+      "cgics_repo"
+    ],
+    [
+      "FSS-1000",
+      "semantic / diverse objects",
+      "类别 split 520 / 240 / 240",
+      "每类少量 reference；不能强行要求每 query 50 个 distinct refs",
+      "官方 split 可查；未下载",
+      "fss"
+    ],
+    [
+      "PASCAL-Part",
+      "part",
+      "prepared 56 parts / 15 object classes，4 groups",
+      "原 INSID3 用 GT object-box crops；这是给定对象定位的 part protocol，不等于 full-image part segmentation",
+      "已审 loader；未下载",
+      "insid3_data"
+    ],
+    [
+      "PACO-Part",
+      "part / fine granularity",
+      "prepared part subset；论文 303 parts / 75 categories",
+      "原代码用 object-box crops；与 LVIS 共享 COCO2017 图像，不能当独立图像 domain",
+      "已审 loader；需锁 taxonomy",
+      "insid3_data"
+    ],
+    [
+      "ISIC 2018",
+      "semantic / skin lesion",
+      "Task1 training data 经诊断类别重组",
+      "目录 1/2/3 为类别分组，不是官方 train/val/test；patient leakage 需另审",
+      "已审 loader；未下载",
+      "insid3_data"
+    ],
+    [
+      "Chest X-ray / Lung",
+      "semantic / medical",
+      "分发包 800 images / 704 masks；取有效配对",
+      "任务为 lung foreground；不是疾病分割；来源、patient ID 和 split 待核",
+      "已审 loader；未下载",
+      "insid3_data"
+    ],
+    [
+      "SUIM",
+      "semantic / underwater",
+      "原始 train-val 1525 + test 110；作者协议合并 1635",
+      "合并 episodic evaluation 与 untouched test 必须分协议；7 foreground + background",
+      "已审 loader；未下载",
+      "suim"
+    ],
+    [
+      "iSAID-5i",
+      "semantic / aerial small targets",
+      "15 类，3 folds；预处理 val patches",
+      "保留 ignore 255；新增协议按原场景分组，避免相邻 tiles 信息重叠",
+      "已审 loader；未下载",
+      "insid3_data"
+    ],
+    [
+      "PerMIS / PerMIRS",
+      "personalized / distractors",
+      "PDM/BURST-derived；每序列首帧 reference，后续 query",
+      "同一物理实例；不隐含 temporal propagation；原 evaluator 全部 class0 pooled",
+      "已审 loader；名称/格式待下载核",
+      "permis"
+    ],
+    [
+      "PerSeg",
+      "personalized",
+      "PerSAM 官方 reference/evaluation protocol",
+      "与 semantic 分表；先锁身份、reference 数与具体 split",
+      "官方资源确认；adapter 待审",
+      "persam"
+    ],
+    [
+      "DeepGlobe land-cover",
+      "semantic / remote sensing",
+      "PATNet CD-FSS prepared benchmark",
+      "land-cover taxonomy 与 road extraction 分开；相邻 crop 按原场景分组",
+      "来源确认；版本待核",
+      "patnet"
+    ],
+    [
+      "LoveDA",
+      "semantic / urban-rural remote sensing",
+      "公开 Train / Validation；7 类，0=ignore",
+      "自定义 ICS；Urban↔Rural reference/query；按地理场景分组",
+      "标注与split信息确认；episodes未构建",
+      "extension_dataset_1"
+    ],
+    [
+      "Cityscapes",
+      "semantic / street scenes",
+      "gtFine public train 2975 / val 500；test GT withheld",
+      "固定 19 eval labels / void；排除邻帧、stereo近重复；按city/sequence隔离",
+      "官方协议确认；ICS需自建",
+      "extension_dataset_2"
+    ],
+    [
+      "ADE20K / ADEChallenge150",
+      "semantic / scenes；parts可另设",
+      "完整 release 与 150-class 派生 benchmark 不同",
+      "先锁版本、taxonomy、split；检查各 pretrained baseline 是否训练过ADE20K",
+      "官方版本差异确认；adapter待建",
+      "extension_dataset_3"
+    ],
+    [
+      "Kvasir-SEG",
+      "semantic foreground / endoscopy",
+      "1000 polyp images + masks；作者有 Data-split 目录",
+      "split具体列表待读；patient/sequence IDs未核，不能声称patient-independent",
+      "来源确认；下载/患者划分待核",
+      "extension_dataset_4"
+    ],
+    [
+      "MoNuSeg 2018",
+      "nuclei / histopathology",
+      "30 train /14 test；nuclear boundary annotation；官方AJI",
+      "核mask合并后是binary semantic ICS；不等于instance AJI；按patient/slide分组",
+      "官方信息可检索；直接页面403，下载待验证",
+      "extension_dataset_5"
+    ],
+    [
+      "DAVIS 2017",
+      "personalized / video extension",
+      "TrainVal 多对象mask；test仅首帧公开；官方J&F at480p",
+      "独立image-pair无memory与video propagation分track；按sequence划分",
+      "官方协议确认；扩展adapter待建",
+      "extension_dataset_6"
+    ]
+  ],
+  "research_questions": [
+    [
+      "RQ1",
+      "Concept guidance 是否比 dense visual matching 更能抵抗 reference 改变？",
+      "固定 query，跨 reference 比较 per-query mean / Std / lower quantile；模型随机性另测",
+      "待实验"
+    ],
+    [
+      "RQ2",
+      "稳定的概念描述是否会丢失 part / identity 的细粒度差异？",
+      "semantic、object-crop part、full-image part、personalized 分开；concept 原文和失败图共同留档",
+      "研究假设"
+    ],
+    [
+      "RQ3",
+      "收益来自 SAM3 本体、MLLM 描述还是 tree search？",
+      "SAM3 visual-only；单概念；candidate scoring；search；visual fusion，按相同样本 ablation",
+      "计划实验"
+    ],
+    [
+      "RQ4",
+      "search 多花的成本是否换来足够提升？",
+      "nodes/depth/stop thresholds 与端到端 latency、tokens、GPU memory；同预算结果及 Pareto 关系",
+      "计划实验"
+    ],
+    [
+      "RQ5",
+      "跨域、小目标、边界和目标缺席时，何时更易失效？",
+      "预定义 strata；真实遮挡与人工 corruption 分开；absent queries 需完整标注；同时报告 present accuracy",
+      "计划实验"
+    ],
+    [
+      "RQ6",
+      "论文协议与统一协议会不会改变方法排序？",
+      "同一份 prediction 分别计算三种指标；GT grid、重复 reference、crop protocol 单独控制",
+      "计划实验"
+    ]
+  ],
+  "blocked_by": [
+    "Actual compute allocation and GPU/VRAM inventory unknown",
+    "Authorized DINOv3 and SAM3 checkpoint access unverified",
+    "Datasets and checkpoint bytes not downloaded",
+    "Model adapters and original-grid evaluator not implemented"
+  ],
+  "coursework": {
+    "weight_percent": 50,
+    "due_date": "2026-11-17",
+    "min_methods": 1,
+    "min_datasets": 2,
+    "min_report_pages": 3,
+    "own_results_required": true,
+    "no_scope_upper_bound_set": true
+  },
+  "dataset_extension_status": "Not native ICS protocols except explicitly noted identity/video evaluation; no downloaded datasets or episodes."
+}

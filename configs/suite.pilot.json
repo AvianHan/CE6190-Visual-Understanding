@@ -1,0 +1,439 @@
+{
+  "schema_version": 1,
+  "description": "Pilot for actual hardware throughput and pipeline checks; NOT formal benchmark results.",
+  "prepare_missing_manifests": true,
+  "smoke_episodes": 2,
+  "manifests": [
+    {
+      "id": "coco_fold0_standard_pilot",
+      "cohort": "standard",
+      "path": "${ICS_RUNTIME}/manifests/coco_fold0_standard_pilot.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "coco",
+        "fold": 0,
+        "queries": 4,
+        "references_per_query": 1,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true
+      }
+    },
+    {
+      "id": "coco_fold0_reference_pilot",
+      "cohort": "reference",
+      "path": "${ICS_RUNTIME}/manifests/coco_fold0_reference_pilot.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "coco",
+        "fold": 0,
+        "queries": 4,
+        "references_per_query": 2,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true
+      }
+    },
+    {
+      "id": "coco_fold0_component_pilot",
+      "cohort": "component",
+      "path": "${ICS_RUNTIME}/manifests/coco_fold0_component_pilot.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "coco",
+        "fold": 0,
+        "queries": 4,
+        "references_per_query": 2,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true
+      }
+    },
+    {
+      "id": "lvis_fold0_standard_pilot",
+      "cohort": "standard",
+      "path": "${ICS_RUNTIME}/manifests/lvis_fold0_standard_pilot.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 0,
+        "queries": 4,
+        "references_per_query": 1,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true
+      }
+    },
+    {
+      "id": "lvis_fold0_reference_pilot",
+      "cohort": "reference",
+      "path": "${ICS_RUNTIME}/manifests/lvis_fold0_reference_pilot.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 0,
+        "queries": 4,
+        "references_per_query": 2,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true
+      }
+    },
+    {
+      "id": "lvis_fold0_component_pilot",
+      "cohort": "component",
+      "path": "${ICS_RUNTIME}/manifests/lvis_fold0_component_pilot.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 0,
+        "queries": 4,
+        "references_per_query": 2,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true
+      }
+    }
+  ],
+  "experiments": [
+    {
+      "config": "configs/experiments/cgics_component_full.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_concat.json",
+      "resource": "cgics_visual",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_full.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "coco_fold0_standard_pilot",
+        "coco_fold0_reference_pilot",
+        "lvis_fold0_standard_pilot",
+        "lvis_fold0_reference_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_no_search.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_sweep_bon_1.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_sweep_bon_3.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_sweep_bon_8.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_sweep_num_loops_1.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_sweep_num_loops_2.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_sweep_num_loops_4.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_text_only.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_visual_only.json",
+      "resource": "cgics_visual",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/insid3_component_full.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/insid3_cross_only.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/insid3_full.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_standard_pilot",
+        "coco_fold0_reference_pilot",
+        "lvis_fold0_standard_pilot",
+        "lvis_fold0_reference_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/insid3_no_aggregation.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/insid3_no_debias.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/insid3_simple_similarity.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/insid3_sweep_image_size_768.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/insid3_sweep_svd_components_250.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/insid3_sweep_svd_components_750.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/insid3_sweep_tau_0p5.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/insid3_sweep_tau_0p7.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/matrix_dinov2_full.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/matrix_dinov2_simple_similarity.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/matrix_dinov3_full.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/matrix_dinov3_simple_similarity.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/matrix_sam3_full.json",
+      "resource": "cgics_visual",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/matrix_sam3_simple_similarity.json",
+      "resource": "cgics_visual",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/insid3_no_debias_cross_only.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/insid3_no_debias_seed_only.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_single_concept_text.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_single_concept_full.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_candidates_text.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_component_full_seed1.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_component_full_seed2.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "coco_fold0_component_pilot",
+        "lvis_fold0_component_pilot"
+      ],
+      "enabled": true
+    }
+  ],
+  "shards_by_cohort": {
+    "standard": 1,
+    "reference": 1,
+    "component": 1
+  }
+}

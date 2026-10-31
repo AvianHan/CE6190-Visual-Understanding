@@ -1,0 +1,63 @@
+{
+  "date_singapore": "2026-11-01",
+  "timestamp_utc": "2026-10-31T18:43:26.264912+00:00",
+  "status": "PASS",
+  "scope": "CPU and synthetic inputs, mock scheduling; no pretrained model or GPU inference",
+  "tests_run": 72,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "seconds": 5.477,
+  "compileall": true,
+  "upstream_parity_source": "INSID3 0c165a10cf52ab91f335883d06260de86854adbe; synthetic encoder",
+  "test_output": "test_area_bins_keep_failed_episodes (test_analysis.AnalysisTests.test_area_bins_keep_failed_episodes) ... ok\ntest_paired_comparisons_require_same_manifest (test_analysis.AnalysisTests.test_paired_comparisons_require_same_manifest) ... ok\ntest_partial_failure_coverage_and_html (test_analysis.AnalysisTests.test_partial_failure_coverage_and_html) ... ok\ntest_reference_std_is_within_query_and_distinct_references (test_analysis.AnalysisTests.test_reference_std_is_within_query_and_distinct_references) ... ok\ntest_retry_preserves_failed_attempt_and_cumulative_cost (test_analysis.AnalysisTests.test_retry_preserves_failed_attempt_and_cumulative_cost) ... ok\ntest_stochastic_repeats_group_ephemeral_ports (test_analysis.AnalysisTests.test_stochastic_repeats_group_ephemeral_ports) ... ok\ntest_failure_always_clears_image_states (test_cgics_adapter.ComponentTests.test_failure_always_clears_image_states) ... ok\ntest_impossible_or_mislabelled_combinations_rejected (test_cgics_adapter.ComponentTests.test_impossible_or_mislabelled_combinations_rejected) ... ok\ntest_missing_usage_is_unknown_not_zero (test_cgics_adapter.ComponentTests.test_missing_usage_is_unknown_not_zero) ... ok\ntest_mllm_usage_and_sampling_are_recorded_from_actual_client_result (test_cgics_adapter.ComponentTests.test_mllm_usage_and_sampling_are_recorded_from_actual_client_result) ... ok\ntest_query_gt_or_class_metadata_rejected_before_backend (test_cgics_adapter.ComponentTests.test_query_gt_or_class_metadata_rejected_before_backend) ... ok\ntest_real_counter_wrapper_counts_actual_invocations (test_cgics_adapter.ComponentTests.test_real_counter_wrapper_counts_actual_invocations) ... ok\ntest_routes_remain_distinct (test_cgics_adapter.ComponentTests.test_routes_remain_distinct) ... ok\ntest_visual_only_performs_final_query_inference (test_cgics_adapter.ComponentTests.test_visual_only_performs_final_query_inference) ... ok\ntest_label_map_is_rejected_instead_of_treating_all_classes_as_foreground (test_cgics_adapter.TensorBoundaryTests.test_label_map_is_rejected_instead_of_treating_all_classes_as_foreground) ... ok\ntest_prepare_preserves_binary_reference_and_square_working_images (test_cgics_adapter.TensorBoundaryTests.test_prepare_preserves_binary_reference_and_square_working_images) ... ok\ntest_visual_route_slices_query_half_and_retains_empty_reference_predictions (test_cgics_adapter.TensorBoundaryTests.test_visual_route_slices_query_half_and_retains_empty_reference_predictions) ... ok\ntest_zero_instance_concatenation_is_valid_empty_prediction (test_cgics_adapter.TensorBoundaryTests.test_zero_instance_concatenation_is_valid_empty_prediction) ... ok\ntest_duplicate_content_and_ids_rejected (test_contract.ContractTests.test_duplicate_content_and_ids_rejected) ... ok\ntest_file_tamper_is_detected (test_contract.ContractTests.test_file_tamper_is_detected) ... ok\ntest_ignore_and_invalid_labels (test_contract.ContractTests.test_ignore_and_invalid_labels) ... ok\ntest_query_ground_truth_and_class_names_never_enter_model_input (test_contract.ContractTests.test_query_ground_truth_and_class_names_never_enter_model_input) ... ok\ntest_reference_change_changes_manifest_identity (test_contract.ContractTests.test_reference_change_changes_manifest_identity) ... ok\ntest_synthetic_examples_cannot_pass_as_ready (test_contract.ContractTests.test_synthetic_examples_cannot_pass_as_ready) ... ok\ntest_three_aggregations_differ_for_unequal_sizes_and_classes (test_contract.ContractTests.test_three_aggregations_differ_for_unequal_sizes_and_classes) ... ok\ntest_available_reference_cap_and_no_duplicates (test_data.DataTests.test_available_reference_cap_and_no_duplicates) ... ok\ntest_class_balance_and_explicit_repeats (test_data.DataTests.test_class_balance_and_explicit_repeats) ... ok\ntest_content_duplicates_are_excluded (test_data.DataTests.test_content_duplicates_are_excluded) ... ok\ntest_deterministic_and_schema_and_gt_boundary (test_data.DataTests.test_deterministic_and_schema_and_gt_boundary) ... ok\ntest_group_exclusion (test_data.DataTests.test_group_exclusion) ... ok\ntest_ignore_not_foreground_in_reference (test_data.DataTests.test_ignore_not_foreground_in_reference) ... ok\ntest_lvis_fold_uses_author_order_and_pickle_guard (test_data.DataTests.test_lvis_fold_uses_author_order_and_pickle_guard) ... ok\ntest_lvis_instance_union (test_data.DataTests.test_lvis_instance_union) ... ok\ntest_modified_mask_cache_is_rejected_not_blessed (test_data.DataTests.test_modified_mask_cache_is_rejected_not_blessed) ... ok\ntest_nshot_support_sets_distinct (test_data.DataTests.test_nshot_support_sets_distinct) ... ok\ntest_query_draws_independent_of_reference_budget (test_data.DataTests.test_query_draws_independent_of_reference_budget) ... ok\ntest_truncated_http_is_not_promoted_to_complete_archive (test_data.DataTests.test_truncated_http_is_not_promoted_to_complete_archive) ... ok\ntest_zip_traversal_and_overwrite_rejected (test_data.DataTests.test_zip_traversal_and_overwrite_rejected) ... ok\ntest_component_combinations_are_explicit (test_insid3_adapter.INSID3BoundaryTests.test_component_combinations_are_explicit) ... ok\ntest_empty_multiclass_and_misaligned_reference_masks_fail (test_insid3_adapter.INSID3BoundaryTests.test_empty_multiclass_and_misaligned_reference_masks_fail) ... ok\ntest_patch_size_incompatible_resolution_fails (test_insid3_adapter.INSID3BoundaryTests.test_patch_size_incompatible_resolution_fails) ... ok\ntest_query_gt_cannot_cross_adapter_boundary (test_insid3_adapter.INSID3BoundaryTests.test_query_gt_cannot_cross_adapter_boundary) ... ok\ntest_reference_encoding_and_original_sizes (test_insid3_adapter.INSID3BoundaryTests.test_reference_encoding_and_original_sizes) ... ok\ntest_reference_query_identity_is_rejected (test_insid3_adapter.INSID3BoundaryTests.test_reference_query_identity_is_rejected) ... ok\ntest_source_change_rejected_before_importing_torch (test_insid3_adapter.INSID3BoundaryTests.test_source_change_rejected_before_importing_torch) ... ok\ntest_cross_only_retains_cross_match_but_not_non_candidates (test_insid3_adapter.INSID3TensorAblationTests.test_cross_only_retains_cross_match_but_not_non_candidates) ... ok\ntest_full_delegates_to_unmodified_upstream (test_insid3_adapter.INSID3TensorAblationTests.test_full_delegates_to_unmodified_upstream) ... ok\ntest_seed_only_does_not_keep_other_matching_clusters (test_insid3_adapter.INSID3TensorAblationTests.test_seed_only_does_not_keep_other_matching_clusters) ... ok\ntest_full_path_matches_upstream_with_same_synthetic_encoder (test_insid3_adapter.PinnedSourceParityTests.test_full_path_matches_upstream_with_same_synthetic_encoder)\nOptional integration: real upstream processing, toy features, no checkpoint. ... ok\ntest_actual_slurm_resources_required (test_orchestration.OrchestrationTests.test_actual_slurm_resources_required) ... ok\ntest_array_chunk_offsets_and_bounded_resource_dependency (test_orchestration.OrchestrationTests.test_array_chunk_offsets_and_bounded_resource_dependency) ... ok\ntest_changed_plan_cannot_reuse_run_directory (test_orchestration.OrchestrationTests.test_changed_plan_cannot_reuse_run_directory) ... ok\ntest_device_assignment_is_explicit_and_disjoint (test_orchestration.OrchestrationTests.test_device_assignment_is_explicit_and_disjoint) ... ok\ntest_missing_concurrency_does_not_submit_preflight (test_orchestration.OrchestrationTests.test_missing_concurrency_does_not_submit_preflight) ... ok\ntest_owned_mllm_requires_separate_gpus (test_orchestration.OrchestrationTests.test_owned_mllm_requires_separate_gpus) ... ok\ntest_pending_task_budget_rejected_before_any_submission (test_orchestration.OrchestrationTests.test_pending_task_budget_rejected_before_any_submission) ... ok\ntest_plan_only_creates_no_submission (test_orchestration.OrchestrationTests.test_plan_only_creates_no_submission) ... ok\ntest_reused_manifest_recipe_mismatch_is_not_silently_accepted (test_orchestration.OrchestrationTests.test_reused_manifest_recipe_mismatch_is_not_silently_accepted) ... ok\ntest_submission_idempotent_and_dependencies (test_orchestration.OrchestrationTests.test_submission_idempotent_and_dependencies) ... ok\ntest_unresolved_env_and_unsafe_identifiers_rejected (test_orchestration.OrchestrationTests.test_unresolved_env_and_unsafe_identifiers_rejected) ... ok\ntest_orphan_retained_but_reused_worker_and_root_pids_excluded (test_resource_monitor.ResourceTests.test_orphan_retained_but_reused_worker_and_root_pids_excluded) ... ok\ntest_owned_trees_and_simultaneous_peaks (test_resource_monitor.ResourceTests.test_owned_trees_and_simultaneous_peaks) ... ok\ntest_pid_reuse_during_driver_query_is_excluded (test_resource_monitor.ResourceTests.test_pid_reuse_during_driver_query_is_excluded) ... ok\ntest_unavailable_is_not_zero_peak (test_resource_monitor.ResourceTests.test_unavailable_is_not_zero_peak) ... ok\ntest_corrupted_prediction_rejected_on_resume (test_runner.RunnerTests.test_corrupted_prediction_rejected_on_resume) ... ok\ntest_error_kept_and_explicit_retry (test_runner.RunnerTests.test_error_kept_and_explicit_retry) ... ok\ntest_managed_local_port_only_normalization (test_runner.RunnerTests.test_managed_local_port_only_normalization) ... ok\ntest_shards_resume_and_whitelisted_model_inputs (test_runner.RunnerTests.test_shards_resume_and_whitelisted_model_inputs) ... ok\ntest_unset_environment_variable_rejected (test_runner.RunnerTests.test_unset_environment_variable_rejected) ... ok\ntest_vectorized_counts_equal_original_contract (test_runner.RunnerTests.test_vectorized_counts_equal_original_contract) ... ok\ntest_weights_change_invalidates_resume (test_runner.RunnerTests.test_weights_change_invalidates_resume) ... ok\ntest_wrong_shape_is_failure_not_resized_silently (test_runner.RunnerTests.test_wrong_shape_is_failure_not_resized_silently) ... ok\n\n----------------------------------------------------------------------\nRan 72 tests in 5.475s\n\nOK\n",
+  "not_verified": [
+    "company GPU and scheduler",
+    "real pretrained model inference",
+    "full CUDA dependencies",
+    "dataset download and actual dataset files",
+    "scientific model scores"
+  ],
+  "additional_checks": {
+    "configuration_validation": {
+      "status": "PASS",
+      "configurations": 36
+    },
+    "suite_dry_plans": {
+      "status": "PASS",
+      "submitted": false,
+      "plans": {
+        "initial": {
+          "manifests": 42,
+          "smoke_tasks": 36,
+          "production_tasks": 1484,
+          "requested_episode_estimate": 896800
+        },
+        "pilot": {
+          "manifests": 6,
+          "smoke_tasks": 36,
+          "production_tasks": 76,
+          "requested_episode_estimate": 592
+        },
+        "phase2": {
+          "manifests": 12,
+          "smoke_tasks": 8,
+          "production_tasks": 84,
+          "requested_episode_estimate": 25600
+        }
+      }
+    },
+    "bootstrap_dry_plan": {
+      "status": "PASS",
+      "installation_or_download": false
+    },
+    "update_round_trip": {
+      "status": "PASS",
+      "backup_verified": true,
+      "git_unchanged": true,
+      "unlisted_files_preserved": true,
+      "idempotent": true,
+      "target": "temporary synthetic git clone; not user repository"
+    }
+  }
+}

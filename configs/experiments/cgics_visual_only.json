@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "experiment_id": "cgics_visual_only",
+  "method": "cgics",
+  "variant": "visual_only",
+  "seed": 0,
+  "adapter": {
+    "upstream_dir": "${ICS_RUNTIME}/sources/CG-ICS",
+    "sam3_checkpoint": "${ICS_RUNTIME}/weights/sam3.pt",
+    "device": "cuda",
+    "variant": "visual_only",
+    "image_size": 512,
+    "BON": 5,
+    "num_loops": 3,
+    "num_expand_per_node": 5,
+    "alpha": 1.0,
+    "beta": 1.0,
+    "expansion_threshold": 0.5,
+    "max_restarts": 3,
+    "early_stop_threshold": 0.8,
+    "seg_type": "object"
+  },
+  "study": {
+    "group": "E4",
+    "description": "CG-ICS controlled component/system comparison: visual_only.",
+    "status": "IMPLEMENTED_NOT_GPU_VALIDATED",
+    "protocol": "unified_original_query_resolution"
+  }
+}

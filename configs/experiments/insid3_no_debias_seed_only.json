@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "experiment_id": "insid3_no_debias_seed_only",
+  "method": "insid3",
+  "variant": "no_debias",
+  "seed": 0,
+  "adapter": {
+    "upstream_dir": "${ICS_RUNTIME}/sources/INSID3",
+    "checkpoint": "${ICS_RUNTIME}/weights/dinov3_L.pth",
+    "dinov3_source": "${ICS_RUNTIME}/sources/dinov3",
+    "device": "cuda",
+    "encoder": "dinov3",
+    "model_size": "large",
+    "variant": "no_debias",
+    "image_size": 1024,
+    "svd_components": 500,
+    "tau": 0.6,
+    "merge_threshold": 0.2,
+    "similarity_threshold": 0.55,
+    "mask_refiner": "bilinear",
+    "crf_size": 640,
+    "aggregation": "seed_only"
+  },
+  "study": {
+    "group": "E3",
+    "description": "Joint component case: debias disabled, aggregation=seed_only. Compare all compatible combinations, not additive attribution.",
+    "status": "IMPLEMENTED_NOT_GPU_VALIDATED",
+    "protocol": "unified_original_query_resolution"
+  }
+}

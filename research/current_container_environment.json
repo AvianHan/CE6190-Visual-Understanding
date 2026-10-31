@@ -1,0 +1,43 @@
+{
+  "probe_version": 1,
+  "python": "3.12.14",
+  "os": "Linux",
+  "architecture": "x86_64",
+  "cpu_count": 9,
+  "packages": {
+    "torch": null,
+    "torchvision": null,
+    "transformers": null,
+    "vllm": null,
+    "numpy": "2.3.5",
+    "Pillow": "12.3.0",
+    "opencv-python": null,
+    "scipy": "1.17.0",
+    "timm": null,
+    "xformers": null,
+    "flash-attn": null
+  },
+  "commands": {
+    "nvidia-smi": false,
+    "nvcc": false,
+    "conda": false,
+    "uv": true,
+    "git": true,
+    "sbatch": false,
+    "sinfo": false,
+    "squeue": false
+  },
+  "ram_bytes": 10451439616,
+  "working_filesystem_bytes": {
+    "total": 33770192896,
+    "free": 23677898752
+  },
+  "cuda_visible_devices_declared_count": null,
+  "gpu_inventory": [],
+  "notes": [
+    "Run inside the intended compute allocation, not only on a login node.",
+    "GPU inventory alone does not establish allocated or usable GPUs.",
+    "No CUDA/PyTorch execution test was performed.",
+    "Disk free space is not a project storage quota."
+  ]
+}

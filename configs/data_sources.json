@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "source_document": "https://github.com/visinf/INSID3/blob/0c165a10cf52ab91f335883d06260de86854adbe/docs/data.md",
+  "note": "Author URLs, not invented mirrors. No upstream checksums were published here; observed SHA256 is recorded locally. Download availability and full real-data layouts remain unverified in this package.",
+  "assets": [
+    {"id":"coco2014_train_images","dataset":"coco","url":"http://images.cocodataset.org/zips/train2014.zip","archive":"zip","destination":"COCO2014","sha256":null},
+    {"id":"coco2014_val_images","dataset":"coco","url":"http://images.cocodataset.org/zips/val2014.zip","archive":"zip","destination":"COCO2014","sha256":null},
+    {"id":"coco2014_train_semantic","dataset":"coco","url":"https://drive.google.com/file/d/1cwup51kcr4m7v9jO14ArpxKMA4O3-Uge/view","archive":"zip","destination":"COCO2014/annotations","sha256":null},
+    {"id":"coco2014_val_semantic","dataset":"coco","url":"https://drive.google.com/file/d/1PNw4U3T2MhzAEBWGGgceXvYU3cZ7mJL1/view","archive":"zip","destination":"COCO2014/annotations","sha256":null},
+    {"id":"coco2014_splits","dataset":"coco","url":"https://drive.google.com/file/d/1K1UxhUzpjCe1jtgpsEUyrvU8gAlH1ZMy/view","archive":"zip","destination":"COCO2014","sha256":null},
+    {"id":"coco2017_train_images","dataset":"lvis","url":"http://images.cocodataset.org/zips/train2017.zip","archive":"zip","destination":"LVIS/coco","sha256":null},
+    {"id":"coco2017_val_images","dataset":"lvis","url":"http://images.cocodataset.org/zips/val2017.zip","archive":"zip","destination":"LVIS/coco","sha256":null},
+    {"id":"lvis_annotations","dataset":"lvis","url":"https://drive.google.com/file/d/1itJC119ikrZyjHB9yienUPD0iqV12_9y/view","archive":"zip","destination":"LVIS","strip_prefix":"lvis","sha256":null},
+    {"id":"isic2018_images","dataset":"isic","url":"https://isic-archive.s3.amazonaws.com/challenges/2018/ISIC2018_Task1-2_Training_Input.zip","archive":"zip","destination":"ISIC","sha256":null},
+    {"id":"isic2018_masks","dataset":"isic","url":"https://isic-archive.s3.amazonaws.com/challenges/2018/ISIC2018_Task1_Training_GroundTruth.zip","archive":"zip","destination":"ISIC","sha256":null},
+    {"id":"suim_merged","dataset":"suim","url":"https://www.kaggle.com/api/v1/datasets/download/heyoujue/suim-merged","archive":"zip","destination":"SUIM","strip_prefix":"suim_merged","sha256":null},
+    {"id":"isaid_patches","dataset":"isaid","url":"https://drive.google.com/file/d/17PQ1iKCbaj2OjwBdCn_VBh09ntI4lxgL/view","archive":"zip","destination":"iSAID","strip_prefix":"iSAID_patches","sha256":null},
+    {"id":"isaid_splits","dataset":"isaid","url":"https://drive.google.com/file/d/1RBmVHXGhEXak2XB4OeCzQj2yswOmuMB2/view","archive":"zip","destination":"iSAID","sha256":null}
+  ],
+  "additional_preparation": {
+    "isic":"Reorganize public training images into author class directories 1/2/3 using the DR-Adapter mapping linked in docs/data.md; downloader does not execute remote preprocessing code.",
+    "fss":"Download from https://github.com/HKUSTCV/FSS-1000 and place class folders in FSS-1000/data, split lists in FSS-1000/splits. CG-ICS datasets/splits/fss provides the audited lists; pass --split-file explicitly if kept there.",
+    "pascal":"Prepare VOC2012/JPEGImages and SegmentationClassAug as described in https://github.com/ANDYZAQ/GF-SAM/blob/master/datasets/README.md ; pass CG-ICS datasets/splits/pascal/val/foldN.txt with --split-file. No unverified download URL is automated.",
+    "isaid":"Preserve source-image grouping. P#### prefixes are recognized; otherwise provide --group-map. Indexed semantic masks only, not raw RGB instance masks."
+  }
+}

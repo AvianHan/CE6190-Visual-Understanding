@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "experiment_id": "insid3_full",
+  "method": "insid3",
+  "variant": "full",
+  "seed": 0,
+  "adapter": {
+    "upstream_dir": "${ICS_RUNTIME}/sources/INSID3",
+    "checkpoint": "${ICS_RUNTIME}/weights/dinov3_L.pth",
+    "dinov3_source": "${ICS_RUNTIME}/sources/dinov3",
+    "device": "cuda",
+    "encoder": "dinov3",
+    "model_size": "large",
+    "variant": "full",
+    "image_size": 1024,
+    "svd_components": 500,
+    "tau": 0.6,
+    "merge_threshold": 0.2,
+    "similarity_threshold": 0.55,
+    "mask_refiner": "bilinear",
+    "crf_size": 640
+  },
+  "study": {
+    "group": "E1_E2",
+    "description": "Pinned official source behavior, unified episode and original query resolution evaluation; not a claim of identical paper protocol.",
+    "status": "IMPLEMENTED_NOT_GPU_VALIDATED",
+    "protocol": "unified_original_query_resolution"
+  }
+}

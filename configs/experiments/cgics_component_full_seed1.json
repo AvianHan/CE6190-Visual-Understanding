@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "experiment_id": "cgics_component_full_seed1",
+  "method": "cgics",
+  "variant": "full",
+  "seed": 1,
+  "adapter": {
+    "upstream_dir": "${ICS_RUNTIME}/sources/CG-ICS",
+    "sam3_checkpoint": "${ICS_RUNTIME}/weights/sam3.pt",
+    "device": "cuda",
+    "variant": "full",
+    "image_size": 512,
+    "endpoint": "http://127.0.0.1:22002/v1",
+    "mllm_model": "qwen3-vl-4b",
+    "BON": 5,
+    "num_loops": 3,
+    "num_expand_per_node": 5,
+    "alpha": 1.0,
+    "beta": 1.0,
+    "expansion_threshold": 0.5,
+    "max_restarts": 3,
+    "early_stop_threshold": 0.8,
+    "seg_type": "object",
+    "llm_seed": 0,
+    "llm_seed_from_episode": true
+  },
+  "study": {
+    "group": "E4",
+    "description": "Full CG-ICS control on same component episodes.",
+    "status": "IMPLEMENTED_NOT_GPU_VALIDATED",
+    "protocol": "unified_original_query_resolution"
+  }
+}

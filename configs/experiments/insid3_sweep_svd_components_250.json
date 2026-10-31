@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "experiment_id": "insid3_sweep_svd_components_250",
+  "method": "insid3",
+  "variant": "full",
+  "seed": 0,
+  "adapter": {
+    "upstream_dir": "${ICS_RUNTIME}/sources/INSID3",
+    "checkpoint": "${ICS_RUNTIME}/weights/dinov3_L.pth",
+    "dinov3_source": "${ICS_RUNTIME}/sources/dinov3",
+    "device": "cuda",
+    "encoder": "dinov3",
+    "model_size": "large",
+    "variant": "full",
+    "image_size": 1024,
+    "svd_components": 250,
+    "tau": 0.6,
+    "merge_threshold": 0.2,
+    "similarity_threshold": 0.55,
+    "mask_refiner": "bilinear",
+    "crf_size": 640
+  },
+  "study": {
+    "group": "E6",
+    "description": "Sensitivity, not test-set parameter selection: svd_components=250; baseline has default parameter.",
+    "status": "IMPLEMENTED_NOT_GPU_VALIDATED",
+    "protocol": "unified_original_query_resolution"
+  }
+}

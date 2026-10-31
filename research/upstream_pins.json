@@ -1,0 +1,28 @@
+{
+  "status": "source_versions_audited_not_model_execution",
+  "checked_date": "2026-10-22",
+  "INSID3": {
+    "repository": "https://github.com/visinf/INSID3",
+    "commit": "0c165a10cf52ab91f335883d06260de86854adbe",
+    "python_reference": "3.10",
+    "torch_reference": "2.7.1",
+    "cuda_reference": "12.6",
+    "weight": "dinov3_vitl16_pretrain_lvd1689m-8aa4cbdd.pth",
+    "weight_downloaded": false,
+    "upstream_dinov3_source_pin": "pending"
+  },
+  "CG-ICS": {
+    "repository": "https://github.com/Kakarot1103/CG-ICS",
+    "commit": "8da845743f15c18ec490567fbd86dba58c8a388f",
+    "python_reference": "3.12",
+    "torch_reference": "2.9.0",
+    "cuda_reference": "12.8",
+    "vllm_reference": "0.11.2",
+    "weights": [
+      "sam3.pt",
+      "Qwen3-VL-4B-Instruct"
+    ],
+    "weights_downloaded": false
+  },
+  "note": "Reference versions are author configurations, not a portable installation lock or verified minimum hardware."
+}
