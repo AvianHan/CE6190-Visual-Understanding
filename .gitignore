@@ -1,0 +1,20 @@
+
+# ICS runtime artifacts
+__pycache__/
+*.py[cod]
+.venv*/
+.pytest_cache/
+.DS_Store
+configs/cluster.local.json
+configs/runtime.local.json
+data/
+weights/
+models_cache/
+runtime/
+runs/
+results/
+sources/
+*.pth
+*.pt
+*.safetensors
+.env
