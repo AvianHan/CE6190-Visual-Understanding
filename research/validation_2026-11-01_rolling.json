@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "date_utc": "2026-11-01T05:13:41.794368+00:00",
+  "source_base_commit": "aabdbb07a25cf11cf47b95797f9d6e621cb649f6",
+  "status": "CPU_SYNTHETIC_VALIDATED_NOT_ORION_SUBMITTED_NOT_GPU_VALIDATED",
+  "command": "python -m unittest discover -s tests -v",
+  "tests_run": 140,
+  "passed": 132,
+  "failures": [],
+  "errors": [],
+  "skipped": [
+    {
+      "test": "test_label_map_is_rejected_instead_of_treating_all_classes_as_foreground (test_cgics_adapter.TensorBoundaryTests.test_label_map_is_rejected_instead_of_treating_all_classes_as_foreground)",
+      "reason": "torch/torchvision unavailable; install model environment for tensor boundary checks"
+    },
+    {
+      "test": "test_prepare_preserves_binary_reference_and_square_working_images (test_cgics_adapter.TensorBoundaryTests.test_prepare_preserves_binary_reference_and_square_working_images)",
+      "reason": "torch/torchvision unavailable; install model environment for tensor boundary checks"
+    },
+    {
+      "test": "test_visual_route_slices_query_half_and_retains_empty_reference_predictions (test_cgics_adapter.TensorBoundaryTests.test_visual_route_slices_query_half_and_retains_empty_reference_predictions)",
+      "reason": "torch/torchvision unavailable; install model environment for tensor boundary checks"
+    },
+    {
+      "test": "test_zero_instance_concatenation_is_valid_empty_prediction (test_cgics_adapter.TensorBoundaryTests.test_zero_instance_concatenation_is_valid_empty_prediction)",
+      "reason": "torch/torchvision unavailable; install model environment for tensor boundary checks"
+    },
+    {
+      "test": "test_cross_only_retains_cross_match_but_not_non_candidates (test_insid3_adapter.INSID3TensorAblationTests.test_cross_only_retains_cross_match_but_not_non_candidates)",
+      "reason": "CPU tensor ablations require torch; no model weights are used"
+    },
+    {
+      "test": "test_full_delegates_to_unmodified_upstream (test_insid3_adapter.INSID3TensorAblationTests.test_full_delegates_to_unmodified_upstream)",
+      "reason": "CPU tensor ablations require torch; no model weights are used"
+    },
+    {
+      "test": "test_seed_only_does_not_keep_other_matching_clusters (test_insid3_adapter.INSID3TensorAblationTests.test_seed_only_does_not_keep_other_matching_clusters)",
+      "reason": "CPU tensor ablations require torch; no model weights are used"
+    },
+    {
+      "test": "test_full_path_matches_upstream_with_same_synthetic_encoder (test_insid3_adapter.PinnedSourceParityTests.test_full_path_matches_upstream_with_same_synthetic_encoder)",
+      "reason": "Pinned-source parity requires CPU torch"
+    }
+  ],
+  "scope": [
+    "Shared cap counts expanded arrays across the same user/QOS including other projects",
+    "Actual background process / inherited lock / duplicate-start test with fake Slurm binaries",
+    "Frozen source reuse and changed-source detection",
+    "Uncertain acknowledgement recovery without duplicate resubmission",
+    "Prerequisite failure isolation and collection after blocked branches",
+    "Downloader receipt integrity, missing-member repair and best-effort free-space checks"
+  ],
+  "initial_plan": {
+    "status": "PLANNED_NOT_SUBMITTED",
+    "plan_fingerprint": "d5bcd264607f453c47b9b1320ea42cbbf0c345d7334d487c4f88e459a2bb4753",
+    "manifests": 42,
+    "resources": {
+      "cgics_mllm": {
+        "smoke_jobs": 15,
+        "experiment_jobs": 700,
+        "gpus_per_job": 2,
+        "requested_episode_estimate": 435800,
+        "max_parallel": 2
+      },
+      "cgics_visual": {
+        "smoke_jobs": 4,
+        "experiment_jobs": 56,
+        "gpus_per_job": 1,
+        "requested_episode_estimate": 16800,
+        "max_parallel": 2
+      },
+      "insid3": {
+        "smoke_jobs": 17,
+        "experiment_jobs": 728,
+        "gpus_per_job": 1,
+        "requested_episode_estimate": 444200,
+        "max_parallel": 4
+      }
+    },
+    "note": "Episode counts are requested upper estimates; available distinct references may be fewer. No model result exists yet."
+  },
+  "rolling_task_total": 1523,
+  "limitations": [
+    "No real sbatch/squeue/sacct commands were used in validation",
+    "No datasets or model weights downloaded in these tests",
+    "No GPU/model inference performed; tensor-specific optional tests skipped because torch is unavailable",
+    "Orion walltimes, available storage, CPU-node outbound networking and model throughput require actual jobs",
+    "The shared filesystem free-space threshold is not a quota reservation",
+    "Phase2 data preparation requires documented manual steps and is excluded from initial rolling queue"
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "description": "Orion settings from the 2026-11-01 account/partition probe. Resource requests are isolation choices; GPU inference is not yet validated. Use queue_ics.py for the shared 60-task cap.",
+  "launcher_python": "${ICS_RUNTIME}/envs/insid3/bin/python",
+  "max_parallel": 8,
+  "max_array_size": 1000,
+  "max_submit_tasks": 60,
+  "defaults": {
+    "account": "prj0000000262",
+    "partition": "h200p",
+    "qos": "highpriority",
+    "time": "12:00:00",
+    "cpus": 4,
+    "memory": "32G"
+  },
+  "resources": {
+    "preflight": {
+      "partition": "cpup",
+      "time": "08:00:00",
+      "gpus": 0,
+      "python": "${ICS_RUNTIME}/envs/insid3/bin/python"
+    },
+    "insid3": {
+      "gpus": 1,
+      "max_parallel": 4,
+      "python": "${ICS_RUNTIME}/envs/insid3/bin/python"
+    },
+    "cgics_visual": {
+      "gpus": 1,
+      "max_parallel": 2,
+      "python": "${ICS_RUNTIME}/envs/cgics/bin/python"
+    },
+    "cgics_mllm": {
+      "gpus": 2,
+      "max_parallel": 2,
+      "cpus": 8,
+      "memory": "64G",
+      "python": "${ICS_RUNTIME}/envs/cgics/bin/python",
+      "mllm_mode": "owned",
+      "mllm_python": "${ICS_RUNTIME}/envs/mllm/bin/python",
+      "mllm_model_path": "${ICS_RUNTIME}/weights/Qwen3-VL-4B-Instruct",
+      "mllm_gpu_memory_utilization": 0.85,
+      "mllm_startup_timeout": 900,
+      "mllm_max_model_len": 16384,
+      "mllm_max_num_seqs": 5,
+      "mllm_processor_cache_gb": 0
+    }
+  }
+}

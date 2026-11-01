@@ -1,6 +1,6 @@
-# 并行运行：一次提交，按依赖执行
+# 并行运行：一次启动，按共享空位滚动提交
 
-状态：调度代码与合成测试已实现；没有在公司的 Slurm 或 GPU 上执行。这里不把当前容器配置当作 A*STAR 配置。
+状态：原静态调度及本轮滚动入口均有实现；尚未在 Orion 提交 ICS 作业或完成真实 GPU 验证。已确认 account／QoS／共享提交限制；环境、权重和证据边界见 [项目维护记录](../CE6190_ICS_PROJECT_LOG.md)。
 
 ## 这次准备了什么
 
@@ -14,22 +14,74 @@
 
 初始完整计划包含 42 份 manifests、36 个 smoke tasks、1,484 个正式 job tasks；请求 episode 总数上限估计 896,800（稀有类别可用 references 不足会下降）。这不是运行完成的数字。每个任务包含多个 episodes，而非每张图启动一次模型。模型大小/分辨率/组件参数是配置，不额外冒充独立方法。
 
-## 一次提交的依赖
+## Orion 推荐入口：完整登记，滚动提交
+
+`highpriority` 的 `MaxSubmitJobsPU=60` 包含同一用户／QoS 的 pending 和 running task elements；Generation 与 ICS 共享，数组 `%N` 不减少已提交元素数。新的 `queue_ics.py` 先持久化完整待办，再按实时共享空位提交；不会取消或改变 Generation 作业。首批增加独立数据准备任务，共 **1,523 个任务**：data 1＋preflight 1＋smoke 36＋experiment 1,484＋collect 1。登记的任务、已取得 Slurm ID 的任务、已完成的任务分别计数。
+
+在 Orion 已同步代码的仓库目录执行：
+
+```bash
+export ICS_RUNTIME="/scratch/prj0000000262_1/hansy/ce6190-ics-runtime"
+"$ICS_RUNTIME/envs/insid3/bin/python" scripts/queue_ics.py start \
+  --runtime "$ICS_RUNTIME" \
+  --suite configs/suite.initial.json \
+  --cluster configs/cluster.orion.json \
+  --run-dir "$ICS_RUNTIME/runs/ics-initial-20261101"
+```
+
+该配置使用 `prj0000000262`（没有 `_1`）、`highpriority`、CPU `cpup` 和 GPU `h200p`。CPU 8 小时、GPU 12 小时是初始 walltime 请求，尚未实测能完成；超时会记为失败，不自动重试。Python 和权重沿用已准备的 `$ICS_RUNTIME`。启动前不需要再做 HF 登录或重装成功环境。
+
+| 默认设置 | 值 | 含义 |
+|---|---:|---|
+| 查询间隔 | 60 秒 | 管理器定期核对共享队列与本批状态 |
+| `max-inflight` | 8 | 本批同时已提交／运行的任务上限，不是 GPU 数 |
+| `shared-limit` | 60 | 同一用户／QoS 的共享提交上限 |
+| `reserved-slots` | 0 | 额外预留槽位；后台管理器本身不占 Slurm 名额 |
+| `data-workers` | 2 | CPU 数据作业的下载并发 |
+| `min-free-gib` | 32 | 数据准备的最低空闲检查阈值，不是全部数据所需容量估算 |
+
+任务只有在前置条件满足且共享名额可用时才进入 Slurm；等待依赖的任务留在本地待办，不以大量 pending 作业占满 60 个名额。提交时若其他流程抢先占用空位，遇 QoS 提交限额会等待后续检查。队列已满时 `start` 仍能建立待办和启动管理器，但不表示已经取得新作业 ID。
+
+查看持久化状态（只读，不查询／提交 Slurm）：
+
+```bash
+"$ICS_RUNTIME/envs/insid3/bin/python" scripts/queue_ics.py status \
+  --run-dir "$ICS_RUNTIME/runs/ics-initial-20261101"
+tail -n 40 "$ICS_RUNTIME/runs/ics-initial-20261101/manager.log"
+```
+
+仅在后台管理器未运行时，单次协调／提交可用：
+
+```bash
+"$ICS_RUNTIME/envs/insid3/bin/python" scripts/queue_ics.py watch \
+  --run-dir "$ICS_RUNTIME/runs/ics-initial-20261101" --once
+```
+
+`start` 默认已启动后台轻量管理器；`watch --once` 执行单次协调，可能提交新任务，去掉 `--once` 则前台持续管理。已有管理器时会持锁拒绝第二个 watch。管理器只协调作业，数据处理和模型运行仍申请计算资源。SSH 断开一般可存活；登录节点重启或清理进程时管理器可能停止，按原参数重跑同一个 `start` 恢复。已提交的 Slurm 作业不依赖 SSH 会话继续运行。
+
+持久化文件包括 `plan.json`、`rolling_state.json`（完整任务／作业 ID／错误／容量快照）、`manager.json` 和 `manager.log`。`status.updated_at` 是上次更新，旧输出不是实时队列；`submitted_ever` 仅计已取得作业 ID 的任务。`manager` 根据 flock 显示 `ACTIVE`／`STOPPED`／`NOT_STARTED`；尚未结束且为 `STOPPED` 时重复相同 start 恢复。`WAITING_CAPACITY` 表示无名额，`PAUSED` 需看 `last_error`／`attention`（例如调度查询失败或提交回执待确认），`COMPLETE_WITH_FAILURES` 不等于全部实验成功。提交回执不明确时等 `squeue`／`sacct` 查证，不能为消除提示盲目创建重复 run。
+
+首次 start 将代码／配置冻结到 `<run-dir>/source/`；重复使用同一 run directory 恢复冻结版本，不会悄悄采用后来更新的 checkout。要使用新代码、配置或 manifest recipe，请用新 run directory；不要修改旧 `source/` 来解释已运行结果。
+
+## 自动依赖与失败分支
 
 ```mermaid
 flowchart TD
-    P["数据与 manifest 检查"] --> SI["INSID3 配置试跑"]
+    D["CPU 数据准备"] --> P["preflight 与固定 manifests"]
+    P --> SI["INSID3 配置试跑"]
     P --> SV["SAM3 视觉配置试跑"]
     P --> SC["CG-ICS 概念配置试跑"]
-    SI --> EI["对应配置的实验数组"]
-    SV --> EV["对应配置的实验数组"]
-    SC --> EC["对应配置的实验数组"]
+    SI --> EI["对应配置的正式分片"]
+    SV --> EV["对应配置的正式分片"]
+    SC --> EC["对应配置的正式分片"]
     EI --> A["汇总成功、失败与待运行项"]
     EV --> A
     EC --> A
 ```
 
-每种资源的 smoke array 结束后启动其生产 array；每个生产任务只接受自己对应配置的 smoke PASS。一个可选 backbone 失败不会让另一个成功配置继续冒险，也不会阻止其他成功配置运行。失败配置的任务会记录失败并立即退出。Slurm 使用 `--kill-on-invalid-dep=yes` 处理无法满足的依赖，避免无限悬挂；实际集群 Slurm 版本仍需验证。
+滚动入口对每个正式任务检查其对应配置的 smoke PASS。数据或 preflight 失败会阻塞下游；一个 smoke 失败只阻塞相应配置，其他通过配置继续。collector 在各分支结束后仍产生成功／失败／未完成报告，不把被阻塞任务算成功，也不自动重试失败模型。
+
+下文原静态入口则以资源 smoke arrays／production arrays 组织依赖，worker 同样逐配置检查 smoke；静态失败分支由 worker 明确记录后退出，并使用 `--kill-on-invalid-dep=yes` 处理无法满足的依赖。它不提供共享空位滚动补位。
 
 ## 服务器配置
 
@@ -40,9 +92,9 @@ python3 scripts/probe_cluster.py --output cluster_probe.json
 python3 scripts/probe_environment.py > environment.json
 ```
 
-复制 `configs/cluster.example.json` 为自己的 `configs/cluster.local.json`，填写实际的 `account`、`partition`、`time`、必要的 `qos`，以及 `max_parallel`。未填写时可以生成计划，但不会提交任务。每个资源 profile 可以覆盖这些字段；CPU preflight 也可以指定独立 partition。
+Orion 使用上面的 `configs/cluster.orion.json`。其他集群复制 `configs/cluster.example.json` 为自己的 `configs/cluster.local.json`，填写实际的 `account`、`partition`、`time`、必要的 `qos`，以及 `max_parallel`。未填写时可以生成计划，但不会提交任务。每个资源 profile 可以覆盖这些字段；CPU preflight 也可以指定独立 partition。
 
-`max_parallel` 是**每个资源数组**允许同时运行的任务数，不是整个套件共用一个总数。可以分别设置 `resources.insid3.max_parallel`、`resources.cgics_visual.max_parallel`、`resources.cgics_mllm.max_parallel`。最大请求 GPU 数约为 `insid3并行数 + visual并行数 + 2×concept并行数`，最后由 Slurm 的真实配额、QOS、可用资源决定分配。代码不会扫描全部可见 GPU 后占满。
+原静态模式的 `max_parallel` 是**每个资源数组**允许同时运行的任务数，不是整个套件共用一个总数。可以分别设置 `resources.insid3.max_parallel`、`resources.cgics_visual.max_parallel`、`resources.cgics_mllm.max_parallel`。最大请求 GPU 数约为 `insid3并行数 + visual并行数 + 2×concept并行数`，最后由 Slurm 的真实配额、QOS、可用资源决定分配。滚动入口另受本批 `max-inflight` 和共享可用槽位限制。代码不会扫描全部可见 GPU 后占满。
 
 环境和大文件位于你选定的项目外运行目录，例如：
 
@@ -50,9 +102,11 @@ python3 scripts/probe_environment.py > environment.json
 export ICS_RUNTIME="/your/project-storage/ce6190-ics-runtime"
 ```
 
-必须先完成环境、源码、数据和权重准备。`launch_suite` 不会隐式联网下载模型。preflight 会按 suite 中的明确 recipe 创建缺失的 manifests，复用已有文件并校验；模型 assets 在各自 smoke 中检查，不因一个可选 checkpoint 缺失阻塞其他模型。
+必须先完成环境、源码和权重准备。滚动入口会安排第一批数据准备；原 `launch_suite` 要求数据事先准备，且不会隐式联网下载模型。preflight 会按 suite 中的明确 recipe 创建缺失的 manifests，复用已有文件并校验；模型 assets 在各自 smoke 中检查，不因一个可选 checkpoint 缺失阻塞其他模型。
 
-## 查看并一次提交
+## 原有静态入口：先看计划，再整批提交
+
+此入口仍可用于整批能放进实际提交预算的场景；Orion 的共享 60-task 限制无法容纳完整首批 1,522 个静态任务，推荐前述滚动入口。原模式不包含数据下载任务。
 
 ```bash
 python3 scripts/launch_suite.py \
@@ -112,13 +166,15 @@ python3 scripts/launch_suite.py \
 - `running.lock` 用于避免相同 task 同时执行。节点被杀或断电可能留下 lock；先核实没有运行中的相同 job，再人工移除对应 stale lock。
 - Slurm 时长取实际 QOS 限制；超过时长不是模型结论。用 pilot 测到的吞吐决定后续 `shards` 和 job walltime。
 
-同一批任务排队／运行期间，不要在服务器上覆盖或更新它使用的 checkout；新的代码版本应使用独立目录和新的 run directory。runner 会记录并检查代码／配置／权重绑定，但不能用一次 Git 更新为已排队任务提供不可变源码快照。
+滚动入口的任务使用 `<run-dir>/source/` 冻结副本；不要改动该目录。原静态／local 入口仍使用其原 checkout，同一批排队／运行期间不能覆盖该 checkout；新代码版本应使用独立目录和新的 run directory。runner 的身份检查不能代替执行期间不变的代码。
 
 E7 案例与困难条件分析使用已保存预测和逐样本结果，不必为画图重复 GPU 推理。没有可靠遮挡标注时，不能凭低 IoU 自动宣称“遮挡导致失败”。
 
-## 第二批单独提交
+## 第二批独立计划，先准备实际数据
 
 `configs/suite.phase2.json` 复用同一 runner／模型配置，包含 FSS-1000、SUIM、ISIC、iSAID 的完整两方法及一组组件对照；它独立于第一批的数据就绪检查，不会因为第二批尚未准备好阻塞 COCO／LVIS。
+
+第二批自动数据准备仍有明确阻塞，不纳入当前 initial 自动队列。完成各自数据／协议核验后再使用独立 run directory；以下是保留的静态入口，仍需先确认共享提交预算，不能直接在 60-task 限制下整批提交。
 
 ```bash
 python3 scripts/launch_suite.py \
@@ -137,11 +193,11 @@ python3 scripts/launch_suite.py \
 
 `shards_by_cohort` 默认 standard=4、reference=32、component=1。于是一个请求 25,000 个 reference episodes 的 fold 会分成 32 个独立 worker；实际数据不足时按实际 episode 数分配。每条 manifest 的 `shards` 或每个 experiment 的 `shards` 可以覆盖 suite 默认。分片不会改变 episode 配对，也不会把分片当作独立重复实验。
 
-提交时读取实际 Slurm `MaxArraySize`，取它与 `cluster.max_array_size`（示例 1000）的较小值，必要时把 array 拆成多个 chunk。相同资源的 chunks 按前一 chunk 结束后继续，保持该资源的并发上限。`MaxArraySize` 与 `MaxSubmitJobsPU` 是不同限制；后者限制总 pending/running array elements，实际探测值仍需要核实，不能用降低 `max_parallel` 冒充解决 pending-task 配额。
+原静态入口提交时读取实际 Slurm `MaxArraySize`，取它与 `cluster.max_array_size`（示例 1000）的较小值，必要时把 array 拆成多个 chunk。相同资源的 chunks 按前一 chunk 结束后继续，保持该资源的并发上限。`MaxArraySize` 与 `MaxSubmitJobsPU` 是不同限制；后者限制总 pending/running array elements，不能用降低 `max_parallel` 冒充解决 pending-task 配额。Orion 已确认共享 60-task 限制；新滚动入口将尚未满足条件的元素保留在持久化待办中。
 
 INSID3 的 debias on/off × aggregation(self+cross/cross/seed) 兼容组合已经补齐；CG-ICS 的单概念／候选评分／搜索 × visual boxes on/off 兼容组合也已补齐，另外保留 visual-only 与直接拼接对照。组合必须有有效输入输出接口，不能把“没有任何 prompt”混成普通消融。
 
 CG-ICS component-full 使用同一输入在 seeds 0、1、2 下重复；除 experiment_id／seed 外 study 元数据相同，MLLM 请求 seed 从 episode seed 派生。这样可以把模型随机变化与更换 reference 导致的变化分别分析。固定 seed 不保证所有 GPU kernel 或 server 版本都完全确定，实际差异仍按日志记录。
 
 
-`cluster.max_submit_tasks` 可填写**当前可用于这批实验的** pending/running task 总预算（先扣除你已经提交的其他项目任务），默认 null 表示未知。填写后提交器会在提交任何 job 前检查总数；不足时明确拒绝，避免半套提交后才撞 quota。当前完整第一批包含 1,484 个 production elements＋36 个 smoke elements＋preflight／collect，即 1,522 个待提交 elements。unknown 不等于无限；实际 `MaxSubmitJobsPU`、association 限制和现有队列必须以 probe 为准。减少分片数可降低 pending elements，但会增长单个任务时长，需要结合实际吞吐和 QOS walltime调整。
+原静态入口的 `cluster.max_submit_tasks` 可填写**当前可用于这批实验的** pending/running task 总预算（先扣除其他项目），默认 null 表示未知；不足时在任何提交前拒绝。静态首批为 1,522 个元素；滚动首批多一个独立数据准备任务，共 1,523 个待办，仅按空位提交。unknown 不等于无限；真实队列和其他 association 限制仍由 Slurm 决定。减少分片数可减少静态元素，但会增长单任务时长，不应为了塞进 60 个名额而任意改变科学计划或未经实测突破 walltime。
