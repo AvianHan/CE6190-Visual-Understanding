@@ -16,6 +16,7 @@ import json
 import math
 from pathlib import Path, PurePosixPath
 import re
+import shlex
 import shutil
 import stat
 import subprocess
@@ -215,7 +216,7 @@ def download_http(url: str, target: Path, guard: CapacityGuard | None = None):
 
 def download_drive(url: str, target: Path, guard: CapacityGuard):
     partial = target.with_suffix('.zip.part')
-    command = [sys.executable, '-m', 'gdown', '--fuzzy', '--continue', url, '-O', str(partial)]
+    command = [sys.executable, '-I', '-m', 'gdown', '--fuzzy', '--continue', url, '-O', str(partial)]
     guard.check(target.parent)
     # Drive does not expose a reliable size here. Monitor its child process so
     # an unknown-size transfer still respects the reserve on a best-effort basis.
@@ -239,6 +240,53 @@ def download_drive(url: str, target: Path, guard: CapacityGuard):
                 process.wait()
             raise
     partial.replace(target)
+
+
+def needs_drive_transfer(asset: dict, root: Path, archives: Path) -> bool:
+    """Read-only cache check; extraction/checksum validation remains in acquire."""
+    if 'drive.google.com/' not in asset['url']:
+        return False
+    archive = archives / (asset['id'] + '.zip')
+    if archive.exists():
+        return False
+    receipt = archives / (asset['id'] + '.receipt.json')
+    if receipt.exists():
+        prior = json.loads(receipt.read_text())
+        destination = contained(root, asset['destination'])
+        if prior.get('source_url') != asset['url'] or prior.get('destination') != str(destination):
+            raise ValueError(f'Existing receipt conflicts with catalog entry {asset["id"]}')
+        if 'strip_prefix' in prior and prior['strip_prefix'] != asset.get('strip_prefix'):
+            raise ValueError(f'Existing receipt has a different archive layout: {asset["id"]}')
+        if asset.get('sha256') and prior.get('observed_sha256') != asset['sha256']:
+            raise ValueError('Expected SHA256 mismatch: ' + asset['id'])
+        if 'files' in prior and verify_inventory(destination, prior['files'])[0]:
+            return False
+    return True
+
+
+def check_dependencies(assets: list[dict], root: Path, archives: Path) -> dict:
+    """Check the exact interpreter before starting any selected downloads."""
+    transfers = [asset['id'] for asset in assets if needs_drive_transfer(asset, root, archives)]
+    report = {'status': 'dependencies_ready', 'python': sys.executable,
+              'prefix': sys.prefix, 'base_prefix': sys.base_prefix,
+              'required_modules': ['gdown'] if transfers else [],
+              'drive_assets_requiring_transfer': transfers,
+              'note': 'Read-only dependency check; not a dataset-integrity or GPU validation.'}
+    if transfers:
+        command = [sys.executable, '-I', '-B', '-m', 'gdown', '--help']
+        try:
+            result = subprocess.run(command, capture_output=True, text=True, timeout=30)
+        except (OSError, subprocess.SubprocessError) as exc:
+            raise RuntimeError(f'Cannot check gdown using {sys.executable}: {type(exc).__name__}. '
+                               f'Current sys.prefix={sys.prefix}; check this environment before downloading.') from exc
+        if result.returncode:
+            repair = shlex.join([sys.executable, '-I', '-m', 'pip', 'install', 'gdown>=5,<6'])
+            raise RuntimeError(f'gdown is unavailable or cannot start in Python {sys.executable}; '
+                               f'sys.prefix={sys.prefix}, sys.base_prefix={sys.base_prefix}. '
+                               'No selected downloads have started. First verify the intended virtualenv '
+                               f'Python path; if gdown is missing there, run: {repair}. '
+                               f'Detail: {result.stderr.strip()[-1200:]}')
+    return report
 
 
 def acquire(asset: dict, root: Path, archives: Path, guard: CapacityGuard | None = None):
@@ -309,7 +357,10 @@ def main():
                           help='Best-effort free-space reserve in decimal GB (default: disabled)')
     capacity.add_argument('--min-free-gib', type=float, default=0,
                           help='Best-effort free-space reserve in binary GiB (default: disabled)')
-    parser.add_argument('--execute', action='store_true')
+    action = parser.add_mutually_exclusive_group()
+    action.add_argument('--execute', action='store_true')
+    action.add_argument('--check-dependencies-only', action='store_true',
+                        help='Read-only check of the interpreter and required download dependencies')
     args = parser.parse_args()
     if args.workers < 1:
         parser.error('--workers must be positive')
@@ -322,10 +373,13 @@ def main():
     notes = {k: v for k, v in catalog['additional_preparation'].items() if k in args.datasets}
     root = args.data_root.resolve()
     archives = (args.archive_dir or root / 'download_archives').resolve()
-    if not args.execute:
+    if not args.execute and not args.check_dependencies_only:
         print(json.dumps({'status': 'plan_only', 'assets': assets, 'additional_preparation': notes,
                           'data_root': str(root), 'archive_dir': str(archives),
                           'minimum_free_bytes': guard.minimum_bytes}, indent=2))
+        return
+    print(json.dumps(check_dependencies(assets, root, archives), indent=2), flush=True)
+    if args.check_dependencies_only:
         return
     root.mkdir(parents=True, exist_ok=True)
     # Separate archive assets target disjoint files. Receipts are per asset.

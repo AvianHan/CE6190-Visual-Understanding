@@ -64,12 +64,18 @@ def resolve_path(value: str, relative_to: Path = PROJECT_ROOT) -> str:
     return str(p.resolve() if p.is_absolute() else (relative_to / p).resolve())
 
 
+def resolve_executable(value: str, relative_to: Path = PROJECT_ROOT) -> str:
+    """Make an interpreter path absolute without dereferencing a venv symlink."""
+    p = Path(expand(value))
+    return os.path.abspath(p if p.is_absolute() else relative_to / p)
+
+
 def resource_profile(cluster: dict, name: str) -> dict:
     p = dict(cluster.get("defaults", {}))
     p.update(cluster.get("resources", {}).get(name, {}))
     if "python" not in p:
         raise ValueError(f"Resource profile {name} needs an explicit python executable")
-    p["python"] = resolve_path(p["python"])
+    p["python"] = resolve_executable(p['python'])
     p["gpus"] = int(p.get("gpus", 0))
     if p["gpus"] < 0:
         raise ValueError("GPU allocation cannot be negative")
@@ -85,7 +91,7 @@ def resource_profile(cluster: dict, name: str) -> dict:
             for field in ("mllm_python", "mllm_model_path"):
                 if not p.get(field):
                     raise ValueError(f"Owned MLLM profile requires {field}")
-                p[field] = resolve_path(p[field])
+                p[field] = resolve_executable(p[field]) if field == 'mllm_python' else resolve_path(p[field])
         else:
             endpoint = p.get("mllm_endpoint", "")
             if not endpoint.startswith(("http://127.0.0.1:", "http://localhost:")):

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import importlib.util
+import contextlib
 import io
 import json
 import os
@@ -9,8 +10,10 @@ from pathlib import Path
 import shutil
 import stat
 import subprocess
+import sys
 import tempfile
 import unittest
+import venv
 from unittest import mock
 import zipfile
 
@@ -197,6 +200,114 @@ class DownloadDataTests(unittest.TestCase):
                 downloader.download_drive('https://drive.google.com/fixture', self.archive, guard)
         process.terminate.assert_called_once()
         self.assertFalse(self.archive.exists())
+
+    def test_missing_gdown_fails_before_any_http_transfer_or_directory_creation(self):
+        catalog = self.root / 'catalog.json'
+        drive = dict(self.asset, id='drive_fixture', url='https://drive.google.com/file/d/fixture/view')
+        catalog.write_text(json.dumps({'assets': [self.asset, drive], 'additional_preparation': {}}))
+        data_root = self.root / 'not-created'
+        args = ['download_data.py', '--datasets', 'coco', '--data-root', str(data_root),
+                '--catalog', str(catalog), '--execute']
+        with mock.patch.object(sys, 'argv', args), \
+                mock.patch.object(downloader.subprocess, 'run', return_value=mock.Mock(returncode=1, stderr='No module named gdown')), \
+                mock.patch.object(downloader, 'acquire') as acquire, \
+                mock.patch.object(downloader, 'urlopen') as http:
+            with self.assertRaisesRegex(RuntimeError, 'No selected downloads have started'):
+                downloader.main()
+        acquire.assert_not_called()
+        http.assert_not_called()
+        self.assertFalse(data_root.exists())
+
+    def test_dependency_only_mode_is_read_only(self):
+        catalog = self.root / 'catalog.json'
+        drive = dict(self.asset, url='https://drive.google.com/file/d/fixture/view')
+        catalog.write_text(json.dumps({'assets': [drive], 'additional_preparation': {}}))
+        data_root = self.root / 'not-created'
+        args = ['download_data.py', '--datasets', 'coco', '--data-root', str(data_root),
+                '--catalog', str(catalog), '--check-dependencies-only']
+        with mock.patch.object(sys, 'argv', args), contextlib.redirect_stdout(io.StringIO()) as out, \
+                mock.patch.object(downloader.subprocess, 'run', return_value=mock.Mock(returncode=0)) as run, \
+                mock.patch.object(downloader, 'acquire') as acquire:
+            downloader.main()
+        report = json.loads(out.getvalue())
+        self.assertEqual(report['required_modules'], ['gdown'])
+        self.assertEqual(report['python'], sys.executable)
+        self.assertEqual(run.call_args.args[0], [sys.executable, '-I', '-B', '-m', 'gdown', '--help'])
+        acquire.assert_not_called()
+        self.assertFalse(data_root.exists())
+
+    def test_dry_plan_does_not_require_gdown_or_check_dependencies(self):
+        catalog = self.root / 'catalog.json'
+        catalog.write_text(json.dumps({'assets': [dict(self.asset, url='https://drive.google.com/x')],
+                                       'additional_preparation': {}}))
+        args = ['download_data.py', '--datasets', 'coco', '--data-root', str(self.root / 'data'),
+                '--catalog', str(catalog)]
+        with mock.patch.object(sys, 'argv', args), contextlib.redirect_stdout(io.StringIO()) as out, \
+                mock.patch.object(downloader, 'check_dependencies', side_effect=AssertionError('dependency check')):
+            downloader.main()
+        self.assertEqual(json.loads(out.getvalue())['status'], 'plan_only')
+
+    def test_cached_drive_archive_does_not_require_gdown(self):
+        self.asset['url'] = 'https://drive.google.com/fixture'
+        self.make_zip()
+        with mock.patch.object(downloader.subprocess, 'run', side_effect=AssertionError('gdown')):
+            report = downloader.check_dependencies([self.asset], self.root, self.archives)
+        self.assertEqual(report['required_modules'], [])
+
+    def test_complete_drive_receipt_without_archive_does_not_require_gdown_or_rewrite(self):
+        self.asset['url'] = 'https://drive.google.com/fixture'
+        self.make_zip()
+        self.acquire()
+        self.archive.unlink()
+        before = self.receipt.read_bytes()
+        with mock.patch.object(downloader.subprocess, 'run', side_effect=AssertionError('gdown')), \
+                mock.patch.object(downloader, 'write_receipt', side_effect=AssertionError('write')):
+            report = downloader.check_dependencies([self.asset], self.root, self.archives)
+        self.assertEqual(report['required_modules'], [])
+        self.assertEqual(self.receipt.read_bytes(), before)
+
+    def test_missing_receipt_member_and_archive_requires_gdown(self):
+        self.asset['url'] = 'https://drive.google.com/fixture'
+        self.make_zip()
+        self.acquire()
+        self.archive.unlink()
+        (self.root / 'images/train/a.jpg').unlink()
+        with mock.patch.object(downloader.subprocess, 'run', return_value=mock.Mock(returncode=1, stderr='missing')):
+            with self.assertRaisesRegex(RuntimeError, 'gdown is unavailable'):
+                downloader.check_dependencies([self.asset], self.root, self.archives)
+
+    def test_gdown_probe_preserves_real_venv_python_symlink(self):
+        virtualenv = self.root / 'venv with spaces'
+        venv.EnvBuilder(with_pip=False, symlinks=True).create(virtualenv)
+        python = virtualenv / 'bin/python'
+        site = Path(subprocess.check_output([str(python), '-I', '-c',
+            'import sysconfig; print(sysconfig.get_path("purelib"))'], text=True).strip())
+        package = site / 'gdown'
+        package.mkdir()
+        (package / '__init__.py').write_text('')
+        (package / '__main__.py').write_text(
+            'import pathlib,sys\nassert pathlib.Path(sys.prefix) == pathlib.Path(' + repr(str(virtualenv)) + ')\n')
+        self.assertTrue(python.is_symlink())
+        drive = dict(self.asset, url='https://drive.google.com/fixture')
+        with mock.patch.object(sys, 'executable', str(python)):
+            report = downloader.check_dependencies([drive], self.root, self.archives)
+        self.assertEqual(report['python'], str(python))
+        self.assertEqual(report['status'], 'dependencies_ready')
+        self.assertFalse((package / '__pycache__').exists())
+
+    def test_drive_download_keeps_current_interpreter_spelling(self):
+        partial = self.archive.with_suffix('.zip.part')
+        partial.write_bytes(b'fixture')
+        process = mock.MagicMock()
+        process.__enter__.return_value = process
+        process.wait.return_value = 0
+        with mock.patch.object(sys, 'executable', '/runtime/envs/insid3/bin/python'), \
+                mock.patch.object(downloader.subprocess, 'Popen', return_value=process) as launch:
+            downloader.download_drive('https://drive.google.com/fixture', self.archive,
+                                      downloader.CapacityGuard())
+        self.assertEqual(launch.call_args.args[0][:4],
+                         ['/runtime/envs/insid3/bin/python', '-I', '-m', 'gdown'])
+        self.assertEqual(self.archive.read_bytes(), b'fixture')
 
 
 if __name__ == '__main__':
