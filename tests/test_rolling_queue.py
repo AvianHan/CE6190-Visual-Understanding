@@ -123,6 +123,72 @@ class RollingTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "different plan or policy"):
             rq.initialize_queue(self.plan_path, max_inflight=7)
 
+    def test_large_failed_queue_summary_prioritizes_cause_and_preserves_full_state(self):
+        state = self.read()
+        # Put the downstream blocks first, as their dictionary order must not
+        # hide the directly failed preflight job in a bounded summary.
+        state["tasks"] = {
+            f"blocked-{i}": {"key": f"blocked-{i}",
+                            "kind": "smoke" if i < 36 else "experiment",
+                            "resource": "insid3", "status": "BLOCKED",
+                            "error": "Failed prerequisites: preflight"}
+            for i in range(1520)}
+        for key, status, jid in (("data", "PASS", "187001"),
+                                 ("preflight", "FAILED", "187040"),
+                                 ("collect", "PASS", "187041")):
+            state["tasks"][key] = {"key": key, "kind": key, "resource": "preflight",
+                                   "status": status, "job_id": jid,
+                                   "error": "Slurm FAILED exit 1:0" if status == "FAILED" else None}
+        self.save(state)
+        before_state = copy.deepcopy(state)
+        before_bytes = self.state_path.read_bytes()
+        summary = rq._summary(self.plan, state)
+        self.assertEqual(summary, rq.queue_status(self.plan_path))
+        self.assertEqual(summary["status"], "COMPLETE_WITH_FAILURES")
+        self.assertTrue(summary["terminal"])
+        self.assertEqual(summary["total"], 1523)
+        self.assertEqual(summary["counts"], {"PASS": 2, "FAILED": 1, "BLOCKED": 1520})
+        self.assertEqual(summary["stage_counts"], {
+            "data": {"PASS": 1}, "preflight": {"FAILED": 1},
+            "smoke": {"BLOCKED": 36}, "experiment": {"BLOCKED": 1484},
+            "collect": {"PASS": 1}})
+        self.assertEqual(summary["submitted_ever"], 3)
+        self.assertEqual(len(summary["attention"]), 10)
+        self.assertEqual(summary["attention_total"], 1521)
+        self.assertTrue(summary["attention_truncated"])
+        self.assertEqual(summary["attention"][0], {
+            "key": "preflight", "kind": "preflight", "resource": "preflight",
+            "job_id": "187040", "status": "FAILED", "error": "Slurm FAILED exit 1:0"})
+        self.assertLess(len(json.dumps(summary)), 10000)
+        self.assertEqual(state, before_state)
+        self.assertEqual(self.state_path.read_bytes(), before_bytes)
+        self.assertEqual(len(self.read()["tasks"]), 1523)
+        self.assertEqual(self.scheduler.commands, [])
+
+    def test_attention_prioritizes_actionable_states_before_blocks(self):
+        state = self.read()
+        for key, status in (("data", "BLOCKED"), ("preflight", "WAITING_QUOTA"),
+                            ("smoke-a", "UNCERTAIN"), ("smoke-b", "FAILED")):
+            state["tasks"][key]["status"] = status
+        summary = rq._summary(self.plan, state)
+        self.assertEqual([t["status"] for t in summary["attention"]],
+                         ["FAILED", "UNCERTAIN", "WAITING_QUOTA", "BLOCKED"])
+        self.assertEqual(summary["attention_total"], 4)
+        self.assertFalse(summary["attention_truncated"])
+        self.assertEqual(set(summary["attention"][0]),
+                         {"key", "kind", "resource", "job_id", "status", "error"})
+        self.assertIsNone(summary["attention"][0]["job_id"])
+
+    def test_ready_summary_has_no_attention_and_complete_stage_counts(self):
+        summary = rq.queue_status(self.plan_path)
+        self.assertEqual(summary["attention"], [])
+        self.assertEqual(summary["attention_total"], 0)
+        self.assertFalse(summary["attention_truncated"])
+        self.assertEqual(summary["stage_counts"], {
+            "data": {"PENDING": 1}, "preflight": {"PENDING": 1},
+            "smoke": {"PENDING": 2}, "experiment": {"PENDING": 2},
+            "collect": {"PENDING": 1}})
+
     def test_static_submission_cannot_be_mixed(self):
         (self.root / "run/submission.json").write_text("{}")
         with self.assertRaisesRegex(ValueError, "static submission"):

@@ -97,6 +97,128 @@ class OrchestrationTests(unittest.TestCase):
                 run_preflight(plan)
             call.assert_not_called()
 
+    def cached_manifest(self, *, dataset='coco', policy=None, protocol='legacy-protocol', audit=None):
+        """Isolate preflight reuse checks; the external asset evaluator is mocked."""
+        from ics_eval import manifest_fingerprint
+        plan = self.plan()
+        recipe = plan['manifests']['coco_f0']['prepare']
+        recipe.update(dataset=dataset, fold=0)
+        path = Path(plan['manifests']['coco_f0']['path'])
+        manifest = {'schema_version': 1, 'status': 'ready', 'protocol_id': protocol,
+                    'episodes': [{'fold': 0}]}
+        sidecar = {'manifest_sha256': manifest_fingerprint(manifest),
+                   'sampling': {'queries_requested': 10, 'reference_sets_requested_per_query': 3}}
+        if policy is not None:
+            sidecar['sampling']['empty_mask_policy'] = policy
+        if audit is not None:
+            sidecar['sample_eligibility'] = audit
+        path.write_text(json.dumps(manifest))
+        path.with_suffix('.protocol.json').write_text(json.dumps(sidecar))
+        return plan, path, sidecar
+
+    def test_legacy_coco_manifest_reused_without_preparing_or_rewriting(self):
+        plan, path, _ = self.cached_manifest()
+        before = path.read_bytes(), path.with_suffix('.protocol.json').read_bytes()
+        with mock.patch('ics.orchestration.subprocess.run') as call:
+            run_preflight(plan)
+        self.assertEqual(call.call_count, 1)
+        self.assertTrue(call.call_args.args[0][1].endswith('ics_eval.py'))
+        self.assertEqual(before, (path.read_bytes(), path.with_suffix('.protocol.json').read_bytes()))
+        self.assertEqual(json.loads((Path(plan['run_dir'])/'preflight.complete.json').read_text())['status'], 'PASS')
+
+    def test_exclusion_policy_cannot_reuse_legacy_strict_manifest(self):
+        plan, path, _ = self.cached_manifest(dataset='lvis')
+        plan['manifests']['coco_f0']['prepare']['empty_mask_policy'] = 'exclude'
+        with mock.patch('ics.orchestration.subprocess.run') as call:
+            with self.assertRaisesRegex(ValueError, 'different empty_mask_policy'):
+                run_preflight(plan)
+        call.assert_not_called()
+        self.assertTrue(path.exists())
+        self.assertFalse((Path(plan['run_dir'])/'preflight.complete.json').exists())
+
+    def test_exclusion_policy_requires_matching_versioned_audit(self):
+        for audit in (None, {'policy': 'exclude', 'version': 'old'},
+                      {'policy': 'error', 'version': 'lvis-nonempty-v2'}):
+            with self.subTest(audit=audit):
+                plan, _, _ = self.cached_manifest(dataset='lvis', policy='exclude', audit=audit)
+                plan['manifests']['coco_f0']['prepare']['empty_mask_policy'] = 'exclude'
+                with mock.patch('ics.orchestration.subprocess.run') as call:
+                    with self.assertRaisesRegex(ValueError, 'eligibility audit'):
+                        run_preflight(plan)
+                call.assert_not_called()
+
+    def test_explicit_protocol_identity_checked_before_reuse(self):
+        plan, path, sidecar = self.cached_manifest()
+        plan['manifests']['coco_f0']['prepare']['protocol_id'] = 'new-protocol'
+        with mock.patch('ics.orchestration.subprocess.run') as call:
+            with self.assertRaisesRegex(ValueError, 'different protocol_id'):
+                run_preflight(plan)
+            call.assert_not_called()
+        plan['manifests']['coco_f0']['prepare']['protocol_id'] = 'legacy-protocol'
+        sidecar['protocol_id'] = 'inconsistent-sidecar-protocol'
+        path.with_suffix('.protocol.json').write_text(json.dumps(sidecar))
+        with mock.patch('ics.orchestration.subprocess.run') as call:
+            with self.assertRaisesRegex(ValueError, 'protocol_id mismatch'):
+                run_preflight(plan)
+            call.assert_not_called()
+
+    def test_missing_manifest_forwards_policy_and_accepts_audited_result(self):
+        audit = {'policy': 'exclude', 'version': 'lvis-nonempty-v2'}
+        plan, path, sidecar = self.cached_manifest(dataset='lvis', policy='exclude',
+                                                  protocol='lvis-nonempty-f0', audit=audit)
+        manifest_bytes = path.read_bytes()
+        path.unlink()
+        path.with_suffix('.protocol.json').unlink()
+        plan['prepare_missing_manifests'] = True
+        plan['manifests']['coco_f0']['prepare'].update(
+            empty_mask_policy='exclude', protocol_id='lvis-nonempty-f0')
+        def execute(command, **kwargs):
+            if command[1].endswith('prepare_episodes.py'):
+                self.assertEqual(command[command.index('--empty-mask-policy')+1], 'exclude')
+                self.assertEqual(command[command.index('--protocol-id')+1], 'lvis-nonempty-f0')
+                path.write_bytes(manifest_bytes)
+                path.with_suffix('.protocol.json').write_text(json.dumps(sidecar))
+        with mock.patch('ics.orchestration.subprocess.run', side_effect=execute) as call:
+            run_preflight(plan)
+        self.assertEqual(call.call_count, 2)
+
+    def test_invalid_empty_policy_rejected_before_preparation(self):
+        for dataset, policy in (('lvis', 'silently-ignore'), ('coco', 'exclude')):
+            with self.subTest(dataset=dataset, policy=policy):
+                plan = self.plan()
+                plan['prepare_missing_manifests'] = True
+                plan['manifests']['coco_f0']['prepare'].update(dataset=dataset, empty_mask_policy=policy)
+                with mock.patch('ics.orchestration.subprocess.run') as call:
+                    with self.assertRaisesRegex(ValueError, 'empty_mask_policy'):
+                        run_preflight(plan)
+                call.assert_not_called()
+
+    def test_lvis_recovery_suite_preserves_workload_and_coco_manifests(self):
+        project = Path(__file__).resolve().parents[1]
+        original = json.loads((project/'configs/suite.initial.json').read_text())
+        recovery_path = project/'configs/suite.initial.lvisfix.json'
+        recovery = json.loads(recovery_path.read_text())
+        self.assertEqual(original['experiments'], recovery['experiments'])
+        self.assertEqual(len(recovery['manifests']), 42)
+        coco_count = lvis_count = 0
+        for old, new in zip(original['manifests'], recovery['manifests']):
+            if old['prepare']['dataset'] == 'coco':
+                coco_count += 1
+                self.assertEqual(old, new)
+            else:
+                lvis_count += 1
+                self.assertEqual(new['path'], '${ICS_RUNTIME}/manifests/lvis-nonempty-v2/'+Path(old['path']).name)
+                expected = copy.deepcopy(old)
+                expected['path'] = new['path']
+                expected['prepare']['empty_mask_policy'] = 'exclude'
+                expected['prepare']['protocol_id'] = 'ce6190-unified-v2-nonempty-'+old['id']
+                self.assertEqual(expected, new)
+        self.assertEqual((coco_count, lvis_count), (12, 30))
+        with mock.patch.dict(os.environ, {'ICS_RUNTIME': str(self.root/'runtime')}):
+            plan = build_plan(recovery_path, project/'configs/cluster.orion.json', self.root/'recovery-run')
+        self.assertEqual((len(plan['smoke']), len(plan['tasks'])), (36, 1484))
+        self.assertEqual(len(plan['smoke'])+len(plan['tasks'])+3, 1523)
+
     def test_missing_concurrency_does_not_submit_preflight(self):
         c=json.loads(self.cluster.read_text());c['max_parallel']=None;self.cluster.write_text(json.dumps(c))
         path=write_plan(self.plan())

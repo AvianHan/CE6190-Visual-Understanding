@@ -462,8 +462,20 @@ def tick(plan_path: Path) -> dict:
 
 
 def _summary(plan: dict, state: dict) -> dict:
-    counts = dict(Counter(t["status"] for t in state["tasks"].values()))
-    terminal = all(t["status"] in TERMINAL for t in state["tasks"].values())
+    tasks = list(state["tasks"].values())
+    counts = dict(Counter(t["status"] for t in tasks))
+    stage_counts = {kind: Counter() for kind in
+                    ("data", "preflight", "smoke", "experiment", "collect")}
+    for task in tasks:
+        stage_counts.setdefault(task["kind"], Counter())[task["status"]] += 1
+    attention_priority = {"FAILED": 0, "UNCERTAIN": 1, "WAITING_QUOTA": 2, "BLOCKED": 3}
+    attention = sorted((t for t in tasks if t["status"] in attention_priority),
+                       key=lambda t: attention_priority[t["status"]])
+    # Summarize the root failures first without dropping any persistent task state.
+    attention_preview = [{key: t.get(key) for key in
+                          ("key", "kind", "resource", "job_id", "status", "error")}
+                         for t in attention[:10]]
+    terminal = all(t["status"] in TERMINAL for t in tasks)
     active = sum(counts.get(s, 0) for s in ACTIVE)
     if terminal:
         status = "COMPLETE_WITH_FAILURES" if counts.get("FAILED") or counts.get("BLOCKED") else "COMPLETE"
@@ -479,14 +491,14 @@ def _summary(plan: dict, state: dict) -> dict:
         status = "READY"
     return {"status": status, "terminal": terminal, "total": len(state["tasks"]),
             "active": active, "counts": counts,
-            "submitted_ever": sum(bool(t.get("job_id")) for t in state["tasks"].values()),
+            "stage_counts": {kind: dict(values) for kind, values in stage_counts.items()},
+            "submitted_ever": sum(bool(t.get("job_id")) for t in tasks),
             "plan_path": state["plan_path"], "plan_fingerprint": state["plan_fingerprint"],
             "queue_state_path": str(Path(plan["run_dir"]) / STATE_NAME),
             "policy": state["policy"], "capacity": state.get("capacity"),
             "last_error": state.get("last_error"), "updated_at": state["updated_at"],
-            "attention": [{"key": t["key"], "status": t["status"], "error": t.get("error")}
-                          for t in state["tasks"].values()
-                          if t["status"] in {"FAILED", "BLOCKED", "UNCERTAIN", "WAITING_QUOTA"}]}
+            "attention": attention_preview, "attention_total": len(attention),
+            "attention_truncated": len(attention) > len(attention_preview)}
 
 
 def queue_status(plan_path: Path) -> dict:

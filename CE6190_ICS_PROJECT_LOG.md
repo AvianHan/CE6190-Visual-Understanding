@@ -1,8 +1,8 @@
 # CE6190 ICS — 持续研究与实验记录
 
-最后更新：**2026-11-02（新加坡时间）**。服务器状态以用户最近回传的终端输出为准，并非实时监控。
+最后更新：**2026-11-04（新加坡时间）**。服务器状态以用户最近回传的终端输出为准，并非实时监控。
 
-这是当前项目的维护文档。每次修改记录：研究问题、输入输出、变化原因、运行证据、结论边界和下一步。**四份模型权重与三个环境的既有基础检查保留。Orion 的首轮 `ics-initial-20261101` 已以 `COMPLETE_WITH_FAILURES` 结束：数据作业 185464 失败，1,521 个下游任务 BLOCKED，collector PASS，管理器 STOPPED；没有 GPU smoke 或正式实验运行。四份图像压缩包已下载并解压，标注／splits 未完成。已定位虚拟环境解释器被 `Path.resolve()` 解引用的问题，本轮修复与恢复方案见 2.9–2.10；尚未部署到 Orion。**
+这是当前项目的维护文档。每次修改记录：研究问题、输入输出、变化原因、运行证据、结论边界和下一步。**11 月 4 日回传的完整诊断已定位 `ics-initial-20261102-pythonfix` 的根失败：data PASS，preflight 作业 187040 在生成 LVIS fold4 reference manifest 时遇到解码后无前景的源 mask；36 个 smoke 和 1,484 个正式分片均未运行。管理器已 STOPPED，终态 COMPLETE_WITH_FAILURES，不是继续等待容量。故障发生于 11 月 2 日，见 2.13 的时间戳。本次准备显式、可审计的 LVIS 空 mask 筛选，全部新 LVIS manifests 使用独立目录；保留旧 run／旧 manifests，复用 COCO、图像、环境、权重和缓存，恢复目标为 `ics-initial-20261104-lvisfix`。本次修复尚未取得 Orion 部署或新作业证据，交付流程见 2.14。**
 
 维护记录纠正：仓库原本已有本文，包含研究设计与历史验证；最近的服务器配置／下载步骤没有同步写回。此前说“没有维护文档”不准确，应为“没有及时更新已有文档”。本次将终端证据补回本文，保留历史研究范围和结论边界，后续继续维护同一份记录。
 
@@ -23,15 +23,15 @@
 | 项目 | 状态 | 依据／限制 | 下一步 |
 |---|---|---|---|
 | 2026-10-22 starter、研究 HTML、原始 evaluator | 已找回并继承 | 旧包和 `research/`；保留旧 README | 使用新记录区分历史状态 |
-| 远端仓库与用户本地修改 | 用户已完成更新并 push；Orion fast-forward 至 `3478ea0` | 用户上次 `git pull --ff-only` 输出：`aabdbb0..3478ea0`；本地未提交工作树仍未直接检查 | 后续更新继续一条应用命令＋commit message，用户手动 commit／push |
+| 远端仓库与用户本地修改 | 解释器修复已 push；最后确认 Orion 为 `20d6432` | `git pull --ff-only`：`3478ea0..20d6432`，8 个文件更新；本次 LVIS 修复尚未部署，本地未提交工作树未直接检查 | 本次保持一条应用命令＋commit message，用户手动 commit／push |
 | 固定 manifest、query GT 隔离、三种 IoU | 已实现并 CPU 验证 | `ics_eval.py`、contract tests；原 API 保留 | 实际数据 smoke |
-| COCO／LVIS 和第二批数据 loaders | 已实现并合成验证 | `ics/data.py`、13 项数据测试 | 实际下载、split／图像抽查 |
+| COCO／LVIS 和第二批数据 loaders | 已实现；真实 LVIS preflight 暴露空源 mask | 历史 13 项数据测试不足以覆盖本次故障；修复协议与审计见 2.14 | 用新 LVIS 有效池生成独立 manifests，再检查真实 smoke |
 | INSID3 adapter、组件／encoder 接口 | 已实现并合成验证 | 11 项测试，含真实 upstream 处理代码＋合成 encoder 等价检查 | 预训练权重 GPU 推理 |
 | CG-ICS adapter、概念／visual 组件 | 已实现并合成验证；服务器完整导入通过 | 历史 12 项 tests；SAM3／Qwen 权重已下载，`CG-ICS imports OK; model not loaded` | GPU 模型 smoke |
 | runner、resume、失败重试审计、分析 | 已实现并合成验证 | runner／analysis tests；失败 attempt 不覆盖丢失 | 真实结果检查 |
-| 批量调度、资源监测、诊断 | 首轮已结束，`COMPLETE_WITH_FAILURES`／manager `STOPPED` | 共提交 2 个作业；data FAILED 1、下游 BLOCKED 1,521、collector PASS 1；见 2.9 | 修复解释器路径后用新 run，保留旧 run 原始证据；不修改旧状态假装成功 |
+| 批量调度、资源监测、诊断 | 旧 run 已终止：PASS 2、FAILED 1、BLOCKED 1,520 | data／collect PASS；preflight FAILED；本次补阶段计数及优先失败的限长诊断 | 应用更新后启动独立 lvisfix run；不重复启动终态旧 run |
 | 三个环境与四份模型权重 | 基础检查／下载已通过 | 见下面实际版本、哈希和修复记录；尚无 GPU 模型加载证据 | 复用现有资源，在 Slurm 计算节点 smoke |
-| 实际数据与 manifests | 四份 COCO 图像资源下载／解压成功；数据阶段整体失败 | 185464 日志确认图像数与观察哈希；4 项 Drive 标注／split 资源调用 base Python 时缺 `gdown`；未进入 preflight | 复用原 data／archives／receipts，只补缺失项，再生成固定 manifests；不能宣称完整数据已准备好 |
+| 实际数据与 manifests | data 阶段已 PASS；LVIS manifests 部分生成后失败 | fold4 standard 的 2,300 episodes 验证通过，fold4 reference 遇到空 mask；不代表所有 manifests 已就绪 | 复用 12 个 COCO manifest 路径；30 个 LVIS manifests 在 `manifests/lvis-nonempty-v2/` 重新按同一有效池生成 |
 | 作者原始随机 episode／resize-GT 协议的完整复现 | 尚未完成 | 本包默认统一 manifest＋原图 GT 协议 | 另建明确的 author-protocol run |
 | 正式模型成绩、跨域结论、最佳组合 | 尚无结果 | 没有 GPU 模型运行日志 | 不能提前下结论 |
 
@@ -173,7 +173,7 @@ export ICS_RUNTIME="/scratch/prj0000000262_1/hansy/ce6190-ics-runtime"
 
 当时的处理是继续等待已有管理器，不重复 start。`ACTIVE` 与无错误只描述该中间快照；后续实际发生数据失败并结束管理器，详见 2.9。现在不能继续沿用“仍在运行／只需等待”的结论。
 
-### 2.9 最新 Orion 失败证据与根因（2026-11-02 补录）
+### 2.9 首轮 Orion 失败证据与根因（2026-11-02 补录）
 
 用户回传旧 run 的状态、数据日志和汇总：
 
@@ -211,6 +211,8 @@ $ICS_RUNTIME/python/cpython-3.12.15-linux-x86_64-gnu/bin/python3.12
 
 ### 2.10 此轮修复、检查与新 run 恢复方案
 
+以下保留修复交付时的方案与验证边界；随后用户已完成部署和启动，见 2.11。
+
 - 解释器路径独立使用 `resolve_executable()`：严格展开环境变量、转为绝对路径，同时保留虚拟环境符号链接；数据、配置等普通路径继续原有规范化行为。覆盖 resource `python` 和 `mllm_python`，不改模型算法、研究配置、原权重与已成功环境。
 - `scripts/apply_python_fix.py` 在用户真实仓库中核对已知源码锚点后定点修补 `ics/orchestration.py`，保留其余未知源码与用户工作；不能安全匹配时拒绝应用，不以摘录替换整文件。更新流程沿用校验、备份与幂等保护，不自动 commit／push。
 - 数据下载器在启动传输前检查本次缺失资源需要的依赖，并提供只读 `--check-dependencies-only`；报告所用 interpreter、prefix、base_prefix，便于核验实际环境。已经完整的 archive／有效 receipts 复用，不因不需下载的 Drive 项强制安装依赖。
@@ -233,6 +235,112 @@ fix: preserve virtualenv Python paths and precheck data dependencies
 ```
 
 完整 Orion 恢复命令见 [docs/PYTHON_ENV_RECOVERY.md](docs/PYTHON_ENV_RECOVERY.md)，实际聊天交付同时直接给可复制命令，不把阅读该文件作为前置要求。恢复包含 pull、检查 `resource_profile` 中普通 worker 与 MLLM 的环境路径、仅在正确 insid3 缺少时安装 `gdown>=5,<6`、只读依赖检查，以及启动上述新 run；这些操作尚未取得用户的实际执行输出。
+
+### 2.11 修复已部署，新 run 已启动（2026-11-02）
+
+用户回传实际执行结果，已完成上一节的本地手动 commit／push 与 Orion 恢复命令：
+
+| 项目 | 当时服务器证据 |
+|---|---|
+| 代码 | `git pull --ff-only`：`3478ea0..20d6432`，8 个文件更新，包含 `ics/orchestration.py` 的解释器修复 |
+| 路径检查 | preflight、insid3、cgics_visual、cgics_mllm 全部通过；也检查 owned MLLM 的 `mllm_python` |
+| 下载依赖 | `dependencies_ready`；Python 为 `$ICS_RUNTIME/envs/insid3/bin/python`，prefix 为 `envs/insid3`，与 base_prefix 不同 |
+| gdown | 正确 insid3 环境可以启动；此次输出未出现 pip 安装步骤，没有证据需要再次安装 |
+| 仍需传输的 Drive 项 | `coco2014_train_semantic`、`coco2014_val_semantic`、`coco2014_splits`、`lvis_annotations` |
+| 新 run | `$ICS_RUNTIME/runs/ics-initial-20261102-pythonfix` |
+| 管理器 | `STARTED`，PID `3314891`，日志为新 run 的 `manager.log`；PID 不是 Slurm job ID |
+| 初始状态 | `READY`，`terminal=false`，total 1,523，PENDING 1,523，active 0，submitted_ever 0 |
+| 初始诊断 | `capacity=null`、`last_error=null`、`attention=[]`；`updated_at=1793599239.6199355` |
+| 新 plan fingerprint | `b792c006fb247d9aed670405bf47d2612bfbfe2d58bac4dd6951ff8cd8e2bc56` |
+| 策略 | ICS 最多 8 在途；同用户／QoS 共享上限 60；预留 0；coco／lvis、2 data workers、最低余量 32 GiB；仍用原 `$ICS_RUNTIME/data` |
+
+这是启动时打印的初始快照，尚不证明 manager 当前仍 ACTIVE，也不证明已提交 Slurm 作业、补完标注或开始 GPU 推理。`capacity=null` 不能解释为名额已满。用户粘贴的命令末尾显示有错位，但实际输出已经 STARTED，不应仅凭回显排版再次 start 或新建第三个 run。
+
+下一步只读查询新 run 的冻结入口；使用完整路径，不依赖上次括号子 shell 内的变量：
+
+```bash
+/scratch/prj0000000262_1/hansy/ce6190-ics-runtime/envs/insid3/bin/python -I /scratch/prj0000000262_1/hansy/ce6190-ics-runtime/runs/ics-initial-20261102-pythonfix/source/scripts/queue_ics.py status --run-dir /scratch/prj0000000262_1/hansy/ce6190-ics-runtime/runs/ics-initial-20261102-pythonfix
+```
+
+先确认管理器与阶段进展，完成后再查看／导出结果；若出现 FAILED／BLOCKED／STOPPED，再查看对应任务日志。此次只补记实际部署证据，没有新的代码补丁或再次安装／提交动作。
+
+后续只读 status 已回传（同一 plan fingerprint）：
+
+| 字段 | 最新观察 |
+|---|---|
+| manager／status | `ACTIVE`／`WAITING_CAPACITY`，`terminal=false` |
+| 待办／提交 | PENDING 1,523；active 0；submitted_ever 0 |
+| 共享容量 | `shared_observed=60`；`available_before_submission=0`；`own_active=0`；`unseen_own_reservations=0` |
+| 错误／关注项 | `last_error=null`；`attention=[]` |
+| 时间戳 | `observed_at=1793599666.2166855`；`updated_at=1793599666.6423755` |
+
+该快照已确认管理器当时仍持锁活动，等待的是同用户／QoS 的共享提交名额。快照中的 60 个占用不来自新 ICS run；未回传具体作业列表，不能断言全部属于 Generation。1,523 PENDING 是内部待办，尚未排入 Slurm。管理器按既定周期继续观察，有空位时自动尝试提交；其他提交者也可能竞争空位，不保证确切启动时间。当时无须重新 start、安装或修改代码；后来实际进入 data／preflight 并失败，最终证据见 2.13。
+
+### 2.12 11 月 4 日首次异常回传：当时待查首个错误
+
+用户再次查询同一新 run，上传 `粘贴的文本 (1)(20261104-030007).txt`（36,625 bytes、1,043 行）。附件从一个任务对象中间开始，只是输出尾部：包含 208 条 BLOCKED 状态、207 个完整任务 key，依赖报错涉及 15 个不同 `smoke-...` 名称，末尾为 `manager: STOPPED` 及 `resume: Repeat the same start command`。
+
+- 这些只是附件内计数，**不是整个 run 的总失败／阻塞数量**。未看到总体 status、terminal、counts、submitted_ever、首个 FAILED 任务、Slurm job ID 或 traceback。
+- `Failed prerequisites: smoke-...` 表示下游没有获准运行；不能据此认定这些 smoke 全部实际执行并失败。更早的 data 或 preflight 失败也可能造成连锁阻塞。
+- 已有 CLI 的 manager 检查在未持锁时统一输出上述 resume 提示，不看 terminal；终态 run 再 start 只会返回 NOT_NEEDED。必须先取得总体状态和根失败日志，再决定恢复步骤。
+- 因此当前不能宣称仍正常排队，也不能沿用旧根因认定再次缺 gdown、GPU 依赖或空间不足。没有足够证据进行安装、改环境或重新排队。
+- 本次改用精简只读诊断：总体状态排除庞大的 attention，按阶段计数，列出真正 FAILED／UNCERTAIN 任务，最多选三个不同阶段／资源的代表任务，读取 Slurm 日志、rolling marker、runner／vLLM 日志。若无直接失败或尚未终态，补管理器尾部。这样避免长 BLOCKED 列表淹没关键错误。
+- 当前本地重新发现旧基线工作树（HEAD aabdbb0，含 rolling 工作树文件），可核对已交付状态／日志逻辑；它不等同于服务器 20d6432，也不提供服务器最新运行文件。
+
+当时下一步为回传精简只读诊断，尚未改代码、安装依赖或重启作业。随后用户已提供完整输出，根因与修复交付记录见 2.13–2.14；本节保留为诊断过程，不再代表当前缺少根失败日志。
+
+### 2.13 完整诊断：数据通过，LVIS reference 预检失败（11 月 4 日回传）
+
+| 项目 | 实际证据与解释 |
+|---|---|
+| run／plan | `ics-initial-20261102-pythonfix`；fingerprint `b792c006fb247d9aed670405bf47d2612bfbfe2d58bac4dd6951ff8cd8e2bc56` |
+| 总体终态 | `manager=STOPPED`、`status=COMPLETE_WITH_FAILURES`、`terminal=true`；不是管理器失联或仍在排队 |
+| 任务计数 | PASS 2、FAILED 1、BLOCKED 1,520；`submitted_ever=3`，对应 data、preflight、collect |
+| 分阶段 | data PASS 1；preflight FAILED 1；smoke BLOCKED 36；experiment BLOCKED 1,484；collect PASS 1 |
+| 直接失败 | preflight，Slurm job **187040**，`Slurm FAILED exit 1:0`；marker `status=FAIL`、`error_type=CalledProcessError` |
+| 失败输入 | `LVIS/coco/train2017/000000578055.jpg` 的某个 image／concept 源 mask 解码后为空；发生在 reference asset 构造时 |
+| 失败 recipe | LVIS fold 4，queries 500、references-per-query 50、shots 1、seed 0、query-seed 0，`--trust-prepared-pickle` |
+| preflight 开始／结束 | `1793622940.253583`／`1793624697.7603624`，即新加坡时间 **2026-11-02 20:35:40–21:04:57**；11 月 4 日是回传时间 |
+| 终态更新时间 | `1793624763.4117153`，新加坡时间 2026-11-02 21:06:03；`last_error=null` 不否定 task FAILED |
+| 最后容量快照 | shared 60、own active 0、available 0、unseen reservations 0；`observed_at=1793624762.9600296`；容量不是此次直接失败原因 |
+
+报错原文：
+
+```text
+ValueError: Selected source mask is empty: /scratch/prj0000000262_1/hansy/ce6190-ics-runtime/data/LVIS/coco/train2017/000000578055.jpg
+```
+
+此前同一日志中 **LVIS fold4 standard** 已生成并验证 `valid=true`／`status=ready`：2,300 episodes，manifest SHA-256 为 `83d18e785ad81a55494d4f9f77804f160bd5764e995281dd6c1f691f2603845c`。query draws 2,300、unique query/concept pairs 1,532、query repeats 768；references-per-query 1、shots 1、seed／query-seed 均为 0。standard 成功并不保证扩大 reference 采样后不会碰到另一条空 mask。
+
+本轮 data 已 PASS，说明上一轮解释器／gdown 故障未再次阻断该数据任务；**当前没有 GPU smoke 或正式模型结果**。collector PASS 只说明失败汇总完成。缺少服务器实际 pickle 内容，尚不能确定该源标注为什么解码为空，不能宣称图像损坏、标注整体下载损坏或作者也使用同样过滤规则。
+
+### 2.14 LVIS 空 mask 修复与独立恢复计划（2026-11-04）
+
+修复采用显式的 `--empty-mask-policy exclude`，仅适用于 LVIS；默认仍为严格 `error`。先固定原类别集合与 fold 分配，再扫描当前 fold 的所有 image／concept 候选：只有**成功解码、尺寸正确、合并后前景像素数为 0** 的源 mask 才排除。编码错误、尺寸不符、缺失文件、损坏的生成 mask 缓存等继续报错，不能把任意异常静默跳过。筛选后任何原类别无足够样本均明确失败，不允许类别消失或重新编号 fold。
+
+query 和 reference 使用同一有效池；采样保持确定性、分离 query／reference RNG，并保持不同 reference budget 的 query 对齐。protocol sidecar 记录 `sampling.empty_mask_policy`，以及 `sample_eligibility` 的策略／版本、输入／有效／排除数量、逐类别计数、完整 `excluded_samples` 与有效池 `pool_fingerprint`。实际排除记录包含 image、concept、原因及标注数量；服务器真实排除数量要等新 preflight 输出，不能预填为 1。此筛选改变采样总体，必须使用新的协议身份，不能称为作者原始随机协议的精确复现。
+
+新 suite 为 `configs/suite.initial.lvisfix.json`：12 个 COCO manifest 的路径和 recipe 保持原样；30 个 LVIS manifests 全部使用 `${ICS_RUNTIME}/manifests/lvis-nonempty-v2/`，不覆盖或混用旧 LVIS standard／reference／component manifests。已成功的图像、下载 receipts、archives、模型环境、四份权重和有效 mask 缓存继续复用。原 36 配置、42 manifests、36 smoke、1,484 正式分片及完整 1,523 项队列范围保持不变。
+
+preflight 传递并核对 manifest 的策略／协议身份；旧 sidecar 未声明 policy 时只按严格 `error` 处理，所以旧 COCO 可按原身份复用。状态输出新增 `stage_counts`；`attention` 最多 10 项，优先真正 FAILED／UNCERTAIN／WAITING_QUOTA，再列 BLOCKED，附 kind／resource／job_id，并给总数与截断标识；完整任务记录仍保留。终态 STOPPED 不再建议重复 start；非终态意外停机仍可显示恢复提示。未修改自动重试或旧状态重置行为。
+
+本次本地完整测试：**189 项运行，181 项通过，8 项因缺少 torch／torchvision 跳过，0 failures／errors**，耗时 1.700 秒；报告见 [research/validation_2026-11-04_lvis_fix.json](research/validation_2026-11-04_lvis_fix.json)。其中 23 项 data、18 项 orchestration、5 项 prepare CLI、58 项 queue／CLI 测试全部通过；使用 `pycocotools 2.0.10` 实际解码合成 polygon、压缩与未压缩 RLE，验证空 union 筛选、异常不被吞掉、类别／fold 保留、采样对齐和排除审计。8 项跳过的是可选模型 tensor 测试，不能写成 189 项全部通过；这些 CPU／合成与模拟调度测试不代表服务器部署、真实 LVIS 全量筛选或 GPU 验证。
+
+另以真实 venv 子进程在本地合成 LVIS fold4（空 mask 1、有效样本 3）连续两次执行 `run_preflight`：standard／reference／component 三个 cohort 的 query 前缀和有效池一致，第二次文件 hash／mtime 不变，解释器路径保留 venv 身份。更新器验证备份字节匹配，保留 Git、未列入更新的文件及前次 Python 修复，重复应用返回 `UP_TO_DATE`；增量包包含 16 个 payload 文件加 1 份清单。
+
+交付包 `CE6190-ICS-lvis-fix-20261104.zip` 下载到 Mac `~/Downloads` 后，在已有本地仓库目录执行一条命令，沿用更新器校验、备份和幂等行为：
+
+```bash
+(ICS_FIX_DIR="$(mktemp -d)" && unzip -q "$HOME/Downloads/CE6190-ICS-lvis-fix-20261104.zip" -d "$ICS_FIX_DIR" && python3 "$ICS_FIX_DIR/CE6190-Visual-Understanding/scripts/apply_update.py" --target "$PWD" --apply)
+```
+
+用户在 VS Code 手动检查 diff、commit／push。本次 commit message：
+
+```text
+fix: audit empty LVIS masks and isolate recovery manifests
+```
+
+随后 Orion `git pull --ff-only`，用新 suite 启动 **`$ICS_RUNTIME/runs/ics-initial-20261104-lvisfix`**。完整可复制命令见 [docs/LVIS_EMPTY_MASK_RECOVERY.md](docs/LVIS_EMPTY_MASK_RECOVERY.md)，聊天交付同时直接提供命令，不要求先打开说明。旧两轮 run 的 frozen source、状态和日志保留；不手改 BLOCKED／FAIL，不在旧终态 run 上重复 start。当前尚未取得用户应用此次更新、push、Orion pull 或新 run 启动证据。
 
 ## 3. 怎样拆组件，才能回答问题
 
@@ -338,15 +446,15 @@ DINOv3 的 dense features 不能直接替代 SAM3 的 text／visual prompt 接�
 ## 9. 执行顺序与当前阻塞
 
 1. 已完成的历史准备保留：三个模型环境的基础检查、四份权重、滚动队列配置与首次 Orion 部署；四份图像资源已实际下载／解压。首轮数据任务 185464 失败，旧 run 终止，无 GPU 实验结果。
-2. 本轮交付只修解释器路径与下载依赖早检查，并补全本文。助手提供更新 ZIP、一条直接可粘贴的应用命令及 commit message；用户在 VS Code 手动检查 diff、commit／push，再在 Orion pull。
-3. 使用真正的 insid3 Python 核验／必要时仅补装 `gdown`，执行只读依赖检查，再启动 `ics-initial-20261102-pythonfix`。保留旧 run 状态与冻结源码，复用同一 runtime 的 data、缓存、模型环境和权重。
-4. 新 run 按共享名额先完成缺失数据，再运行 preflight／固定 manifests；成功后在 Slurm GPU 节点逐配置 smoke，成功分支才放行正式分片。第二批独立 suite 不阻塞首批 COCO／LVIS。此流程尚未取得本次 Orion 执行证据。
+2. 已完成：交付解释器路径与下载依赖早检查修复、维护记录、单条应用命令和 commit message；用户完成 commit／push，Orion pull 至 20d6432。
+3. 已完成：真正的 insid3 Python 通过依赖检查；`ics-initial-20261102-pythonfix` 的 data PASS，但 preflight 187040 因 LVIS 空源 mask 失败并终止，36 smoke／1,484 正式分片均 BLOCKED。旧 run 状态与冻结源码保留，没有 GPU 成绩。
+4. 当前恢复方案：应用本次 LVIS 显式筛选与审计修复，用户手动 commit／push 后 Orion pull；以 `configs/suite.initial.lvisfix.json` 启动 `ics-initial-20261104-lvisfix`，保留旧 manifests、复用成功资源，并在新目录生成统一有效池的 LVIS manifests。先取得实际新 preflight／smoke 日志；本次尚未部署或提交。
 5. 持续滚动补位、防重复提交并收集 failure／coverage、指标、mask 案例和资源。先取得真实 smoke 吞吐与显存，必要时另建有身份的 pilot／调整分片，不把少量 smoke 当主结果。严格区分内部登记、取得 job ID、RUNNING 与 PASS。
 6. 根据自己的结果决定第二批扩展、额外方法和深入组件实验。论证区分事实、假设、计划与结果；没有普遍最优或跨域结论的预设。
 
 自动调度必须统计共享用户／QoS 的展开数组元素，有空位才提交，给管理作业留余量；其他进程抢先提交导致 QoS 拒绝时退避重试。未满足依赖的任务优先保留在持久化待办中，不塞满 Slurm pending。提交成功但写回中断时需查证恢复，不因再次启动重复提交。CPU 数据与 GPU 推理申请各自资源，不在登录节点跑模型；控制程序部署与续跑应符合实际站点规则。
 
-当前不缺实验授权、SAM3／DINOv3 下载授权或四份权重。**当前阻塞是工作进程解释器选错导致数据失败；需要应用本轮修复，再取得新 run 的数据完成和 GPU smoke 证据。** 旧 run 已经终止，不能把恢复解释为继续等待共享 60 个名额。无需取消 Generation 作业，也无需再次要求用户逐阶段批准。当前会话没有 Orion SSH，不能声称已代为安装、提交或恢复服务器运行。
+当前不缺实验授权、SAM3／DINOv3 下载授权或四份权重。**最新阻塞已定位为 LVIS preflight 空源 mask；data 已通过，GPU 阶段未开始。本次准备可审计的采样修复与新 run，不再仅等待共享名额。** 保留两轮旧 run 的全部证据；实际筛选数量、完整 manifests、GPU 可运行性和正式结果仍待服务器执行。无需取消 Generation 作业，也无需再次要求用户逐阶段批准。当前会话没有 Orion SSH，不能声称已代为安装、提交或恢复服务器运行。
 
 ## 10. 课程要求与更新记录
 
@@ -364,5 +472,9 @@ DINOv3 的 dense features 不能直接替代 SAM3 的 text／visual prompt 接�
 | 2026-11-01，Orion 首次启动 | 用户 pull 至 `3478ea0`，管理器 STARTED／PID 3608718，登记完整 1,523 个待办；固定之后每次更新附 commit message | 初始 READY 快照未含首次轮询；尚无实际 ICS job ID／数据完成／GPU 成绩证据。 |
 | 2026-11-01，首次实际作业 RUNNING | 同一 plan 下 submitted_ever=1、RUNNING=1、PENDING=1522，manager ACTIVE；共享 60/60 含本批 1 个 | 无 last_error／attention；按依赖图为首个数据任务，具体 job ID／下载日志未展示，数据完成与 GPU 仍未验证。 |
 | 2026-11-02，首轮终态与解释器修复 | 记录 data job 185464 失败、1,521 BLOCKED、collector PASS；定位 `Path.resolve()` 解引用 venv Python，补解释器路径修复及下载依赖早检查；恢复方案改用 `ics-initial-20261102-pythonfix` 复用成功资源 | 原 run 共提交 2 个作业，无 GPU 运行；本轮 37 项回归全过；完整 checkout 未恢复，未声称部署或重跑历史 140 项。 |
+| 2026-11-02，修复部署与新 run STARTED | Orion 更新到 20d6432；四类 Python 路径检查和 insid3 gdown 依赖检查通过；新 run ics-initial-20261102-pythonfix，PID 3314891 | 初始 READY、1,523 PENDING、submitted_ever=0、capacity=null；尚未确认实际提交、数据完成或 GPU 运行，下一步只读 status。 |
+| 2026-11-02，新 run 容量等待 | manager ACTIVE、WAITING_CAPACITY；共享 60/60，本批 0 提交、1,523 内部 PENDING | last_error=null、attention=[]；继续自动轮询，尚无新数据作业或 GPU 结果，不重复 start。 |
+| 2026-11-04，新 run 异常回传 | 附件尾部显示 STOPPED、208 条 BLOCKED 片段及 smoke 前置依赖错误 | 不是完整统计；缺直接 FAILED／总状态／traceback；已准备精简只读诊断，暂不按通用 resume 提示重启。 |
+| 2026-11-04，完整诊断与 LVIS 修复准备 | 已确认 data PASS、preflight 187040 因 fold4 reference 的空源 mask 失败；总 PASS 2／FAILED 1／BLOCKED 1,520。显式 LVIS 非空池、排除审计、新 manifest 目录及状态摘要修复；恢复 run 为 ics-initial-20261104-lvisfix | 故障实际发生于 11 月 2 日，11 月 4 日回传。旧标准 manifest 与所有旧 run 保留；本地 189 项运行／181 通过／8 可选 tensor 跳过／0 failures／errors，尚未部署或提交新 run，无 GPU 验证。 |
 
 后续每轮追加：实际命令／run directory、配置与 manifest hash、成功／失败数量、实验观察、仍不能确定的结论、下一轮修改。不要将“会做”或“已写配置”改写为“已完成实验”。

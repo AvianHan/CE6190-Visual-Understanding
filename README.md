@@ -1,6 +1,6 @@
 # CE6190 Visual Understanding — In-context Segmentation
 
-更新：2026-11-01。项目主线是 INSID3 与 CG-ICS 的复现、统一比较和组件分析。**三个环境基础检查和四份权重下载已有服务器证据；尚未确认实际数据、GPU 推理或正式 ICS 实验，没有自有模型成绩。** 新增滚动队列入口，尚未在 Orion 提交／验证。
+更新：2026-11-04。项目主线是 INSID3 与 CG-ICS 的复现、统一比较和组件分析。**数据下载任务已 PASS；最新 run 在 LVIS fold 4 reference manifest 准备时遇到空 mask，preflight 失败，GPU smoke／正式实验均未运行。** 本次增加可审计的 LVIS 正样本筛选策略及独立恢复 suite，尚未在 Orion 验证此修复。恢复说明见 [docs/LVIS_EMPTY_MASK_RECOVERY.md](docs/LVIS_EMPTY_MASK_RECOVERY.md)。
 
 持续记录见 [CE6190_ICS_PROJECT_LOG.md](CE6190_ICS_PROJECT_LOG.md)。旧版说明保留于 `research/README_2026-10-22.md`；旧审计文件是历史记录，不能代替本次验证状态。
 
@@ -22,16 +22,19 @@
 
 ## 下载更新到现有 VS Code clone
 
-在本地终端进入已有的 `CE6190-Visual-Understanding` clone。将下载 ZIP 解压到独立目录，然后运行其中的 updater：
+将 `CE6190-ICS-lvis-fix-20261104.zip` 下载到 Mac 的 `~/Downloads`，在已有本地仓库的 VS Code 终端执行：
 
 ```bash
-python3 /absolute/path/to/extracted/CE6190-Visual-Understanding/scripts/apply_update.py --target "$PWD"
-python3 /absolute/path/to/extracted/CE6190-Visual-Understanding/scripts/apply_update.py --target "$PWD" --apply
+(ICS_FIX_DIR="$(mktemp -d)" && unzip -q "$HOME/Downloads/CE6190-ICS-lvis-fix-20261104.zip" -d "$ICS_FIX_DIR" && python3 "$ICS_FIX_DIR/CE6190-Visual-Understanding/scripts/apply_update.py" --target "$PWD" --apply)
 ```
 
-第一条仅显示变更；第二条核对包内 SHA256，并在 clone 的同级 backup 目录备份所有将替换的旧文件。它保留 `.git`、未列入更新的文件，不做 commit／push。随后由你在 VS Code Source Control 检查 diff、手动 commit／push。旧环境探测结果不代表服务器配置。
+更新器核对包内 SHA256，并先在仓库同级 backup 目录备份所有替换文件；保留 Git 和未列入更新的文件。随后由用户在 VS Code Source Control 检查 diff、手动 commit／push，再在 Orion pull。Commit message：
 
-本次已成功 clone 项目远端，更新基线为 `aabdbb07a25cf11cf47b95797f9d6e621cb649f6`。用户本地 VS Code 工作树和 Orion HEAD 未直接检查；若有独立未推送修改，仍应从备份和 Source Control diff 核对。仓库原有维护文档已补录最近服务器步骤，并非新建研究方向。
+```text
+fix: audit empty LVIS masks and isolate recovery manifests
+```
+
+代码继承现有项目及已部署的 Python 路径修复；实际服务器最新已知版本是 `20d6432`。本地验证与真实 Orion 执行分别记录，不能以合成测试代替 GPU 运行证据。
 
 ## 服务器准备
 
@@ -65,7 +68,7 @@ SAM3 下载需要已有的官方授权；DINOv3 需要官方原始 `.pth`，放�
 "$ICS_RUNTIME/envs/insid3/bin/python" scripts/download_data.py --datasets coco lvis --data-root "$ICS_RUNTIME/data" --workers 2 --execute
 ```
 
-数据布局、split 和标注规则见 [docs/DATA_PROTOCOLS.md](docs/DATA_PROTOCOLS.md)。下载 URL 来自固定版本作者说明；真实文件下载与服务器网络仍待验证。自动准备 manifest 会明确使用该来源的 pickle，不能替换成未知来源 pickle。
+数据布局、split 和标注规则见 [docs/DATA_PROTOCOLS.md](docs/DATA_PROTOCOLS.md)。下载 URL 来自固定版本作者说明；COCO／LVIS 下载任务已有 PASS 证据；GPU 推理仍待验证。自动准备 manifest 会明确使用该来源的 pickle，不能替换成未知来源 pickle。
 
 ## Orion：一次启动，自动滚动提交
 
@@ -73,24 +76,26 @@ Orion 的 `highpriority` 共享用户上限为 60 个 pending／running task ele
 
 ```bash
 export ICS_RUNTIME="/scratch/prj0000000262_1/hansy/ce6190-ics-runtime"
-"$ICS_RUNTIME/envs/insid3/bin/python" scripts/queue_ics.py start \
+"$ICS_RUNTIME/envs/insid3/bin/python" -I scripts/queue_ics.py start \
   --runtime "$ICS_RUNTIME" \
-  --suite configs/suite.initial.json \
+  --suite configs/suite.initial.lvisfix.json \
   --cluster configs/cluster.orion.json \
-  --run-dir "$ICS_RUNTIME/runs/ics-initial-20261101"
+  --run-dir "$ICS_RUNTIME/runs/ics-initial-20261104-lvisfix"
 ```
 
 该命令登记完整任务清单并启动后台轻量管理器：**数据准备 → preflight → 36 个配置 smoke → 1,484 个正式分片 → collect**，共 1,523 个任务。登记不等于全部进入 Slurm；默认每 60 秒查询共享队列，有空位才提交，ICS 最多保留 8 个在途任务，完整清单在磁盘中等待补位。默认共享上限 60、预留槽位 0、数据下载 workers 2、最低剩余空间 32 GiB；32 GiB 是启动检查阈值，不是整套数据所需空间估算。不取消或修改 Generation 作业。
 
-代码和配置冻结到 run directory 的 `source/`。相同 `start` 可恢复管理器并复用该冻结版；要采用新代码／配置，应使用新 run directory。数据或 preflight 失败阻塞下游；某配置 smoke 失败只阻塞其正式分片；collector 仍生成失败报告。不会自动反复重试失败模型。
+恢复 suite 保留 12 个 COCO manifests 的原路径，30 个 LVIS manifests 使用 `manifests/lvis-nonempty-v2/`：先固定作者类别／fold，再排除成功解码但无前景的图像／类别对，query 与 reference 使用同一有效池；完整排除记录保存在 protocol sidecar。旧 LVIS manifests 保留，不与新采样协议混用。
+
+代码和配置冻结到 run directory 的 `source/`。未结束的 run 可用相同 `start` 恢复管理器并复用该冻结版；已终态失败的 run 不会因此重试；要采用新代码／配置，应使用新 run directory。数据或 preflight 失败阻塞下游；某配置 smoke 失败只阻塞其正式分片；collector 仍生成失败报告。不会自动反复重试失败模型。
 
 ```bash
-"$ICS_RUNTIME/envs/insid3/bin/python" scripts/queue_ics.py status --run-dir "$ICS_RUNTIME/runs/ics-initial-20261101"
+"$ICS_RUNTIME/envs/insid3/bin/python" -I scripts/queue_ics.py status --run-dir "$ICS_RUNTIME/runs/ics-initial-20261104-lvisfix"
 ```
 
-`status` 只读持久化状态，不查询或提交 Slurm；`manager` 根据 flock 显示 `ACTIVE`／`STOPPED`／`NOT_STARTED`，尚未结束且为 `STOPPED` 时重复相同 start 恢复。仅在后台管理器未运行时，可用 `"$ICS_RUNTIME/envs/insid3/bin/python" scripts/queue_ics.py watch --run-dir "$ICS_RUNTIME/runs/ics-initial-20261101" --once` 执行一次协调／提交，去掉 `--once` 则前台持续管理。已有管理器时会拒绝第二个 watch。SSH 断开一般不影响后台管理器，但登录节点重启或清理进程会让它停止；重新执行相同 `start` 恢复。已提交的 Slurm 作业由调度器继续管理，后台进程不是无限期服务保证。
+`status` 只读持久化状态，不查询或提交 Slurm；输出包含各阶段计数，attention 优先显示真正失败且最多 10 项，完整任务仍保存在 rolling_state.json；`manager` 根据 flock 显示 `ACTIVE`／`STOPPED`／`NOT_STARTED`，尚未结束且为 `STOPPED` 时重复相同 start 恢复。仅在后台管理器未运行时，可用 `"$ICS_RUNTIME/envs/insid3/bin/python" -I scripts/queue_ics.py watch --run-dir "$ICS_RUNTIME/runs/ics-initial-20261104-lvisfix" --once` 执行一次协调／提交，去掉 `--once` 则前台持续管理。已有管理器时会拒绝第二个 watch。SSH 断开一般不影响后台管理器，但登录节点重启或清理进程会让它停止；重新执行相同 `start` 恢复。已提交的 Slurm 作业由调度器继续管理，后台进程不是无限期服务保证。
 
-CPU 8 小时、GPU 12 小时是初始 walltime 请求，尚未实测能完成；超时会记为失败，不自动重试。`suite.pilot.json` 是同一配置集合的少量样本方案，可在独立 run directory 使用，用来测吞吐与显存，不作为主结果。运行与恢复细节见 [docs/PARALLEL_RUNS.md](docs/PARALLEL_RUNS.md)。当前没有新的 ICS 作业 ID，以上是待在服务器启动的交付用法。
+CPU 8 小时、GPU 12 小时是初始 walltime 请求，尚未实测能完成；超时会记为失败，不自动重试。`suite.pilot.json` 是同一配置集合的少量样本方案，可在独立 run directory 使用，用来测吞吐与显存，不作为主结果。运行与恢复细节见 [docs/PARALLEL_RUNS.md](docs/PARALLEL_RUNS.md)。最新已知失败作业为 preflight 187040；以上新恢复 run 尚待用户 pull 后启动。
 
 ## 原有静态／本地入口
 
@@ -131,6 +136,6 @@ ICS_TEST_INSID3_SOURCE="$ICS_RUNTIME/sources/INSID3" python3 -m unittest discove
 
 需要相应 CPU torch、numpy、Pillow 等测试依赖。第二条包含真实 upstream 处理代码＋小型合成 encoder 的输出等价检查，仍不是预训练模型实验。
 
-本轮运行 **140 项：132 项通过，8 项因本地缺少 torch／torchvision 的可选张量测试跳过，0 failures／errors**，见 [当前滚动队列验证报告](research/validation_2026-11-01_rolling.json)。其中 39 项 rolling 和 14 项 CLI 测试覆盖模拟 Slurm 共享 60 个名额已满时登记 1,523 个待办、真实后台子进程、重复 start、继承 flock 与冻结源码恢复。测试没有调用真实 Orion 调度器、下载实际数据或执行 GPU 推理。此前 72 项、零跳过的报告保留为[历史版本验证](research/validation_2026-11-01.json)，不混为本轮结果。
+本轮 LVIS 修复运行 **189 项：181 项通过，8 项因本地缺少 torch／torchvision 的可选张量测试跳过，0 failures／errors**，见 [LVIS 修复验证报告](research/validation_2026-11-04_lvis_fix.json)。覆盖真实 pycocotools polygon／RLE 解码、空样本筛选审计、固定类别／fold、query 配对一致性、协议隔离和失败状态诊断，包含真实 CLI 子进程与合成数据。测试没有调用真实 Orion 调度器、下载实际数据或执行 GPU 推理。此前 [140 项滚动队列验证](research/validation_2026-11-01_rolling.json) 和 [72 项历史版本验证](research/validation_2026-11-01.json) 保留为历史记录，不混为本轮结果。
 
 课程提交仍需最终 report PDF 和 source-code ZIP，不能以仓库／云链接代替；代码包排除 datasets、weights、环境及 credentials。截止 2026-11-17。最低 1 方法／2 datasets、至少 3 页、自己的实验、参数分析／消融／优缺点／成功失败案例是最低要求，不是项目上限。最终提交前须核对仓库内课程原件和第三方源码／license 整理情况。

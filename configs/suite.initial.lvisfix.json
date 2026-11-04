@@ -1,0 +1,1531 @@
+{
+  "schema_version": 1,
+  "description": "Initial complete runnable matrix. Standard requested query counts follow anchor protocol sizes; unified pairing/metric/resolution means this is not an exact paper-score reproduction. Reference cohort requests 500 queries/fold x50 distinct references, capped by availability with recorded counts. Component cohort is an initial 100 queries/fold x3 references subset, adjustable without changing study scope. All parameters exposed; no final project-size cap. LVIS nonempty-v2 recovery: preserve original author category/fold assignments, explicitly exclude decoded empty image/category masks before shared query/reference sampling, and retain an eligibility audit. All LVIS cohorts use versioned manifest paths; original COCO manifests are reused.",
+  "prepare_missing_manifests": true,
+  "smoke_episodes": 2,
+  "manifests": [
+    {
+      "id": "coco_fold0_standard",
+      "cohort": "standard",
+      "path": "${ICS_RUNTIME}/manifests/coco_fold0_standard.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "coco",
+        "fold": 0,
+        "queries": 1000,
+        "references_per_query": 1,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true
+      }
+    },
+    {
+      "id": "coco_fold0_reference",
+      "cohort": "reference",
+      "path": "${ICS_RUNTIME}/manifests/coco_fold0_reference.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "coco",
+        "fold": 0,
+        "queries": 500,
+        "references_per_query": 50,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true
+      }
+    },
+    {
+      "id": "coco_fold0_component",
+      "cohort": "component",
+      "path": "${ICS_RUNTIME}/manifests/coco_fold0_component.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "coco",
+        "fold": 0,
+        "queries": 100,
+        "references_per_query": 3,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true
+      }
+    },
+    {
+      "id": "coco_fold1_standard",
+      "cohort": "standard",
+      "path": "${ICS_RUNTIME}/manifests/coco_fold1_standard.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "coco",
+        "fold": 1,
+        "queries": 1000,
+        "references_per_query": 1,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true
+      }
+    },
+    {
+      "id": "coco_fold1_reference",
+      "cohort": "reference",
+      "path": "${ICS_RUNTIME}/manifests/coco_fold1_reference.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "coco",
+        "fold": 1,
+        "queries": 500,
+        "references_per_query": 50,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true
+      }
+    },
+    {
+      "id": "coco_fold1_component",
+      "cohort": "component",
+      "path": "${ICS_RUNTIME}/manifests/coco_fold1_component.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "coco",
+        "fold": 1,
+        "queries": 100,
+        "references_per_query": 3,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true
+      }
+    },
+    {
+      "id": "coco_fold2_standard",
+      "cohort": "standard",
+      "path": "${ICS_RUNTIME}/manifests/coco_fold2_standard.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "coco",
+        "fold": 2,
+        "queries": 1000,
+        "references_per_query": 1,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true
+      }
+    },
+    {
+      "id": "coco_fold2_reference",
+      "cohort": "reference",
+      "path": "${ICS_RUNTIME}/manifests/coco_fold2_reference.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "coco",
+        "fold": 2,
+        "queries": 500,
+        "references_per_query": 50,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true
+      }
+    },
+    {
+      "id": "coco_fold2_component",
+      "cohort": "component",
+      "path": "${ICS_RUNTIME}/manifests/coco_fold2_component.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "coco",
+        "fold": 2,
+        "queries": 100,
+        "references_per_query": 3,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true
+      }
+    },
+    {
+      "id": "coco_fold3_standard",
+      "cohort": "standard",
+      "path": "${ICS_RUNTIME}/manifests/coco_fold3_standard.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "coco",
+        "fold": 3,
+        "queries": 1000,
+        "references_per_query": 1,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true
+      }
+    },
+    {
+      "id": "coco_fold3_reference",
+      "cohort": "reference",
+      "path": "${ICS_RUNTIME}/manifests/coco_fold3_reference.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "coco",
+        "fold": 3,
+        "queries": 500,
+        "references_per_query": 50,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true
+      }
+    },
+    {
+      "id": "coco_fold3_component",
+      "cohort": "component",
+      "path": "${ICS_RUNTIME}/manifests/coco_fold3_component.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "coco",
+        "fold": 3,
+        "queries": 100,
+        "references_per_query": 3,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true
+      }
+    },
+    {
+      "id": "lvis_fold0_standard",
+      "cohort": "standard",
+      "path": "${ICS_RUNTIME}/manifests/lvis-nonempty-v2/lvis_fold0_standard.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 0,
+        "queries": 2300,
+        "references_per_query": 1,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true,
+        "empty_mask_policy": "exclude",
+        "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold0_standard"
+      }
+    },
+    {
+      "id": "lvis_fold0_reference",
+      "cohort": "reference",
+      "path": "${ICS_RUNTIME}/manifests/lvis-nonempty-v2/lvis_fold0_reference.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 0,
+        "queries": 500,
+        "references_per_query": 50,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true,
+        "empty_mask_policy": "exclude",
+        "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold0_reference"
+      }
+    },
+    {
+      "id": "lvis_fold0_component",
+      "cohort": "component",
+      "path": "${ICS_RUNTIME}/manifests/lvis-nonempty-v2/lvis_fold0_component.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 0,
+        "queries": 100,
+        "references_per_query": 3,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true,
+        "empty_mask_policy": "exclude",
+        "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold0_component"
+      }
+    },
+    {
+      "id": "lvis_fold1_standard",
+      "cohort": "standard",
+      "path": "${ICS_RUNTIME}/manifests/lvis-nonempty-v2/lvis_fold1_standard.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 1,
+        "queries": 2300,
+        "references_per_query": 1,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true,
+        "empty_mask_policy": "exclude",
+        "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold1_standard"
+      }
+    },
+    {
+      "id": "lvis_fold1_reference",
+      "cohort": "reference",
+      "path": "${ICS_RUNTIME}/manifests/lvis-nonempty-v2/lvis_fold1_reference.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 1,
+        "queries": 500,
+        "references_per_query": 50,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true,
+        "empty_mask_policy": "exclude",
+        "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold1_reference"
+      }
+    },
+    {
+      "id": "lvis_fold1_component",
+      "cohort": "component",
+      "path": "${ICS_RUNTIME}/manifests/lvis-nonempty-v2/lvis_fold1_component.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 1,
+        "queries": 100,
+        "references_per_query": 3,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true,
+        "empty_mask_policy": "exclude",
+        "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold1_component"
+      }
+    },
+    {
+      "id": "lvis_fold2_standard",
+      "cohort": "standard",
+      "path": "${ICS_RUNTIME}/manifests/lvis-nonempty-v2/lvis_fold2_standard.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 2,
+        "queries": 2300,
+        "references_per_query": 1,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true,
+        "empty_mask_policy": "exclude",
+        "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold2_standard"
+      }
+    },
+    {
+      "id": "lvis_fold2_reference",
+      "cohort": "reference",
+      "path": "${ICS_RUNTIME}/manifests/lvis-nonempty-v2/lvis_fold2_reference.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 2,
+        "queries": 500,
+        "references_per_query": 50,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true,
+        "empty_mask_policy": "exclude",
+        "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold2_reference"
+      }
+    },
+    {
+      "id": "lvis_fold2_component",
+      "cohort": "component",
+      "path": "${ICS_RUNTIME}/manifests/lvis-nonempty-v2/lvis_fold2_component.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 2,
+        "queries": 100,
+        "references_per_query": 3,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true,
+        "empty_mask_policy": "exclude",
+        "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold2_component"
+      }
+    },
+    {
+      "id": "lvis_fold3_standard",
+      "cohort": "standard",
+      "path": "${ICS_RUNTIME}/manifests/lvis-nonempty-v2/lvis_fold3_standard.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 3,
+        "queries": 2300,
+        "references_per_query": 1,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true,
+        "empty_mask_policy": "exclude",
+        "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold3_standard"
+      }
+    },
+    {
+      "id": "lvis_fold3_reference",
+      "cohort": "reference",
+      "path": "${ICS_RUNTIME}/manifests/lvis-nonempty-v2/lvis_fold3_reference.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 3,
+        "queries": 500,
+        "references_per_query": 50,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true,
+        "empty_mask_policy": "exclude",
+        "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold3_reference"
+      }
+    },
+    {
+      "id": "lvis_fold3_component",
+      "cohort": "component",
+      "path": "${ICS_RUNTIME}/manifests/lvis-nonempty-v2/lvis_fold3_component.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 3,
+        "queries": 100,
+        "references_per_query": 3,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true,
+        "empty_mask_policy": "exclude",
+        "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold3_component"
+      }
+    },
+    {
+      "id": "lvis_fold4_standard",
+      "cohort": "standard",
+      "path": "${ICS_RUNTIME}/manifests/lvis-nonempty-v2/lvis_fold4_standard.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 4,
+        "queries": 2300,
+        "references_per_query": 1,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true,
+        "empty_mask_policy": "exclude",
+        "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold4_standard"
+      }
+    },
+    {
+      "id": "lvis_fold4_reference",
+      "cohort": "reference",
+      "path": "${ICS_RUNTIME}/manifests/lvis-nonempty-v2/lvis_fold4_reference.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 4,
+        "queries": 500,
+        "references_per_query": 50,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true,
+        "empty_mask_policy": "exclude",
+        "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold4_reference"
+      }
+    },
+    {
+      "id": "lvis_fold4_component",
+      "cohort": "component",
+      "path": "${ICS_RUNTIME}/manifests/lvis-nonempty-v2/lvis_fold4_component.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 4,
+        "queries": 100,
+        "references_per_query": 3,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true,
+        "empty_mask_policy": "exclude",
+        "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold4_component"
+      }
+    },
+    {
+      "id": "lvis_fold5_standard",
+      "cohort": "standard",
+      "path": "${ICS_RUNTIME}/manifests/lvis-nonempty-v2/lvis_fold5_standard.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 5,
+        "queries": 2300,
+        "references_per_query": 1,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true,
+        "empty_mask_policy": "exclude",
+        "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold5_standard"
+      }
+    },
+    {
+      "id": "lvis_fold5_reference",
+      "cohort": "reference",
+      "path": "${ICS_RUNTIME}/manifests/lvis-nonempty-v2/lvis_fold5_reference.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 5,
+        "queries": 500,
+        "references_per_query": 50,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true,
+        "empty_mask_policy": "exclude",
+        "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold5_reference"
+      }
+    },
+    {
+      "id": "lvis_fold5_component",
+      "cohort": "component",
+      "path": "${ICS_RUNTIME}/manifests/lvis-nonempty-v2/lvis_fold5_component.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 5,
+        "queries": 100,
+        "references_per_query": 3,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true,
+        "empty_mask_policy": "exclude",
+        "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold5_component"
+      }
+    },
+    {
+      "id": "lvis_fold6_standard",
+      "cohort": "standard",
+      "path": "${ICS_RUNTIME}/manifests/lvis-nonempty-v2/lvis_fold6_standard.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 6,
+        "queries": 2300,
+        "references_per_query": 1,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true,
+        "empty_mask_policy": "exclude",
+        "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold6_standard"
+      }
+    },
+    {
+      "id": "lvis_fold6_reference",
+      "cohort": "reference",
+      "path": "${ICS_RUNTIME}/manifests/lvis-nonempty-v2/lvis_fold6_reference.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 6,
+        "queries": 500,
+        "references_per_query": 50,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true,
+        "empty_mask_policy": "exclude",
+        "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold6_reference"
+      }
+    },
+    {
+      "id": "lvis_fold6_component",
+      "cohort": "component",
+      "path": "${ICS_RUNTIME}/manifests/lvis-nonempty-v2/lvis_fold6_component.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 6,
+        "queries": 100,
+        "references_per_query": 3,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true,
+        "empty_mask_policy": "exclude",
+        "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold6_component"
+      }
+    },
+    {
+      "id": "lvis_fold7_standard",
+      "cohort": "standard",
+      "path": "${ICS_RUNTIME}/manifests/lvis-nonempty-v2/lvis_fold7_standard.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 7,
+        "queries": 2300,
+        "references_per_query": 1,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true,
+        "empty_mask_policy": "exclude",
+        "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold7_standard"
+      }
+    },
+    {
+      "id": "lvis_fold7_reference",
+      "cohort": "reference",
+      "path": "${ICS_RUNTIME}/manifests/lvis-nonempty-v2/lvis_fold7_reference.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 7,
+        "queries": 500,
+        "references_per_query": 50,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true,
+        "empty_mask_policy": "exclude",
+        "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold7_reference"
+      }
+    },
+    {
+      "id": "lvis_fold7_component",
+      "cohort": "component",
+      "path": "${ICS_RUNTIME}/manifests/lvis-nonempty-v2/lvis_fold7_component.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 7,
+        "queries": 100,
+        "references_per_query": 3,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true,
+        "empty_mask_policy": "exclude",
+        "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold7_component"
+      }
+    },
+    {
+      "id": "lvis_fold8_standard",
+      "cohort": "standard",
+      "path": "${ICS_RUNTIME}/manifests/lvis-nonempty-v2/lvis_fold8_standard.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 8,
+        "queries": 2300,
+        "references_per_query": 1,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true,
+        "empty_mask_policy": "exclude",
+        "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold8_standard"
+      }
+    },
+    {
+      "id": "lvis_fold8_reference",
+      "cohort": "reference",
+      "path": "${ICS_RUNTIME}/manifests/lvis-nonempty-v2/lvis_fold8_reference.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 8,
+        "queries": 500,
+        "references_per_query": 50,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true,
+        "empty_mask_policy": "exclude",
+        "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold8_reference"
+      }
+    },
+    {
+      "id": "lvis_fold8_component",
+      "cohort": "component",
+      "path": "${ICS_RUNTIME}/manifests/lvis-nonempty-v2/lvis_fold8_component.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 8,
+        "queries": 100,
+        "references_per_query": 3,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true,
+        "empty_mask_policy": "exclude",
+        "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold8_component"
+      }
+    },
+    {
+      "id": "lvis_fold9_standard",
+      "cohort": "standard",
+      "path": "${ICS_RUNTIME}/manifests/lvis-nonempty-v2/lvis_fold9_standard.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 9,
+        "queries": 2300,
+        "references_per_query": 1,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true,
+        "empty_mask_policy": "exclude",
+        "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold9_standard"
+      }
+    },
+    {
+      "id": "lvis_fold9_reference",
+      "cohort": "reference",
+      "path": "${ICS_RUNTIME}/manifests/lvis-nonempty-v2/lvis_fold9_reference.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 9,
+        "queries": 500,
+        "references_per_query": 50,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true,
+        "empty_mask_policy": "exclude",
+        "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold9_reference"
+      }
+    },
+    {
+      "id": "lvis_fold9_component",
+      "cohort": "component",
+      "path": "${ICS_RUNTIME}/manifests/lvis-nonempty-v2/lvis_fold9_component.json",
+      "dataset_root": "${ICS_RUNTIME}/data",
+      "prepare": {
+        "dataset": "lvis",
+        "fold": 9,
+        "queries": 100,
+        "references_per_query": 3,
+        "shots": 1,
+        "seed": 0,
+        "query_seed": 0,
+        "trust_prepared_pickle": true,
+        "empty_mask_policy": "exclude",
+        "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold9_component"
+      }
+    }
+  ],
+  "experiments": [
+    {
+      "config": "configs/experiments/cgics_component_full.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_concat.json",
+      "resource": "cgics_visual",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_full.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "coco_fold0_standard",
+        "coco_fold0_reference",
+        "coco_fold1_standard",
+        "coco_fold1_reference",
+        "coco_fold2_standard",
+        "coco_fold2_reference",
+        "coco_fold3_standard",
+        "coco_fold3_reference",
+        "lvis_fold0_standard",
+        "lvis_fold0_reference",
+        "lvis_fold1_standard",
+        "lvis_fold1_reference",
+        "lvis_fold2_standard",
+        "lvis_fold2_reference",
+        "lvis_fold3_standard",
+        "lvis_fold3_reference",
+        "lvis_fold4_standard",
+        "lvis_fold4_reference",
+        "lvis_fold5_standard",
+        "lvis_fold5_reference",
+        "lvis_fold6_standard",
+        "lvis_fold6_reference",
+        "lvis_fold7_standard",
+        "lvis_fold7_reference",
+        "lvis_fold8_standard",
+        "lvis_fold8_reference",
+        "lvis_fold9_standard",
+        "lvis_fold9_reference"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_no_search.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_sweep_bon_1.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_sweep_bon_3.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_sweep_bon_8.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_sweep_num_loops_1.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_sweep_num_loops_2.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_sweep_num_loops_4.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_text_only.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_visual_only.json",
+      "resource": "cgics_visual",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/insid3_component_full.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/insid3_cross_only.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/insid3_full.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_standard",
+        "coco_fold0_reference",
+        "coco_fold1_standard",
+        "coco_fold1_reference",
+        "coco_fold2_standard",
+        "coco_fold2_reference",
+        "coco_fold3_standard",
+        "coco_fold3_reference",
+        "lvis_fold0_standard",
+        "lvis_fold0_reference",
+        "lvis_fold1_standard",
+        "lvis_fold1_reference",
+        "lvis_fold2_standard",
+        "lvis_fold2_reference",
+        "lvis_fold3_standard",
+        "lvis_fold3_reference",
+        "lvis_fold4_standard",
+        "lvis_fold4_reference",
+        "lvis_fold5_standard",
+        "lvis_fold5_reference",
+        "lvis_fold6_standard",
+        "lvis_fold6_reference",
+        "lvis_fold7_standard",
+        "lvis_fold7_reference",
+        "lvis_fold8_standard",
+        "lvis_fold8_reference",
+        "lvis_fold9_standard",
+        "lvis_fold9_reference"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/insid3_no_aggregation.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/insid3_no_debias.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/insid3_simple_similarity.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/insid3_sweep_image_size_768.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/insid3_sweep_svd_components_250.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/insid3_sweep_svd_components_750.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/insid3_sweep_tau_0p5.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/insid3_sweep_tau_0p7.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/matrix_dinov2_full.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/matrix_dinov2_simple_similarity.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/matrix_dinov3_full.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/matrix_dinov3_simple_similarity.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/matrix_sam3_full.json",
+      "resource": "cgics_visual",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/matrix_sam3_simple_similarity.json",
+      "resource": "cgics_visual",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/insid3_no_debias_cross_only.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/insid3_no_debias_seed_only.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_single_concept_text.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_single_concept_full.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_candidates_text.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_component_full_seed1.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    },
+    {
+      "config": "configs/experiments/cgics_component_full_seed2.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "coco_fold0_component",
+        "coco_fold1_component",
+        "coco_fold2_component",
+        "coco_fold3_component",
+        "lvis_fold0_component",
+        "lvis_fold1_component",
+        "lvis_fold2_component",
+        "lvis_fold3_component",
+        "lvis_fold4_component",
+        "lvis_fold5_component",
+        "lvis_fold6_component",
+        "lvis_fold7_component",
+        "lvis_fold8_component",
+        "lvis_fold9_component"
+      ],
+      "enabled": true
+    }
+  ],
+  "shards_by_cohort": {
+    "standard": 4,
+    "reference": 32,
+    "component": 1
+  }
+}

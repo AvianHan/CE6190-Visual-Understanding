@@ -60,6 +60,10 @@ class DatasetIndex:
     provenance: dict = field(default_factory=dict)
 
 
+class EmptySourceMaskError(ValueError):
+    """A successfully decoded, correctly sized source mask has no foreground."""
+
+
 def _pickle(path: Path, trusted: bool):
     if not trusted:
         raise ValueError('Prepared COCO/LVIS metadata uses pickle. Verify its source, then '
@@ -300,44 +304,114 @@ def read_binary_mask(sample: Sample, *, reference: bool = False) -> np.ndarray:
     if result.shape != (height, width):
         raise ValueError('Mask/image dimensions differ: ' + str(sample.image))
     if not np.any(result == 1):
-        raise ValueError('Selected source mask is empty: ' + str(sample.image))
+        raise EmptySourceMaskError('Selected source mask is empty: ' + str(sample.image))
     return result
+
+
+def _eligible_samples(index: DatasetIndex, root: Path, policy: str):
+    """Freeze the nonempty LVIS pool before either sampler consumes RNG state.
+
+    The index already fixes the author's class universe and folds. No class is
+    removed or moved here. Only decoded empty same-concept unions are eligible
+    for exclusion; decoding, dimensions, missing files and other errors remain
+    fatal. Retain small audit records, never all decoded mask arrays.
+    """
+    if policy not in ('error', 'exclude'):
+        raise ValueError('empty_mask_policy must be error or exclude')
+    if policy == 'exclude' and index.dataset != 'lvis':
+        raise ValueError('empty_mask_policy=exclude currently supports LVIS only')
+    effective = {}
+    counts = {}
+    excluded = []
+    pool_digest = hashlib.sha256()
+
+    def record(value):
+        pool_digest.update(json.dumps(value, sort_keys=True, separators=(',', ':')).encode())
+        pool_digest.update(b'\n')
+
+    for cid, pool in index.samples.items():
+        # Record class order explicitly, including a class that would otherwise
+        # become empty. Filtering cannot shift the remaining classes' folds.
+        record({'concept_id': str(cid)})
+        eligible = []
+        for sample in pool:
+            image = _contained(root, sample.image).relative_to(root).as_posix()
+            entry = {'image': image, 'concept_id': str(cid), 'group_id': sample.group_id}
+            if policy == 'exclude':
+                if sample.mask_kind != 'lvis':
+                    raise ValueError('LVIS nonempty policy requires LVIS instance-union masks')
+                try:
+                    mask = read_binary_mask(sample)
+                except EmptySourceMaskError:
+                    excluded.append({'image': image, 'concept_id': str(cid),
+                        'reason': 'empty_decoded_foreground_union',
+                        'annotation_count': len(sample.mask_source)})
+                    continue
+                entry['mask_shape'] = list(mask.shape)
+                entry['decoded_mask_sha256'] = hashlib.sha256(mask.tobytes()).hexdigest()
+                del mask
+            eligible.append(sample)
+            record(entry)
+        counts[str(cid)] = {'input': len(pool),
+            'eligible': len(eligible) if policy == 'exclude' else None,
+            'excluded': len(pool) - len(eligible)}
+        effective[cid] = eligible
+    if policy == 'exclude':
+        short = [cid for cid, pool in effective.items() if len(pool) < 2]
+        if short:
+            detail = ', '.join(f'{cid} ({len(effective[cid])} nonempty samples)' for cid in short)
+            raise ValueError('LVIS nonempty policy cannot retain query/reference pairs for class(es): '
+                             + detail + '; no class was dropped or reassigned to another fold')
+    audit = {'policy': policy,
+        'version': 'lvis-nonempty-v2' if policy == 'exclude' else 'strict-v1',
+        'scope': 'all_candidates_before_sampling' if policy == 'exclude' else 'selected_assets_only',
+        'input_count': sum(len(pool) for pool in index.samples.values()),
+        'eligible_count': sum(len(pool) for pool in effective.values()) if policy == 'exclude' else None,
+        'excluded_count': len(excluded), 'counts_by_concept': counts,
+        'excluded_samples': excluded, 'pool_fingerprint': pool_digest.hexdigest(),
+        'pool_fingerprint_scope': ('ordered eligible class/image/group membership and decoded mask hashes'
+            if policy == 'exclude' else 'ordered input class/image/group membership; masks not prevalidated')}
+    return effective, audit
 
 
 def create_manifest(index: DatasetIndex, data_root: Path, *, queries: int,
                     references_per_query: int = 1, shots: int = 1, seed: int = 0,
                     query_seed: int = 0, insufficient_references: str = 'all',
-                    protocol_id: str | None = None) -> tuple[dict, dict]:
+                    protocol_id: str | None = None,
+                    empty_mask_policy: str = 'error') -> tuple[dict, dict]:
     """Deterministic class-balanced draws and distinct support sets.
 
     Query sampling and reference sampling use independent RNGs, so a main run
     and robustness run can share queries by keeping query_seed/queries fixed.
+    LVIS exclusion is an explicit new protocol: both roles use the same audited
+    nonempty pool. The default retains the original strict selected-mask rule.
     """
     root = Path(data_root).resolve()
     if queries < 0 or references_per_query < 1 or shots < 1:
         raise ValueError('queries>=0, references_per_query>=1 and shots>=1 required')
     if insufficient_references not in ('all', 'error'):
         raise ValueError('insufficient_references must be all or error')
+    samples, eligibility = _eligible_samples(index, root, empty_mask_policy)
     qrng, rrng = random.Random(query_seed), random.Random(seed)
-    classes = list(index.samples)
+    classes = list(samples)
     if not classes:
         raise ValueError('Empty index')
     draws = []
     if queries == 0:
-        draws = [(cid, sample) for cid in classes for sample in index.samples[cid]]
+        draws = [(cid, sample) for cid in classes for sample in samples[cid]]
     else:
         # Cycle shuffled classes so counts differ by at most one, and cycle a
         # shuffled per-class query pool before reusing a query.
         pools = {}
         for cid in classes:
-            pools[cid] = list(index.samples[cid])
+            pools[cid] = list(samples[cid])
             qrng.shuffle(pools[cid])
         order = list(classes)
         qrng.shuffle(order)
         for i in range(queries):
             cid = order[i % len(order)]
             if not pools[cid]:
-                pools[cid] = list(index.samples[cid])
+                pools[cid] = list(samples[cid])
                 qrng.shuffle(pools[cid])
             draws.append((cid, pools[cid].pop()))
     hash_cache = {}
@@ -392,7 +466,7 @@ def create_manifest(index: DatasetIndex, data_root: Path, *, queries: int,
         query_asset = asset(query, False)
         qhash = query_asset['image_sha256']
         query_hashes.add((cid, qhash))
-        candidates = list(index.samples[cid])
+        candidates = list(samples[cid])
         rrng.shuffle(candidates)
         chosen, hashes = [], {qhash}
         # Hash all candidates when n-shot combinations are needed. In one-shot
@@ -439,17 +513,25 @@ def create_manifest(index: DatasetIndex, data_root: Path, *, queries: int,
                 'references': [asset(ref, True) for ref in references],
                 'mask_semantics': 'binary foreground union of prompted class; reference void=background',
                 'ignore_label': query.source_ignore})
+    protocol_version = 'nonempty-v2' if empty_mask_policy == 'exclude' else 'v1'
     manifest = {'schema_version': 1, 'status': 'ready',
-                'protocol_id': protocol_id or f'ce6190-unified-v1-{index.dataset}-{index.split}-f{index.fold}',
+                'protocol_id': protocol_id or f'ce6190-unified-{protocol_version}-{index.dataset}-{index.split}-f{index.fold}',
                 'episodes': episodes}
     validate_manifest(manifest)  # hashes are produced from bytes above; full rehash is runner's responsibility.
+    provenance = dict(index.provenance)
+    if empty_mask_policy == 'exclude':
+        provenance.update({'sampler': 'ce6190_unified_class_balanced_nonempty_v2',
+            'empty_mask_policy': 'exclude',
+            'class_universe_policy': 'author class/fold membership fixed before sample eligibility filtering'})
     sidecar = {'schema_version': 1, 'status': 'prepared_not_model_evaluated',
         'manifest_sha256': manifest_fingerprint(manifest), 'dataset_root': str(root),
-        'provenance': index.provenance, 'sampling': {'queries_requested': queries,
+        'provenance': provenance, 'sample_eligibility': eligibility,
+        'sampling': {'queries_requested': queries,
             'query_draws': len(draws), 'unique_query_concept_pairs': len(query_hashes),
             'reference_sets_requested_per_query': references_per_query,
             'shots': shots, 'seed': seed, 'query_seed': query_seed,
             'insufficient_references': insufficient_references,
+            'empty_mask_policy': empty_mask_policy,
             'query_repeats': len(draws) - len(query_hashes),
             'note': 'Repeated query draws are NOT independent units for uncertainty estimates'},
         'queries': query_details}

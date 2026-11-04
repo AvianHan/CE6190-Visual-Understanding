@@ -13,7 +13,8 @@ import zipfile
 import numpy as np
 from PIL import Image
 
-from ics.data import DatasetIndex, Sample, build_index, create_manifest, read_binary_mask
+from ics.data import (DatasetIndex, EmptySourceMaskError, Sample, build_index,
+                      create_manifest, read_binary_mask)
 from ics_eval import inference_view, validate_manifest
 
 
@@ -39,6 +40,17 @@ class DataTests(unittest.TestCase):
 
     def index(self, samples):
         return DatasetIndex('synthetic', 'fixture', 'test', 0, samples)
+
+    def lvis_sample(self, cid, n, *, empty=False):
+        item = self.sample(cid, n)
+        item.mask_kind = 'lvis'
+        item.mask_source = [np.zeros((2, 3), dtype=np.uint8) if empty else
+                            np.array([[1, 0, 0], [0, 1, 0]], dtype=np.uint8)]
+        return item
+
+    def lvis_index(self, samples):
+        return DatasetIndex('lvis', 'LVIS-fixture', 'val', 4, samples,
+            {'sampler': 'original-sampler', 'selected_category_ids_in_author_order': list(samples)})
 
     def test_deterministic_and_schema_and_gt_boundary(self):
         index = self.index({'dog': [self.sample('dog', n) for n in range(4)]})
@@ -129,6 +141,196 @@ class DataTests(unittest.TestCase):
         item.mask_kind = 'lvis'
         item.mask_source = [first, second]
         np.testing.assert_array_equal(read_binary_mask(item), (first | second).astype(np.uint8))
+
+    def test_empty_mask_exception_is_specific_and_strict_default_remains(self):
+        empty = self.lvis_sample('dog', 0, empty=True)
+        with self.assertRaises(EmptySourceMaskError):
+            read_binary_mask(empty)
+        items = [empty] + [self.lvis_sample('dog', n) for n in (1, 2)]
+        with self.assertRaises(EmptySourceMaskError):
+            create_manifest(self.lvis_index({'dog': items}), self.root, queries=0)
+        items[0].mask_source = [np.zeros((4, 3), dtype=np.uint8)]
+        with self.assertRaisesRegex(ValueError, 'dimensions differ') as caught:
+            read_binary_mask(items[0])
+        self.assertNotIsInstance(caught.exception, EmptySourceMaskError)
+
+    def test_lvis_exclusion_applies_to_queries_and_references_with_complete_audit(self):
+        items = [self.lvis_sample('dog', n, empty=(n == 1)) for n in range(4)]
+        index = self.lvis_index({'dog': items})
+        original_provenance = json.dumps(index.provenance, sort_keys=True)
+        manifest, side = create_manifest(index, self.root, queries=0,
+            references_per_query=50, empty_mask_policy='exclude')
+        self.assertEqual(len(manifest['episodes']), 6)
+        self.assertEqual(manifest['protocol_id'], 'ce6190-unified-nonempty-v2-lvis-val-f4')
+        self.assertEqual(side['sampling']['empty_mask_policy'], 'exclude')
+        audit = side['sample_eligibility']
+        self.assertEqual((audit['input_count'], audit['eligible_count'], audit['excluded_count']), (4, 3, 1))
+        self.assertEqual(audit['counts_by_concept'], {'dog': {'input': 4, 'eligible': 3, 'excluded': 1}})
+        self.assertEqual(audit['excluded_samples'], [{'image': 'dog_1.png', 'concept_id': 'dog',
+            'reason': 'empty_decoded_foreground_union', 'annotation_count': 1}])
+        for episode in manifest['episodes']:
+            for asset in [episode['query'], *episode['references']]:
+                self.assertNotEqual(asset['image'], 'dog_1.png')
+                self.assertTrue(np.any(np.asarray(Image.open(self.root / asset['mask'])) == 1))
+            self.assertNotEqual(episode['query']['image_sha256'],
+                                episode['references'][0]['image_sha256'])
+        self.assertEqual(json.dumps(index.provenance, sort_keys=True), original_provenance)
+        self.assertIs(index.samples['dog'], items)
+        self.assertEqual(len(index.samples['dog']), 4)
+        validate_manifest(manifest, root=self.root)
+
+    def test_nonempty_queries_and_pool_are_independent_of_reference_budget(self):
+        samples = {cid: [self.lvis_sample(cid, n + offset, empty=(n == 1)) for n in range(5)]
+                   for cid, offset in (('dog', 0), ('bird', 5))}
+        index = self.lvis_index(samples)
+        a, sa = create_manifest(index, self.root, queries=14, references_per_query=1,
+                                query_seed=13, seed=7, empty_mask_policy='exclude')
+        b, sb = create_manifest(index, self.root, queries=14, references_per_query=50,
+                                query_seed=13, seed=7, empty_mask_policy='exclude')
+        again, repeated = create_manifest(index, self.root, queries=14, references_per_query=1,
+                                query_seed=13, seed=7, empty_mask_policy='exclude')
+        self.assertEqual(a, again)
+        self.assertEqual(sa, repeated)
+        self.assertEqual([q['query_id'] for q in sa['queries']], [q['query_id'] for q in sb['queries']])
+        self.assertEqual(sa['sample_eligibility'], sb['sample_eligibility'])
+        self.assertEqual(sum(q['concept_id'] == 'dog' for q in sa['queries']), 7)
+        self.assertEqual(len(b['episodes']), 42)
+        self.assertEqual(sa['sampling']['query_repeats'], 6)
+
+    def test_nonempty_policy_retains_fold_membership_and_never_drops_classes(self):
+        base = self.root / 'LVIS'
+        (base / 'coco').mkdir(parents=True)
+        ids = [200, 100, 90, 80, 70, 60, 50, 40, 30, 20, 10]
+        metadata = {}
+        for cid in ids:
+            metadata[cid] = {}
+            for n in range(3):
+                name = f'{cid}_{n}.png'
+                Image.new('RGB', (3, 2), (n * 20, cid, 15)).save(base / 'coco' / name)
+                mask = np.zeros((2, 3), dtype=np.uint8)
+                if n:
+                    mask[0, 0] = 1
+                metadata[cid][name] = {'annotations': [{'segmentation': mask}]}
+        with (base / 'lvis_val.pkl').open('wb') as stream:
+            pickle.dump(metadata, stream)
+        index = build_index('lvis', self.root, fold=0, trust_prepared_pickle=True)
+        self.assertEqual(list(index.samples), ['200'])
+        manifest, side = create_manifest(index, self.root, queries=0, empty_mask_policy='exclude')
+        self.assertEqual({ep['concept_id'] for ep in manifest['episodes']}, {'200'})
+        self.assertEqual(side['provenance']['selected_category_ids_in_author_order'], ['200'])
+        self.assertEqual(side['provenance']['category_remainder_excluded_by_author_rule'], 1)
+        self.assertEqual(side['sample_eligibility']['counts_by_concept']['200']['eligible'], 2)
+        index.samples['200'][1].mask_source = [np.zeros((2, 3), dtype=np.uint8)]
+        with self.assertRaisesRegex(ValueError, r'200 \(1 nonempty samples\).*no class was dropped'):
+            create_manifest(index, self.root, queries=1, empty_mask_policy='exclude')
+
+    def test_nonempty_policy_does_not_swallow_decode_file_or_cache_errors(self):
+        for problem in ('shape', 'annotation_type', 'malformed_rle', 'missing_image', 'bad_image'):
+            with self.subTest(problem=problem):
+                items = [self.lvis_sample('dog', n) for n in range(3)]
+                if problem == 'shape':
+                    items[0].mask_source = [np.zeros((5, 4), dtype=np.uint8)]
+                elif problem == 'annotation_type':
+                    items[0].mask_source = ['malformed annotation']
+                elif problem == 'malformed_rle':
+                    items[0].mask_source = [{'size': [2, 3]}]
+                elif problem == 'missing_image':
+                    items[0].image.unlink()
+                else:
+                    items[0].image.write_bytes(b'not an image')
+                with self.assertRaises((ValueError, TypeError, KeyError, OSError, RuntimeError)) as caught:
+                    create_manifest(self.lvis_index({'dog': items}), self.root,
+                                    queries=1, empty_mask_policy='exclude')
+                self.assertNotIsInstance(caught.exception, EmptySourceMaskError)
+        items = [self.lvis_sample('dog', n) for n in range(3)]
+        index = self.lvis_index({'dog': items})
+        manifest, _ = create_manifest(index, self.root, queries=1, empty_mask_policy='exclude')
+        cached = self.root / manifest['episodes'][0]['query']['mask']
+        cached.write_bytes(b'damaged generated mask')
+        with self.assertRaisesRegex(ValueError, 'Generated mask cache mismatch'):
+            create_manifest(index, self.root, queries=1, empty_mask_policy='exclude')
+        self.assertEqual(cached.read_bytes(), b'damaged generated mask')
+
+    def test_nonempty_union_and_same_image_different_concepts(self):
+        common = self.lvis_sample('dog', 0, empty=True)
+        common.mask_source.append(np.array([[1, 0, 0], [0, 0, 0]], dtype=np.uint8))
+        other_concept = Sample('bird', common.image, [np.zeros((2, 3), dtype=np.uint8)], 'lvis')
+        samples = {'dog': [common, self.lvis_sample('dog', 1)],
+                   'bird': [other_concept, self.lvis_sample('bird', 2), self.lvis_sample('bird', 3)]}
+        manifest, side = create_manifest(self.lvis_index(samples), self.root,
+                                        queries=0, empty_mask_policy='exclude')
+        audit = side['sample_eligibility']
+        self.assertEqual(audit['excluded_count'], 1)
+        self.assertEqual(audit['excluded_samples'][0]['concept_id'], 'bird')
+        self.assertEqual(audit['counts_by_concept']['dog']['eligible'], 2)
+        self.assertTrue(any(ep['query']['image'] == common.image.name and ep['concept_id'] == 'dog'
+                            for ep in manifest['episodes']))
+
+    def test_nonempty_policy_nshot_shortfalls_are_explicit(self):
+        items = [self.lvis_sample('dog', n, empty=(n == 0)) for n in range(4)]
+        index = self.lvis_index({'dog': items})
+        manifest, side = create_manifest(index, self.root, queries=1,
+            references_per_query=10, shots=2, empty_mask_policy='exclude')
+        self.assertEqual(len(manifest['episodes']), 1)
+        self.assertEqual(side['queries'][0]['actual_reference_sets'], 1)
+        self.assertEqual(len({a['image_sha256'] for a in manifest['episodes'][0]['references']}), 2)
+        with self.assertRaisesRegex(ValueError, 'only 1 available'):
+            create_manifest(index, self.root, queries=1, references_per_query=10,
+                shots=2, insufficient_references='error', empty_mask_policy='exclude')
+        with self.assertRaisesRegex(ValueError, 'not enough distinct'):
+            create_manifest(index, self.root, queries=1, shots=3, empty_mask_policy='exclude')
+
+    def test_nonempty_policy_is_explicit_and_restricted_to_lvis(self):
+        index = self.index({'dog': [self.sample('dog', n) for n in range(3)]})
+        with self.assertRaisesRegex(ValueError, 'supports LVIS only'):
+            create_manifest(index, self.root, queries=1, empty_mask_policy='exclude')
+        with self.assertRaisesRegex(ValueError, 'must be error or exclude'):
+            create_manifest(index, self.root, queries=1, empty_mask_policy='ignore_every_error')
+        _, strict = create_manifest(index, self.root, queries=1)
+        self.assertEqual(strict['sampling']['empty_mask_policy'], 'error')
+        self.assertIsNone(strict['sample_eligibility']['eligible_count'])
+        lvis = self.lvis_index({'dog': [self.lvis_sample('dog', n) for n in range(3)]})
+        explicit, _ = create_manifest(lvis, self.root, queries=1,
+            protocol_id='explicit-audited-protocol', empty_mask_policy='exclude')
+        self.assertEqual(explicit['protocol_id'], 'explicit-audited-protocol')
+
+    def test_nonempty_pool_fingerprint_tracks_mask_content(self):
+        items = [self.lvis_sample('dog', n) for n in range(3)]
+        index = self.lvis_index({'dog': items})
+        _, first = create_manifest(index, self.root, queries=1, empty_mask_policy='exclude')
+        items[0].mask_source = [np.array([[0, 0, 1], [0, 0, 0]], dtype=np.uint8)]
+        _, second = create_manifest(index, self.root, queries=1, empty_mask_policy='exclude')
+        self.assertNotEqual(first['sample_eligibility']['pool_fingerprint'],
+                            second['sample_eligibility']['pool_fingerprint'])
+
+    @unittest.skipUnless(importlib.util.find_spec('pycocotools'), 'pycocotools not installed')
+    def test_real_lvis_polygon_and_rle_nonempty_filtering(self):
+        import pycocotools.mask as mask_util
+        positive = np.array([[1, 0, 0], [0, 0, 0]], dtype=np.uint8)
+        encodings = {
+            'polygon': [[0., 0., 1., 0., 1., 1., 0., 1.]],
+            'compressed_rle': mask_util.encode(np.asfortranarray(positive)),
+            'uncompressed_rle': {'size': [2, 3], 'counts': [0, 1, 5]},
+        }
+        for i, (kind, segmentation) in enumerate(encodings.items()):
+            with self.subTest(kind=kind):
+                item = self.lvis_sample('dog', i)
+                item.mask_source = [segmentation]
+                np.testing.assert_array_equal(read_binary_mask(item), positive)
+        empty = self.lvis_sample('dog', 3)
+        empty_encodings = [
+            [[0.1, 0.1, 0.2, 0.1, 0.2, 0.2]],
+            mask_util.encode(np.asfortranarray(np.zeros((2, 3), dtype=np.uint8))),
+            {'size': [2, 3], 'counts': [6]},
+        ]
+        for segmentation in empty_encodings:
+            empty.mask_source = [segmentation]
+            with self.assertRaises(EmptySourceMaskError):
+                read_binary_mask(empty)
+        another = self.lvis_sample('dog', 4)
+        _, side = create_manifest(self.lvis_index({'dog': [item, empty, another]}),
+            self.root, queries=0, empty_mask_policy='exclude')
+        self.assertEqual(side['sample_eligibility']['excluded_samples'][0]['image'], empty.image.name)
 
     def test_lvis_fold_uses_author_order_and_pickle_guard(self):
         base = self.root / 'LVIS'

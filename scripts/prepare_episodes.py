@@ -26,8 +26,12 @@ def main():
     parser.add_argument('--group-map', type=Path, help='JSON: relative image path -> patient/video/original-image group')
     parser.add_argument('--trust-prepared-pickle', action='store_true')
     parser.add_argument('--insufficient-references', choices=['all','error'], default='all')
+    parser.add_argument('--empty-mask-policy', choices=['error','exclude'], default='error',
+                        help='LVIS only: explicitly exclude successfully decoded empty masks, with an audit')
     parser.add_argument('--overwrite', action='store_true')
     args = parser.parse_args()
+    if args.empty_mask_policy == 'exclude' and args.dataset != 'lvis':
+        parser.error('--empty-mask-policy exclude is supported only for LVIS')
     sidecar = args.output.with_suffix('.protocol.json')
     if not args.overwrite and (args.output.exists() or sidecar.exists()):
         parser.error('Output exists. Reuse it, or explicitly choose --overwrite with a new protocol version.')
@@ -38,15 +42,21 @@ def main():
     manifest, metadata = create_manifest(index, args.data_root, queries=args.queries,
         references_per_query=args.references_per_query, shots=args.shots, seed=args.seed,
         query_seed=args.query_seed, insufficient_references=args.insufficient_references,
-        protocol_id=args.protocol_id)
+        protocol_id=args.protocol_id, empty_mask_policy=args.empty_mask_policy)
+    metadata['protocol_id'] = manifest['protocol_id']
     args.output.parent.mkdir(parents=True, exist_ok=True)
     for path, content in ((sidecar, metadata), (args.output, manifest)):
         temporary = path.with_suffix(path.suffix + '.tmp')
         temporary.write_text(json.dumps(content, indent=2, ensure_ascii=False) + '\n')
         temporary.replace(path)
+    eligibility = metadata.get('sample_eligibility', {})
     print(json.dumps({'manifest': str(args.output), 'protocol': str(sidecar),
                       'manifest_sha256': metadata['manifest_sha256'],
-                      'episodes': len(manifest['episodes']), 'sampling': metadata['sampling']}, indent=2))
+                      'episodes': len(manifest['episodes']), 'sampling': metadata['sampling'],
+                      'sample_eligibility': {key: eligibility.get(key) for key in (
+                          'policy', 'version', 'scope', 'input_count', 'eligible_count',
+                          'excluded_count', 'pool_fingerprint', 'pool_fingerprint_scope')},
+                      'eligibility_audit': str(sidecar)}, indent=2))
 
 
 if __name__ == '__main__':

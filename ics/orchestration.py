@@ -353,6 +353,13 @@ def run_preflight(plan: dict) -> None:
     python = resource_profile(plan["cluster"], "preflight")["python"]
     for mid, m in plan["manifests"].items():
         target = Path(m["path"])
+        recipe = m.get("prepare")
+        if recipe:
+            empty_policy = recipe.get("empty_mask_policy", "error")
+            if empty_policy not in {"error", "exclude"}:
+                raise ValueError(f"Unknown empty_mask_policy for manifest {mid}: {empty_policy}")
+            if empty_policy == "exclude" and recipe.get("dataset") != "lvis":
+                raise ValueError("empty_mask_policy=exclude is supported only for LVIS")
         if not target.exists():
             if not plan["prepare_missing_manifests"] or not m.get("prepare"):
                 raise FileNotFoundError(f"Missing manifest {mid}: {target}")
@@ -362,7 +369,8 @@ def run_preflight(plan: dict) -> None:
             for key in ("fold", "queries", "references_per_query", "shots", "seed", "query_seed"):
                 if key in r:
                     cmd.extend(["--" + key.replace("_", "-"), str(r[key])])
-            for key in ("split", "split_file", "group_map", "protocol_id", "insufficient_references"):
+            for key in ("split", "split_file", "group_map", "protocol_id", "insufficient_references",
+                        "empty_mask_policy"):
                 if r.get(key) is not None:
                     cmd.extend(["--" + key.replace("_", "-"), str(r[key])])
             if r.get("trust_prepared_pickle", False):
@@ -379,8 +387,23 @@ def run_preflight(plan: dict) -> None:
             for requested, stored in mapping.items():
                 if requested in m["prepare"] and m["prepare"][requested] != sampling.get(stored):
                     raise ValueError(f"Existing manifest {mid} has a different {requested}; use a new manifest path, never silently overwrite")
+            # Older manifests used the strict empty-mask error policy implicitly.
+            # They cannot satisfy a request for the new audited exclusion policy.
+            if sampling.get("empty_mask_policy", "error") != empty_policy:
+                raise ValueError(f"Existing manifest {mid} has a different empty_mask_policy; use a new manifest path, never silently overwrite")
+            audit = sidecar.get("sample_eligibility")
+            if empty_policy == "exclude" and (not isinstance(audit, dict) or
+                    audit.get("policy") != "exclude" or audit.get("version") != "lvis-nonempty-v2"):
+                raise ValueError(f"Existing manifest {mid} needs its lvis-nonempty-v2 sample eligibility audit; use a new manifest path")
+            if isinstance(audit, dict) and audit.get("policy") != empty_policy:
+                raise ValueError(f"Manifest sampling/eligibility policy mismatch: {mid}")
             from ics_eval import manifest_fingerprint
             manifest = load_json(target)
+            requested_protocol = m["prepare"].get("protocol_id")
+            if requested_protocol is not None and manifest.get("protocol_id") != requested_protocol:
+                raise ValueError(f"Existing manifest {mid} has a different protocol_id; use a new manifest path, never silently overwrite")
+            if sidecar.get("protocol_id") is not None and sidecar["protocol_id"] != manifest.get("protocol_id"):
+                raise ValueError(f"Manifest/sidecar protocol_id mismatch: {mid}")
             if sidecar.get("manifest_sha256") != manifest_fingerprint(manifest):
                 raise ValueError(f"Manifest/sidecar fingerprint mismatch: {mid}")
             if any(e["fold"] != m["prepare"]["fold"] for e in manifest["episodes"]):

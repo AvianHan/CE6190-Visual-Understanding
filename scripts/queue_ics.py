@@ -116,7 +116,7 @@ def manager_status(run_dir: Path) -> dict:
             fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
             return {"manager": "ACTIVE"}
-    return {"manager": "STOPPED", "resume": "Repeat the same start command"}
+    return {"manager": "STOPPED"}
 
 
 def required_datasets(plan: dict, runtime: Path) -> tuple[str, ...]:
@@ -263,7 +263,14 @@ def main(argv=None) -> int:
     if args.command == "status":
         from ics.rolling_queue import queue_status
         run_dir = args.run_dir.resolve()
-        print_json({**queue_status(run_dir / "plan.json"), **manager_status(run_dir)})
+        summary = {**queue_status(run_dir / "plan.json"), **manager_status(run_dir)}
+        if summary["manager"] == "STOPPED" and summary.get("terminal") is False:
+            summary["resume"] = "Repeat the same start command"
+        elif summary.get("terminal") and summary.get("status") == "COMPLETE_WITH_FAILURES":
+            summary["recovery"] = (
+                "Inspect failed tasks, fix the cause, and start a new --run-dir; "
+                "repeating start does not retry terminal tasks.")
+        print_json(summary)
         return 0
     if args.command == "watch":
         run_dir = args.run_dir.resolve()

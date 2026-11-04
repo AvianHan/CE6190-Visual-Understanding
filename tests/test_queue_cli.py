@@ -94,6 +94,40 @@ class QueueCliTests(unittest.TestCase):
             self.assertIsNotNone(handle)
         self.assertEqual(cli.manager_status(self.run)['manager'], 'STOPPED')
 
+    def test_status_terminal_failure_has_recovery_instead_of_resume(self):
+        with cli.acquire_lock(self.run / 'manager.lock'):
+            pass
+        saved = {'terminal': True, 'status': 'COMPLETE_WITH_FAILURES',
+                 'counts': {'PASS': 2, 'FAILED': 1, 'BLOCKED': 1520}}
+        with mock.patch('ics.rolling_queue.queue_status', return_value=saved), \
+                contextlib.redirect_stdout(io.StringIO()) as out:
+            self.assertEqual(cli.main(['status', '--run-dir', str(self.run)]), 0)
+        summary = json.loads(out.getvalue())
+        self.assertEqual(summary['manager'], 'STOPPED')
+        self.assertEqual(summary['counts'], saved['counts'])
+        self.assertNotIn('resume', summary)
+        self.assertIn('new --run-dir', summary['recovery'])
+        self.assertIn('does not retry', summary['recovery'])
+        self.assertNotIn('recovery', saved)
+
+    def test_status_resume_only_when_stopped_and_nonterminal(self):
+        for manager, terminal, status in (
+                ('STOPPED', False, 'PAUSED'),
+                ('STOPPED', True, 'COMPLETE'),
+                ('ACTIVE', False, 'RUNNING'),
+                ('NOT_STARTED', False, 'READY')):
+            with self.subTest(manager=manager, terminal=terminal), \
+                    mock.patch('ics.rolling_queue.queue_status',
+                               return_value={'terminal': terminal, 'status': status}), \
+                    mock.patch.object(cli, 'manager_status', return_value={'manager': manager}), \
+                    contextlib.redirect_stdout(io.StringIO()) as out:
+                self.assertEqual(cli.main(['status', '--run-dir', str(self.run)]), 0)
+            summary = json.loads(out.getvalue())
+            self.assertEqual('resume' in summary, manager == 'STOPPED' and not terminal)
+            if 'resume' in summary:
+                self.assertEqual(summary['resume'], 'Repeat the same start command')
+            self.assertNotIn('recovery', summary)
+
     def test_nonfinite_poll_interval_rejected(self):
         for value in ('nan', 'inf', '-inf', '0'):
             with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as raised:
