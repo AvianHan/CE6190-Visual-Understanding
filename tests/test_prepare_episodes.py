@@ -4,6 +4,7 @@ import copy
 import importlib.util
 import io
 import json
+import os
 from pathlib import Path
 import pickle
 import subprocess
@@ -106,6 +107,81 @@ class PrepareEpisodesCLITests(unittest.TestCase):
         build.assert_not_called()
         self.assertEqual(sidecar.read_text(), 'existing audit')
 
+    def invoke_fixture_cli(self):
+        with mock.patch('sys.argv', self.argv), mock.patch.object(CLI, 'build_index'), \
+                mock.patch.object(CLI, 'create_manifest', return_value=(self.manifest, copy.deepcopy(self.metadata))), \
+                contextlib.redirect_stdout(io.StringIO()):
+            CLI.main()
+
+    def test_interrupted_manifest_publication_resumes_matching_sidecar_without_rewriting(self):
+        original_replace, original_link = Path.replace, os.link
+        def fail_manifest_replace(source, destination):
+            if Path(destination) == self.output:
+                raise OSError('injected failure between sidecar and manifest publication')
+            return original_replace(source, destination)
+        def fail_manifest_link(source, destination, **kwargs):
+            if Path(destination) == self.output:
+                raise OSError('injected failure between sidecar and manifest publication')
+            return original_link(source, destination, **kwargs)
+        with mock.patch.object(Path, 'replace', fail_manifest_replace), \
+                mock.patch('os.link', side_effect=fail_manifest_link), \
+                self.assertRaisesRegex(OSError, 'injected failure'):
+            self.invoke_fixture_cli()
+        sidecar = self.output.with_suffix('.protocol.json')
+        self.assertFalse(self.output.exists())
+        self.assertTrue(sidecar.exists())
+        before = sidecar.read_bytes(), sidecar.stat().st_mtime_ns
+        self.invoke_fixture_cli()
+        self.assertEqual(json.loads(self.output.read_text()), self.manifest)
+        self.assertEqual(before, (sidecar.read_bytes(), sidecar.stat().st_mtime_ns))
+        self.assertFalse(list(self.output.parent.glob('*.tmp')))
+
+    def test_mismatched_orphan_sidecar_is_preserved_and_not_published(self):
+        sidecar = self.output.with_suffix('.protocol.json')
+        sidecar.parent.mkdir(parents=True)
+        for field, changed in (('protocol_id', 'other-protocol'),
+                               ('manifest_sha256', 'other-content'),
+                               ('provenance', {'source': 'different'})):
+            with self.subTest(field=field):
+                metadata = {**copy.deepcopy(self.metadata), 'protocol_id': self.manifest['protocol_id']}
+                metadata[field] = changed
+                sidecar.write_text(json.dumps(metadata))
+                before = sidecar.read_bytes(), sidecar.stat().st_mtime_ns
+                with contextlib.redirect_stderr(io.StringIO()) as errors, self.assertRaises(SystemExit):
+                    self.invoke_fixture_cli()
+                self.assertIn('does not match', errors.getvalue())
+                self.assertFalse(self.output.exists())
+                self.assertEqual(before, (sidecar.read_bytes(), sidecar.stat().st_mtime_ns))
+
+    def test_existing_complete_manifest_still_refuses_implicit_overwrite(self):
+        self.invoke_fixture_cli()
+        before = self.output.read_bytes(), self.output.stat().st_mtime_ns
+        with mock.patch('sys.argv', self.argv), mock.patch.object(CLI, 'build_index') as build, \
+                contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
+            CLI.main()
+        build.assert_not_called()
+        self.assertEqual(before, (self.output.read_bytes(), self.output.stat().st_mtime_ns))
+
+    def test_manifest_created_by_another_writer_during_publication_is_preserved(self):
+        original_link = os.link
+        def competing_writer(source, destination, **kwargs):
+            if Path(destination) == self.output:
+                self.output.write_text('other writer owns this manifest')
+            return original_link(source, destination, **kwargs)
+        with mock.patch('os.link', side_effect=competing_writer), \
+                contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
+            self.invoke_fixture_cli()
+        self.assertEqual(self.output.read_text(), 'other writer owns this manifest')
+        self.assertFalse(list(self.output.parent.glob('*.tmp')))
+
+    def test_incomplete_json_encoding_does_not_publish_sidecar(self):
+        self.manifest['unserializable'] = {1, 2}
+        with self.assertRaises(TypeError):
+            self.invoke_fixture_cli()
+        self.assertFalse(self.output.exists())
+        self.assertFalse(self.output.with_suffix('.protocol.json').exists())
+        self.assertFalse(list(self.output.parent.glob('*.tmp')))
+
     def test_real_cli_excludes_empty_lvis_candidate_and_writes_valid_manifest(self):
         """Exercise the index -> sampler -> files contract with trusted synthetic metadata."""
         from ics_eval import validate_manifest
@@ -142,6 +218,15 @@ class PrepareEpisodesCLITests(unittest.TestCase):
         self.assertEqual(sidecar['sample_eligibility']['version'], 'lvis-nonempty-v2')
         self.assertEqual(sidecar['sample_eligibility']['excluded_samples'][0]['image'],
                          'LVIS/coco/train2017/000000000000.jpg')
+        # Simulate the published sidecar surviving without its final manifest;
+        # a real second CLI process must recompute the same content and recover.
+        sidecar_path = self.output.with_suffix('.protocol.json')
+        before = sidecar_path.read_bytes(), sidecar_path.stat().st_mtime_ns
+        expected_manifest = self.output.read_bytes()
+        self.output.unlink()
+        subprocess.run(command, text=True, capture_output=True, check=True)
+        self.assertEqual(self.output.read_bytes(), expected_manifest)
+        self.assertEqual(before, (sidecar_path.read_bytes(), sidecar_path.stat().st_mtime_ns))
 
 
 if __name__ == '__main__':

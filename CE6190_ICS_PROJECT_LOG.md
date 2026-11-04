@@ -2,7 +2,7 @@
 
 最后更新：**2026-11-04（新加坡时间）**。服务器状态以用户最近回传的终端输出为准，并非实时监控。
 
-这是当前项目的维护文档。每次修改记录：研究问题、输入输出、变化原因、运行证据、结论边界和下一步。**11 月 4 日回传的完整诊断已定位 `ics-initial-20261102-pythonfix` 的根失败：data PASS，preflight 作业 187040 在生成 LVIS fold4 reference manifest 时遇到解码后无前景的源 mask；36 个 smoke 和 1,484 个正式分片均未运行。管理器已 STOPPED，终态 COMPLETE_WITH_FAILURES，不是继续等待容量。故障发生于 11 月 2 日，见 2.13 的时间戳。本次准备显式、可审计的 LVIS 空 mask 筛选，全部新 LVIS manifests 使用独立目录；保留旧 run／旧 manifests，复用 COCO、图像、环境、权重和缓存，恢复目标为 `ics-initial-20261104-lvisfix`。本次修复尚未取得 Orion 部署或新作业证据，交付流程见 2.14。**
+这是当前项目的维护文档。每次修改记录：研究问题、输入输出、变化原因、运行证据、结论边界和下一步。**最新明确指向 `ics-initial-20261104-lvisfix` 的状态已显示 manager STOPPED；磁盘仍保存 data PASS、preflight RUNNING，最后更新为 11 月 4 日 11:53:43（新加坡时间）。因此不能继续称后台正常推进，也不能用旧 RUNNING 推断 preflight 的当前 Slurm 状态。尚缺 manager.log／退出证据，停止根因未知，不能把本地发现的缺陷直接认作此次服务器原因。用户要求以后每次修改先小范围逻辑测试，再整体／集成测试确认后才交付服务器执行。本轮基于真实仓库 `9f01d28` 审计并修补管理器生命周期与预检恢复边界；下一步只读诊断原 run，不重置状态、不重跑 data、不另建 run，见 2.18–2.19。**
 
 维护记录纠正：仓库原本已有本文，包含研究设计与历史验证；最近的服务器配置／下载步骤没有同步写回。此前说“没有维护文档”不准确，应为“没有及时更新已有文档”。本次将终端证据补回本文，保留历史研究范围和结论边界，后续继续维护同一份记录。
 
@@ -13,6 +13,7 @@
 - 项目：[AvianHan/CE6190-Visual-Understanding](https://github.com/AvianHan/CE6190-Visual-Understanding)。不重选题；不预设最终方法、数据集或项目规模上限。
 - 用户已同意先跑两种 anchor、组件／backbone／参数与 reference 分析，再根据结果扩展 baselines／datasets。
 - 固定交付流程（用户已多次确认）：助手完成代码并提供更新 ZIP；用户下载到本地 Mac 的 `~/Downloads` 后，助手直接在聊天给一条可粘贴的 terminal 命令，自动解压、校验、备份并应用到当前本地仓库。随后由用户在 VS Code Source Control 手动检查 diff、commit／push，再 SSH pull 运行。不要让用户另开包内 README、手工解压或定位文件，也不要再次确认这套流程。之后每次代码更新必须同时给可直接复制的 commit message；用户只免除了 2026-11-01 那一次补发，本轮及后续仍须提供。此前用户已自行完成滚动队列版本的 commit／push，助手没有代为提交 Git。
+- 固定验证顺序（11 月 4 日追加）：**先小范围逻辑测试，再整体测试及真实子进程集成确认，最后才交付服务器动作。** 对具体缺陷先证明修复前失败、修复后通过，覆盖异常、停止与恢复分支；不能反复把服务器当第一次集成测试，也不能把本地合成测试写成真实 GPU 或全量数据验证。
 - 用户最新要求：把必要任务全部纳入持久化队列，一次启动后按数据准备 → preflight → GPU smoke → 正式分片 → 汇总自动推进。已获授权，不再逐阶段要求确认；共享 Slurm 提交上限通过滚动提交处理。
 - 不取消或修改 Visual Generation 作业；ICS 与 Generation 的状态、输出和研究结论分别记录。当前会话没有 Orion SSH 通道，实际服务器启动由用户执行交付命令。
 - 公司服务器凭据使用临时方式；不把 HF token、带签名下载链接或授权邮件全文写入文档、Git、脚本或日志。不重新安装／下载已经成功的资源。
@@ -23,15 +24,15 @@
 | 项目 | 状态 | 依据／限制 | 下一步 |
 |---|---|---|---|
 | 2026-10-22 starter、研究 HTML、原始 evaluator | 已找回并继承 | 旧包和 `research/`；保留旧 README | 使用新记录区分历史状态 |
-| 远端仓库与用户本地修改 | 解释器修复已 push；最后确认 Orion 为 `20d6432` | `git pull --ff-only`：`3478ea0..20d6432`，8 个文件更新；本次 LVIS 修复尚未部署，本地未提交工作树未直接检查 | 本次保持一条应用命令＋commit message，用户手动 commit／push |
+| 远端仓库与用户本地修改 | LVIS 修复已 push，Orion 最后确认到 `9f01d28` | 本轮重新取得真实 Git checkout `9f01d28f324a57522b3b904c591b1fabb45479fd`；不代表用户未提交工作树已检查 | 本地验证本轮审计补丁后交付，用户手动 commit／push；服务器先只读检查原 run |
 | 固定 manifest、query GT 隔离、三种 IoU | 已实现并 CPU 验证 | `ics_eval.py`、contract tests；原 API 保留 | 实际数据 smoke |
 | COCO／LVIS 和第二批数据 loaders | 已实现；真实 LVIS preflight 暴露空源 mask | 历史 13 项数据测试不足以覆盖本次故障；修复协议与审计见 2.14 | 用新 LVIS 有效池生成独立 manifests，再检查真实 smoke |
 | INSID3 adapter、组件／encoder 接口 | 已实现并合成验证 | 11 项测试，含真实 upstream 处理代码＋合成 encoder 等价检查 | 预训练权重 GPU 推理 |
 | CG-ICS adapter、概念／visual 组件 | 已实现并合成验证；服务器完整导入通过 | 历史 12 项 tests；SAM3／Qwen 权重已下载，`CG-ICS imports OK; model not loaded` | GPU 模型 smoke |
 | runner、resume、失败重试审计、分析 | 已实现并合成验证 | runner／analysis tests；失败 attempt 不覆盖丢失 | 真实结果检查 |
-| 批量调度、资源监测、诊断 | 旧 run 已终止：PASS 2、FAILED 1、BLOCKED 1,520 | data／collect PASS；preflight FAILED；本次补阶段计数及优先失败的限长诊断 | 应用更新后启动独立 lvisfix run；不重复启动终态旧 run |
+| 批量调度、资源监测、诊断 | lvisfix 管理器 STOPPED，磁盘保存的队列状态仍 RUNNING | 保存状态为 data PASS／preflight RUNNING；updated_at 1793764423.4704173；退出原因与当前 Slurm 状态未知 | 读 manager.log、preflight marker／日志及 sacct；不依据旧状态立即重新 start |
 | 三个环境与四份模型权重 | 基础检查／下载已通过 | 见下面实际版本、哈希和修复记录；尚无 GPU 模型加载证据 | 复用现有资源，在 Slurm 计算节点 smoke |
-| 实际数据与 manifests | data 阶段已 PASS；LVIS manifests 部分生成后失败 | fold4 standard 的 2,300 episodes 验证通过，fold4 reference 遇到空 mask；不代表所有 manifests 已就绪 | 复用 12 个 COCO manifest 路径；30 个 LVIS manifests 在 `manifests/lvis-nonempty-v2/` 重新按同一有效池生成 |
+| 实际数据与 manifests | lvisfix 的 data 已 PASS；其 preflight 完成情况待查 | 旧 pythonfix 曾在 fold4 reference 空 mask 失败；不能把旧故障直接套到本次停止 | 保留 12 个 COCO 与 30 个独立目录 LVIS manifests；先核查已有 preflight，不重跑数据准备 |
 | 作者原始随机 episode／resize-GT 协议的完整复现 | 尚未完成 | 本包默认统一 manifest＋原图 GT 协议 | 另建明确的 author-protocol run |
 | 正式模型成绩、跨域结论、最佳组合 | 尚无结果 | 没有 GPU 模型运行日志 | 不能提前下结论 |
 
@@ -115,13 +116,15 @@ ICS 启动前用户回传的完整展开队列（历史快照）：
 
 此前附件 `20261101-045039` 只有 978 行测试尾段，缺核心实现、suite／实验配置及 COMMIT／WORKTREE；它不是完整快照。**2026-11-01 当时已成功 clone 完整远端仓库，基线 HEAD 为 `aabdbb07a25cf11cf47b95797f9d6e621cb649f6`，可读取 `ics/orchestration.py`、runner、数据脚本、配置与历史验证报告。** 这是历史取得源码的事实，用户本地未提交改动和 Orion HEAD 仍不可由那次 clone 推断。2026-11-02 本轮工作区已不含该完整 checkout；重新 clone 未成功，现已恢复上一轮滚动更新 ZIP 和本文最新第 4 版。此次针对已知源码锚点制作增量修复器，不以摘录冒充完整仓库，也不将摘录上的回归检查表述为完整仓库测试。
 
-原有 `launch_suite.py` 提供 plan／submit／worker；`probe_environment.py` 只做资源清单，不做 CUDA 运算测试。完整静态提交超过 `max_submit_tasks` 会在首个 sbatch 前拒绝，并不具备滚动补位能力。此前新增 `scripts/queue_ics.py` 和 `ics/rolling_queue.py` 实现持久化滚动控制；当轮验证见第 2 节及历史报告。用户已部署并启动，首次 RUNNING 见 2.8；最新终态及此次修复见 2.9–2.10。
+2026-11-04 管理器审计已重新取得完整 Git checkout，HEAD 为 `9f01d28f324a57522b3b904c591b1fabb45479fd`，并继承最新版维护记录。本轮可以在该完整源码上运行整体／集成测试；用户本地未提交内容及服务器即时运行状态仍须分别核对。
+
+原有 `launch_suite.py` 提供 plan／submit／worker；`probe_environment.py` 只做资源清单，不做 CUDA 运算测试。完整静态提交超过 `max_submit_tasks` 会在首个 sbatch 前拒绝，并不具备滚动补位能力。此前新增 `scripts/queue_ics.py` 和 `ics/rolling_queue.py` 实现持久化滚动控制；当轮验证见第 2 节及历史报告。用户已部署并启动，首次 RUNNING 见 2.8，首轮终态见 2.9–2.10；最新 lvisfix 管理器停止与本轮审计见 2.18–2.19。
 
 服务器证据索引：`20261101-031955` 集群／早期 bootstrap；`033425` decord／bootstrap 源码；`034558` mllm 修复；`035227` CG-ICS 成功及重复检查中断；后续用户粘贴的下载哈希／版本、SAM3 ACCEPTED 截图与队列输出。授权邮件含敏感链接，本文仅保留模型身份和成功结果。
 
 ### 2.6 2026-11-01 自动队列入口（历史用法）
 
-此前在 Orion pull 滚动队列更新后、仓库目录内一次启动如下。该旧 run 已失败结束；本次修复使用 2.10 的新 run，不再以此命令恢复旧冻结代码。
+此前在 Orion pull 滚动队列更新后、仓库目录内一次启动如下。该旧 run 已失败结束；当次解释器修复使用 2.10 的新 run。此处保留历史，不是当前 lvisfix 停止的恢复命令；当前只读诊断见 2.19。
 
 ```bash
 export ICS_RUNTIME="/scratch/prj0000000262_1/hansy/ce6190-ics-runtime"
@@ -340,7 +343,112 @@ preflight 传递并核对 manifest 的策略／协议身份；旧 sidecar 未声
 fix: audit empty LVIS masks and isolate recovery manifests
 ```
 
-随后 Orion `git pull --ff-only`，用新 suite 启动 **`$ICS_RUNTIME/runs/ics-initial-20261104-lvisfix`**。完整可复制命令见 [docs/LVIS_EMPTY_MASK_RECOVERY.md](docs/LVIS_EMPTY_MASK_RECOVERY.md)，聊天交付同时直接提供命令，不要求先打开说明。旧两轮 run 的 frozen source、状态和日志保留；不手改 BLOCKED／FAIL，不在旧终态 run 上重复 start。当前尚未取得用户应用此次更新、push、Orion pull 或新 run 启动证据。
+随后 Orion `git pull --ff-only`，用新 suite 启动 **`$ICS_RUNTIME/runs/ics-initial-20261104-lvisfix`**。完整可复制命令见 [docs/LVIS_EMPTY_MASK_RECOVERY.md](docs/LVIS_EMPTY_MASK_RECOVERY.md)，聊天交付同时直接提供命令，不要求先打开说明。旧两轮 run 的 frozen source、状态和日志保留；不手改 BLOCKED／FAIL，不在旧终态 run 上重复 start。交付时尚未取得用户应用／push／Orion 启动证据；用户随后已回传 pull 和新 run 启动输出，见 2.15。
+
+### 2.15 LVIS 修复已部署，新 run 返回 STARTING（2026-11-04）
+
+用户按交付流程完成本地更新和 commit／push，随后在 Orion 执行 `git pull --ff-only` 与新恢复 start。pull 从 `20d6432` fast-forward 到 **`9f01d28`**，15 个文件更新（2,759 insertions、47 deletions）；新增恢复 suite、恢复文档、验证报告和 CLI tests。此前更新包内已存在且未变化的更新器未形成该次 Git diff。
+
+| 项目 | 用户回传的启动快照 |
+|---|---|
+| run | `/scratch/prj0000000262_1/hansy/ce6190-ics-runtime/runs/ics-initial-20261104-lvisfix` |
+| suite／cluster | `configs/suite.initial.lvisfix.json`／`configs/cluster.orion.json` |
+| manager | `STARTING`；PID **4010034**（登录节点进程 PID，不是 Slurm job ID） |
+| 总体 | `READY`、terminal false、total 1,523、active 0、PENDING 1,523、submitted_ever 0 |
+| 分阶段 | data PENDING 1；preflight PENDING 1；smoke PENDING 36；experiment PENDING 1,484；collect PENDING 1 |
+| 容量／错误 | capacity null、last_error null、attention 空、attention_total 0、attention_truncated false |
+| plan fingerprint | `c25c6d42f0d72f3230a7cb4dfc06e31f8b5072c4a4e54765e4881f1567f43d62` |
+| updated_at | `1793763560.3699665`，即新加坡时间 `2026-11-04T11:39:20.369967+08:00` |
+| 管理器日志 | 新 run 下 `manager.log` |
+
+策略沿用 max_inflight 8、shared_limit 60、reserved_slots 0、COCO/LVIS、data_workers 2、min_free_gib 32、用户 hansy、QoS highpriority。没有修改 Generation 作业。
+
+源码核对：start 在创建 watcher 之前取得 queue summary，随后最多等 3 秒寻找与该 PID 对应的 manager.json；未见就绪记录但期间未检测到子进程退出时返回 STARTING。因此 READY／PENDING／submitted_ever／capacity 是启动前快照；capacity null 不表示集群有空位，也不能认定共享 60/60。STARTING 本身不是失败，但尚不足以宣称后台已健康推进。
+
+下一步约一分钟后只读新 run 冻结源码的 `status`。先确认 manager ACTIVE，再结合 RUNNING／WAITING_CAPACITY、stage_counts、capacity 和 attention 判断进展；若 STOPPED／PAUSED 或仍不能确认进展，读取 manager.log。暂不重复 start，不把旧 run 的 data PASS 当作本次新 run 已 PASS，也不把部署成功当作实际 LVIS 修复验证或 GPU 成绩。
+
+### 2.16 新 lvisfix run 已推进到 preflight RUNNING（2026-11-04）
+
+用户再次运行新 run 冻结源码的只读 status，并回传 manager.log 尾部。plan fingerprint 仍为 `c25c6d42f0d72f3230a7cb4dfc06e31f8b5072c4a4e54765e4881f1567f43d62`，没有换 run 或重置状态。
+
+| 项目 | 最新快照 |
+|---|---|
+| 管理器／总体 | `ACTIVE`／`RUNNING`，terminal false，total 1,523，active 1 |
+| 总计 | PASS 1、RUNNING 1、PENDING 1,521；submitted_ever **2** |
+| data | **PASS 1**；这是本次 lvisfix run 的成功记录 |
+| preflight | **RUNNING 1**；尚未取得完成标记、真实排除数或全部 manifests 就绪证据 |
+| GPU 阶段 | smoke PENDING 36；experiment PENDING 1,484；仍未开始 |
+| collect | PENDING 1 |
+| 容量 | shared_observed **3**、unseen_own_reservations 0、own_active 1、available_before_submission **7** |
+| 错误／关注项 | last_error null、attention 空、attention_total 0、attention_truncated false |
+| 时间 | observed_at `1793763932.5454504`；updated_at `1793763933.2030334`（新加坡时间 `2026-11-04T11:45:33.203033+08:00`） |
+
+累计提交的 2 项对应已完成 data 和正在运行的 preflight；这份 status 没有给具体 Slurm job ID，不自行补造。共享容量快照已不再是之前的 60/60；7 是本批在途上限与共享限额计算出的可提交任务数，不是 GPU 张数。当前只有 1 项运行符合依赖图：全部 smoke 等共同 preflight 成功，正式分片还需其对应 smoke 成功。因此现阶段不能仅因存在空位就绕过数据预检提交模型任务。
+
+该快照支持管理器当时持锁、任务推进到预检且暂无已报告故障，不能据此宣称整个 LVIS 空 mask 修复已经通过真实数据验证。当时继续观察 preflight；随后明确回传 manager STOPPED，当前结论以 2.18 为准，不再沿用“让现有队列继续”作为处置。
+
+### 2.17 新附件重复旧失败输出，需重新确认 lvisfix 状态（2026-11-04）
+
+用户上传 `粘贴的文本 (1)(20261104-082609).txt`。读取完整附件并与早先 `粘贴的文本 (1)(20261104-030007).txt` 逐字节比较：新文件 **36,620 bytes**、旧文件 **36,625 bytes**，新内容严格等于旧文件移除开头 **5 个空格**后的内容；都是 1,043 行、208 处 BLOCKED、207 个完整任务 key。末尾同为 manager STOPPED／resume Repeat the same start command。两者都没有 run directory、总体 status／terminal／counts、时间戳或根失败 traceback。
+
+- 新附件 SHA-256：`feda44e33e747c68fb42b71cb868a498a5d0ff9bd2ddaf1053d5fe911b2c2002`。
+- 旧附件 SHA-256：`711812991b9524bd443fb93d3355cf2404482d2db2a503f0d354e53db19d1411`。
+- 新版 9f01d28 的 status 将 attention 限为最多 10 项，并含 attention_total／attention_truncated；只对非终态 STOPPED 提示 resume，终态失败提示 recovery。附件的长列表不符合新版单次 status 输出。
+- 能确认的是输出重复；不能断言用户实际执行了哪条命令，也不能凭此认定新 lvisfix 再次失败、仍健康运行、空 mask 修复成功或失败。
+- 最近一次明确属于新 lvisfix 的有效证据仍为 2.16：manager ACTIVE、data PASS、preflight RUNNING。那是历史快照，不是当前实时状态。
+
+当时下一步为固定指向 lvisfix 的完整只读 status；没有依据重复旧附件重启或改实验代码。用户随后提供了明确的新 run 状态，确认管理器已经停止，见 2.18。
+
+### 2.18 lvisfix 管理器停止，保存的 RUNNING 不是实时运行证据（2026-11-04）
+
+| 项目 | 最新明确证据／边界 |
+|---|---|
+| run | `ics-initial-20261104-lvisfix`；原 plan、状态与冻结源码保留 |
+| manager | **STOPPED**；不能再称管理器正常自动推进 |
+| 保存的队列状态 | `RUNNING`，data PASS、preflight RUNNING；这是管理器最后持久化的观察 |
+| 保存状态更新时间 | `1793764423.4704173`，新加坡时间 **2026-11-04 11:53:43.470417**；不是已确认的进程退出时间 |
+| 尚缺证据 | manager.log 的最后错误／退出信息、preflight marker／日志、现有 Slurm job 的当前或最终状态 |
+| 未知项 | 管理器为什么退出，以及 preflight 此刻仍运行、已完成或已失败；不能只凭旧 RUNNING 判断 |
+| GPU 结果 | 尚无新增 GPU smoke／正式实验成功证据 |
+
+登录节点管理器与已提交 Slurm 作业是两个进程层级。管理器停止后，已提交作业仍由 Slurm 管理；它可能继续运行或已经结束，必须查询现有 job，而不能假定它已被取消。`last_error=null`／空 attention 也只反映最后保存状态，不能排除其后发生的管理器异常。
+
+用户明确要求先检查和测试整套逻辑，不能每遇一个问题就直接把下一轮交给服务器。本轮因此先审计真实 checkout `9f01d28f324a57522b3b904c591b1fabb45479fd`，做小范围失败复现、修复回归、整体与进程集成验证。**本地能复现的缺陷不等于本次 Orion 停止根因**；在取得 manager.log 前，不把非 object marker、停止信号、系统清理或任何其他猜测写成已确定原因。
+
+### 2.19 管理器与恢复路径审计、交付边界（2026-11-04）
+
+本轮修复和验证以下具体逻辑边界，保留已有实验与采样协议：
+
+| 边界 | 本地发现与修复目标 |
+|---|---|
+| 完成标记 JSON | 合法 JSON 不一定是 object；非 object completion marker 曾令 watcher `.get()` 触发 `AttributeError`。对结构与身份先校验，使异常成为可诊断状态，不把 malformed marker 当成功 |
+| 停止信号 | 原 watcher 设置停止标志后，本轮 tick 仍可能继续提交后续任务；提交边界响应停止请求，同时保存已取得的 job ID，避免停止后继续补位或恢复时重复提交 |
+| 生命周期证据 | 新 watcher 记录阶段、心跳／轮询时间和可捕获的退出原因；诊断记录写失败不能掩盖原异常。旧 manager 没有这些字段时保持 unknown，不虚构历史原因 |
+| 旧退出记录误用 | 退出记录早于最新队列观察，或时间无法可靠比较时，只保留为历史诊断，不作为当前 manager 的退出原因；当前原因保持 unknown |
+| 启动就绪检查 | 旧／损坏／非 object 的 manager 元数据不再被误当作新子进程失败；只有 object 且 PID 匹配新进程才表示就绪，真实子进程提前退出仍明确报错 |
+| 状态语义 | 管理器 STOPPED 且队列未终态时主状态为 `MANAGER_STOPPED`；另给 `saved_queue_status`、`state_age_seconds`，明确 status 不查询 Slurm、保存任务状态不是实时状态 |
+| preflight 身份复用 | 对 dataset、split、reference 不足处理策略等补齐核对；不允许同路径的另一协议悄悄满足新 recipe |
+| manifest 发布中断 | 若 sidecar 已发布而 manifest 尚未写入，仅在重新计算出的完整 metadata／身份匹配时补齐缺失 manifest；不覆盖不匹配的 sidecar、不把任意半成品视作可复用 |
+
+验证遵循小范围“修复前失败 → 修复后通过”、完整测试、真实子进程＋fake Slurm 链条的顺序。首次 218 项整体检查通过后，独立复核又发现旧退出记录误用及启动就绪检查边界；继续先复现失败、修复后通过，再完整复跑。**最终 227 项运行／227 通过，0 failures、0 errors、0 skips，13.517 秒**；2 项端到端子进程测试已包含其中，不另计。报告见 [research/validation_2026-11-04_manager_audit.json](research/validation_2026-11-04_manager_audit.json)，原始输出见 [research/validation_2026-11-04_manager_audit.tests.txt](research/validation_2026-11-04_manager_audit.tests.txt)。
+
+小范围检查为生命周期 13、CLI 17、rolling 47、orchestration 23、prepare 10、adapter 23、diagnose 7 项。隔离环境为 `torch 2.7.1+cpu`、`torchvision 0.22.1+cpu`、`pycocotools 2.0.10`；此前跳过的 tensor 分支和固定版本 INSID3 上游处理源码＋合成 encoder 等价检查均已运行。dry plan 核对 42 manifests（12 COCO／30 LVIS）、36 smoke、1,484 正式分片，含 data／preflight／collect 共 1,523 项，保留 venv 解释器路径且未提交真实作业。真实子进程不等于真实 Orion 调度，CPU 合成 encoder 不等于预训练模型 GPU 推理，合成数据不能代替真实全量 LVIS 检查。
+
+现有 36 个模型 smoke 都选 COCO fold0 的前 2 个 episodes，尚没有真实 LVIS 模型 smoke。故这些 smoke 即使通过，也不构成真实 LVIS 全量数据或 GPU 验证完成证据；本轮没有把微小样本的通过扩写成完整模型可运行结论。
+
+本次交付 `CE6190-ICS-manager-audit-20261104.zip`。下载到 Mac `~/Downloads` 后，在已有本地仓库执行一条命令：
+
+```bash
+(ICS_FIX_DIR="$(mktemp -d)" && unzip -q "$HOME/Downloads/CE6190-ICS-manager-audit-20261104.zip" -d "$ICS_FIX_DIR" && python3 "$ICS_FIX_DIR/CE6190-Visual-Understanding/scripts/apply_update.py" --target "$PWD" --apply)
+```
+
+由用户在 VS Code 检查 diff 并手动 commit／push，commit message：
+
+```text
+fix: harden queue lifecycle and validate recovery paths
+```
+
+服务器下一步仅 pull 和只读诊断：从更新后的 clone 调用 `scripts/diagnose_queue.py --run-dir` 读取**原 lvisfix run**，汇集新版只读 status、manager.log、data／preflight marker／日志及 sacct，并遮蔽常见凭据形式。交付直接给一条 terminal 命令，不再要求用户粘贴长 heredoc；完整命令见 [docs/MANAGER_AUDIT_2026-11-04.md](docs/MANAGER_AUDIT_2026-11-04.md)。pull 不会修改旧 `source/`；同名 start 仍采用旧冻结代码，所以不把本次 pull 当作已将新 manager 逻辑部署进现有 run。当前不修改冻结源码、不 reset、不新建 run、不重跑 data、不立即 start；等真实日志明确后再决定适用的恢复方式。此处是技术诊断顺序，不是撤回用户已给出的实验执行授权。
 
 ## 3. 怎样拆组件，才能回答问题
 
@@ -448,13 +556,13 @@ DINOv3 的 dense features 不能直接替代 SAM3 的 text／visual prompt 接�
 1. 已完成的历史准备保留：三个模型环境的基础检查、四份权重、滚动队列配置与首次 Orion 部署；四份图像资源已实际下载／解压。首轮数据任务 185464 失败，旧 run 终止，无 GPU 实验结果。
 2. 已完成：交付解释器路径与下载依赖早检查修复、维护记录、单条应用命令和 commit message；用户完成 commit／push，Orion pull 至 20d6432。
 3. 已完成：真正的 insid3 Python 通过依赖检查；`ics-initial-20261102-pythonfix` 的 data PASS，但 preflight 187040 因 LVIS 空源 mask 失败并终止，36 smoke／1,484 正式分片均 BLOCKED。旧 run 状态与冻结源码保留，没有 GPU 成绩。
-4. 当前恢复方案：应用本次 LVIS 显式筛选与审计修复，用户手动 commit／push 后 Orion pull；以 `configs/suite.initial.lvisfix.json` 启动 `ics-initial-20261104-lvisfix`，保留旧 manifests、复用成功资源，并在新目录生成统一有效池的 LVIS manifests。先取得实际新 preflight／smoke 日志；本次尚未部署或提交。
-5. 持续滚动补位、防重复提交并收集 failure／coverage、指标、mask 案例和资源。先取得真实 smoke 吞吐与显存，必要时另建有身份的 pilot／调整分片，不把少量 smoke 当主结果。严格区分内部登记、取得 job ID、RUNNING 与 PASS。
+4. LVIS 修复已部署到 9f01d28，lvisfix 已登记全部 1,523 项并曾推进到 data PASS／preflight RUNNING。**最新管理器 STOPPED，保存状态最后更新于 11 月 4 日 11:53:43 SG，停止原因未知。** 本轮先本地小测试、整体／进程集成测试，再交付更新与原 run 只读诊断；保留冻结源码、已有 manifests、状态和 Slurm 作业，不立即 start 或另建 run。
+5. 取得真实退出原因及 preflight 状态后决定恢复，恢复后才继续滚动补位、防重复提交和收集 failure／coverage、指标、mask 案例及资源。真实 smoke 吞吐／显存仍待验证；严格区分内部登记、取得 job ID、保存的 RUNNING 与经调度器核实的当前状态／PASS，不把少量 smoke 当主结果。
 6. 根据自己的结果决定第二批扩展、额外方法和深入组件实验。论证区分事实、假设、计划与结果；没有普遍最优或跨域结论的预设。
 
 自动调度必须统计共享用户／QoS 的展开数组元素，有空位才提交，给管理作业留余量；其他进程抢先提交导致 QoS 拒绝时退避重试。未满足依赖的任务优先保留在持久化待办中，不塞满 Slurm pending。提交成功但写回中断时需查证恢复，不因再次启动重复提交。CPU 数据与 GPU 推理申请各自资源，不在登录节点跑模型；控制程序部署与续跑应符合实际站点规则。
 
-当前不缺实验授权、SAM3／DINOv3 下载授权或四份权重。**最新阻塞已定位为 LVIS preflight 空源 mask；data 已通过，GPU 阶段未开始。本次准备可审计的采样修复与新 run，不再仅等待共享名额。** 保留两轮旧 run 的全部证据；实际筛选数量、完整 manifests、GPU 可运行性和正式结果仍待服务器执行。无需取消 Generation 作业，也无需再次要求用户逐阶段批准。当前会话没有 Orion SSH，不能声称已代为安装、提交或恢复服务器运行。
+当前不缺实验授权、SAM3／DINOv3 下载授权或四份权重。**当前阻塞是 lvisfix 管理器已停止而原因尚未确定；旧 RUNNING 不能当作正常运行证据。** 本次先验证代码并诊断原 run，保留所有旧 run 与成功资源；实际完整 manifests、GPU 可运行性和正式结果仍待证据。无需取消 Generation 作业，也无需再次要求用户逐阶段批准。当前会话没有 Orion SSH，不能声称已代为安装、提交或恢复服务器运行。
 
 ## 10. 课程要求与更新记录
 
@@ -476,5 +584,9 @@ DINOv3 的 dense features 不能直接替代 SAM3 的 text／visual prompt 接�
 | 2026-11-02，新 run 容量等待 | manager ACTIVE、WAITING_CAPACITY；共享 60/60，本批 0 提交、1,523 内部 PENDING | last_error=null、attention=[]；继续自动轮询，尚无新数据作业或 GPU 结果，不重复 start。 |
 | 2026-11-04，新 run 异常回传 | 附件尾部显示 STOPPED、208 条 BLOCKED 片段及 smoke 前置依赖错误 | 不是完整统计；缺直接 FAILED／总状态／traceback；已准备精简只读诊断，暂不按通用 resume 提示重启。 |
 | 2026-11-04，完整诊断与 LVIS 修复准备 | 已确认 data PASS、preflight 187040 因 fold4 reference 的空源 mask 失败；总 PASS 2／FAILED 1／BLOCKED 1,520。显式 LVIS 非空池、排除审计、新 manifest 目录及状态摘要修复；恢复 run 为 ics-initial-20261104-lvisfix | 故障实际发生于 11 月 2 日，11 月 4 日回传。旧标准 manifest 与所有旧 run 保留；本地 189 项运行／181 通过／8 可选 tensor 跳过／0 failures／errors，尚未部署或提交新 run，无 GPU 验证。 |
+| 2026-11-04，LVIS 修复部署与新 run STARTING | 用户 pull `20d6432..9f01d28`；新 lvisfix run 已登记 1,523 项，PID 4010034，plan 指纹 c25c6d42… | 初始快照 READY／PENDING 1,523／submitted_ever 0／capacity null；需下一次 status 确认 ACTIVE，尚未证明实际作业提交、preflight 或 GPU 成功。 |
+| 2026-11-04，lvisfix 推进到预检 | manager ACTIVE、data PASS、preflight RUNNING；累计提交 2 项，PASS 1／RUNNING 1／PENDING 1,521；共享观测 3、本批可提交 7 | 无 last_error／attention；preflight 尚未 PASS，36 smoke 与 1,484 正式分片等待依赖，暂无 GPU 结果。 |
+| 2026-11-04，082609 附件核对 | 新附件与早先030007失败输出完全重复，仅开头少5个空格 | 未包含新run身份或根失败；不能用来推断lvisfix当前状态，需重新取得固定新run的完整status。未改代码或重启。 |
+| 2026-11-04，lvisfix STOPPED 与整体逻辑审计 | 明确的新 run 状态显示 manager STOPPED、保存状态 data PASS／preflight RUNNING；updated_at 1793764423.4704173。基于真实 9f01d28 checkout 修复生命周期、旧退出／就绪记录、标记结构、停止期间提交、preflight 身份和发布中断恢复 | 实际退出原因缺 manager.log，不能把本地发现直接归因到 Orion。小范围先红后绿，最终整体 227／227 PASS、0 failures／errors／skips，含 2 项端到端子进程测试；服务器下一步只读诊断，保留原 run、不 reset、不重跑 data。 |
 
 后续每轮追加：实际命令／run directory、配置与 manifest hash、成功／失败数量、实验观察、仍不能确定的结论、下一轮修改。不要将“会做”或“已写配置”改写为“已完成实验”。

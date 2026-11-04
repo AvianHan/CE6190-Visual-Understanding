@@ -292,6 +292,38 @@ class RollingTests(unittest.TestCase):
         rq.tick(self.plan_path)
         self.assertEqual(self.read()["tasks"]["data"]["status"], "FAILED")
 
+    def test_nonobject_completion_markers_fail_task_without_crashing_manager(self):
+        for value in (None, [], True, 1, "PASS"):
+            with self.subTest(marker=value):
+                self.save(copy.deepcopy(self.state))
+                self.scheduler.queue.clear()
+                self.scheduler.history.clear()
+                task = self.active(status="RUNNING")
+                rq._atomic_json(rq._marker_path(self.plan, task["key"]), value)
+                self.complete_record(task)
+                result = rq.tick(self.plan_path)
+                saved = self.read()["tasks"]["data"]
+                self.assertEqual(saved["status"], "FAILED")
+                self.assertEqual(saved["error"], "Completion marker must be a JSON object")
+                self.assertEqual(result["counts"]["FAILED"], 1)
+
+    def test_nonobject_model_markers_fail_task_without_crashing_manager(self):
+        for value in (None, [], False, 0, "PASS"):
+            with self.subTest(marker=value):
+                self.save(copy.deepcopy(self.state))
+                self.scheduler.queue.clear()
+                self.scheduler.history.clear()
+                self.ready_smokes()
+                task = self.active("smoke-a", status="RUNNING")
+                self.marker(task)
+                rq._atomic_json(self.root / "run/jobs/smoke-a/complete.json", value)
+                self.complete_record(task)
+                result = rq.tick(self.plan_path)
+                saved = self.read()["tasks"]["smoke-a"]
+                self.assertEqual(saved["status"], "FAILED")
+                self.assertEqual(saved["error"], "Model-worker completion marker must be a JSON object")
+                self.assertEqual(result["counts"]["FAILED"], 1)
+
     def test_gpu_requires_both_wrapper_and_original_worker_markers(self):
         self.ready_smokes()
         task = self.active("smoke-a")
@@ -335,6 +367,58 @@ class RollingTests(unittest.TestCase):
         rq.tick(self.plan_path)
         self.assertEqual(self.read()["tasks"]["data"]["job_id"], "987")
         self.assertEqual(len(self.scheduler.commands), 1)
+
+    def test_stop_request_reconciles_existing_job_without_submitting_next(self):
+        task = self.active(status="RUNNING")
+        self.marker(task)
+        self.complete_record(task)
+        rq.tick(self.plan_path, stop_requested=lambda: True)
+        saved = self.read()
+        self.assertEqual(saved["tasks"]["data"]["status"], "PASS")
+        self.assertEqual(saved["tasks"]["preflight"]["status"], "PENDING")
+        self.assertEqual(self.scheduler.commands, [])
+
+    def test_stop_during_submission_retains_ack_and_does_not_submit_another_job(self):
+        self.ready_smokes()
+        stopped = False
+        def submit(command, **kwargs):
+            nonlocal stopped
+            self.assertEqual(self.read()["tasks"]["smoke-a"]["status"], "SUBMITTING")
+            stopped = True
+            return self.scheduler.submit(command, **kwargs)
+        with mock.patch.object(rq.subprocess, "run", side_effect=submit):
+            rq.tick(self.plan_path, stop_requested=lambda: stopped)
+        saved = self.read()
+        self.assertEqual(len(self.scheduler.commands), 1)
+        self.assertEqual(saved["tasks"]["smoke-a"]["status"], "SUBMITTED")
+        self.assertEqual(saved["tasks"]["smoke-a"]["job_id"], "201")
+        self.assertEqual(saved["tasks"]["smoke-a"]["attempts"], 1)
+        self.assertEqual(saved["tasks"]["smoke-b"]["status"], "PENDING")
+        # A later normal poll reuses the acknowledged job, and can submit the next.
+        rq.tick(self.plan_path)
+        self.assertEqual(len(self.scheduler.commands), 2)
+        self.assertEqual(self.read()["tasks"]["smoke-a"]["job_id"], "201")
+        self.assertEqual(self.read()["tasks"]["smoke-a"]["attempts"], 1)
+
+    def test_stop_during_unknown_submission_retains_uncertainty_and_intent(self):
+        self.ready_smokes()
+        self.scheduler.response = subprocess.TimeoutExpired("sbatch", 60)
+        stopped = False
+        def submit(command, **kwargs):
+            nonlocal stopped
+            self.assertEqual(self.read()["tasks"]["smoke-a"]["status"], "SUBMITTING")
+            stopped = True
+            return self.scheduler.submit(command, **kwargs)
+        with mock.patch.object(rq.subprocess, "run", side_effect=submit):
+            result = rq.tick(self.plan_path, stop_requested=lambda: stopped)
+        saved = self.read()
+        self.assertEqual(result["status"], "PAUSED")
+        self.assertEqual(len(self.scheduler.commands), 1)
+        self.assertEqual(saved["tasks"]["smoke-a"]["status"], "UNCERTAIN")
+        self.assertEqual(saved["tasks"]["smoke-a"]["attempts"], 1)
+        self.assertIn("TimeoutExpired", saved["tasks"]["smoke-a"]["error"])
+        self.assertNotIn("job_id", saved["tasks"]["smoke-a"])
+        self.assertEqual(saved["tasks"]["smoke-b"]["status"], "PENDING")
 
     def test_ambiguous_submission_recovers_accounting_and_marker(self):
         state = self.read()

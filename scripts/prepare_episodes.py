@@ -3,10 +3,64 @@
 from pathlib import Path
 import argparse
 import json
+import os
 import sys
+import tempfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from ics.data import build_index, create_manifest
+
+
+def _read_sidecar(path):
+    try:
+        value = json.loads(path.read_text())
+    except (OSError, ValueError) as exc:
+        raise ValueError(f'Existing protocol sidecar is unreadable or invalid: {path}; preserved unchanged') from exc
+    if not isinstance(value, dict):
+        raise ValueError(f'Existing protocol sidecar must be a JSON object: {path}; preserved unchanged')
+    return value
+
+
+def _publish_prepared(output, manifest, metadata, *, overwrite=False):
+    """Publish a pair; recover only an identical orphan audit, never replace it."""
+    sidecar = output.with_suffix('.protocol.json')
+    if not overwrite and output.exists():
+        raise ValueError(f'Manifest already exists: {output}; preserved unchanged')
+    reuse_sidecar = not overwrite and sidecar.exists()
+    if reuse_sidecar and _read_sidecar(sidecar) != metadata:
+        raise ValueError(f'Existing protocol sidecar does not match the recomputed manifest: {sidecar}; '
+                         'preserved unchanged. Use a new output path for different data or protocol.')
+    output.parent.mkdir(parents=True, exist_ok=True)
+    pending = []
+    try:
+        # Prepare complete bytes for BOTH files before publishing either one.
+        # A unique temporary name also avoids collisions between preflight jobs.
+        for path, content in ((sidecar, metadata), (output, manifest)):
+            if path == sidecar and reuse_sidecar:
+                continue
+            with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8',
+                    prefix='.' + path.name + '.', suffix='.tmp',
+                    dir=output.parent, delete=False) as stream:
+                temporary = Path(stream.name)
+                pending.append((path, temporary))
+                json.dump(content, stream, indent=2, ensure_ascii=False, allow_nan=False)
+                stream.write('\n')
+                stream.flush()
+                os.fsync(stream.fileno())
+        for path, temporary in pending:
+            if overwrite:
+                temporary.replace(path)
+            else:
+                try:
+                    # Same-filesystem create-only publication: a racing writer
+                    # cannot have its file silently overwritten after our check.
+                    os.link(temporary, path)
+                except FileExistsError:
+                    if path != sidecar or _read_sidecar(sidecar) != metadata:
+                        raise ValueError(f'Output appeared during preparation: {path}; preserved unchanged')
+    finally:
+        for _, temporary in pending:
+            temporary.unlink(missing_ok=True)
 
 
 def main():
@@ -33,8 +87,13 @@ def main():
     if args.empty_mask_policy == 'exclude' and args.dataset != 'lvis':
         parser.error('--empty-mask-policy exclude is supported only for LVIS')
     sidecar = args.output.with_suffix('.protocol.json')
-    if not args.overwrite and (args.output.exists() or sidecar.exists()):
+    if not args.overwrite and args.output.exists():
         parser.error('Output exists. Reuse it, or explicitly choose --overwrite with a new protocol version.')
+    if not args.overwrite and sidecar.exists():
+        try:
+            _read_sidecar(sidecar)  # Reject damaged audits before expensive recomputation.
+        except ValueError as exc:
+            parser.error(str(exc))
     groups = json.loads(args.group_map.read_text()) if args.group_map else None
     index = build_index(args.dataset, args.data_root, fold=args.fold,
         split=args.split or ('test' if args.dataset == 'fss' else 'val'),
@@ -44,11 +103,10 @@ def main():
         query_seed=args.query_seed, insufficient_references=args.insufficient_references,
         protocol_id=args.protocol_id, empty_mask_policy=args.empty_mask_policy)
     metadata['protocol_id'] = manifest['protocol_id']
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    for path, content in ((sidecar, metadata), (args.output, manifest)):
-        temporary = path.with_suffix(path.suffix + '.tmp')
-        temporary.write_text(json.dumps(content, indent=2, ensure_ascii=False) + '\n')
-        temporary.replace(path)
+    try:
+        _publish_prepared(args.output, manifest, metadata, overwrite=args.overwrite)
+    except ValueError as exc:
+        parser.error(str(exc))
     eligibility = metadata.get('sample_eligibility', {})
     print(json.dumps({'manifest': str(args.output), 'protocol': str(sidecar),
                       'manifest_sha256': metadata['manifest_sha256'],

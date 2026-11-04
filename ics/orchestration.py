@@ -387,6 +387,11 @@ def run_preflight(plan: dict) -> None:
             for requested, stored in mapping.items():
                 if requested in m["prepare"] and m["prepare"][requested] != sampling.get(stored):
                     raise ValueError(f"Existing manifest {mid} has a different {requested}; use a new manifest path, never silently overwrite")
+            # Older sidecars used the CLI's default shortfall policy implicitly.
+            # A capped support set must not satisfy a later strict request.
+            shortfall_policy = recipe.get("insufficient_references", "all")
+            if sampling.get("insufficient_references", "all") != shortfall_policy:
+                raise ValueError(f"Existing manifest {mid} has a different insufficient_references; use a new manifest path, never silently overwrite")
             # Older manifests used the strict empty-mask error policy implicitly.
             # They cannot satisfy a request for the new audited exclusion policy.
             if sampling.get("empty_mask_policy", "error") != empty_policy:
@@ -406,6 +411,15 @@ def run_preflight(plan: dict) -> None:
                 raise ValueError(f"Manifest/sidecar protocol_id mismatch: {mid}")
             if sidecar.get("manifest_sha256") != manifest_fingerprint(manifest):
                 raise ValueError(f"Manifest/sidecar fingerprint mismatch: {mid}")
+            requested_dataset = recipe.get("dataset")
+            if requested_dataset is not None and any(
+                    e.get("dataset") != requested_dataset for e in manifest["episodes"]):
+                raise ValueError(f"Existing manifest {mid} has a different dataset; use a new manifest path, never silently overwrite")
+            # Match prepare_episodes.py's effective split, including its legacy
+            # default: FSS uses test, all other supported datasets use val.
+            requested_split = recipe.get("split") or ("test" if requested_dataset == "fss" else "val")
+            if any(e.get("split") != requested_split for e in manifest["episodes"]):
+                raise ValueError(f"Existing manifest {mid} has a different split; use a new manifest path, never silently overwrite")
             if any(e["fold"] != m["prepare"]["fold"] for e in manifest["episodes"]):
                 raise ValueError(f"Existing manifest fold differs from recipe: {mid}")
         subprocess.run([python, str(PROJECT_ROOT / "ics_eval.py"), str(target),

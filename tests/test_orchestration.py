@@ -105,7 +105,8 @@ class OrchestrationTests(unittest.TestCase):
         recipe.update(dataset=dataset, fold=0)
         path = Path(plan['manifests']['coco_f0']['path'])
         manifest = {'schema_version': 1, 'status': 'ready', 'protocol_id': protocol,
-                    'episodes': [{'fold': 0}]}
+                    'episodes': [{'fold': 0, 'dataset': dataset,
+                                  'split': 'test' if dataset == 'fss' else 'val'}]}
         sidecar = {'manifest_sha256': manifest_fingerprint(manifest),
                    'sampling': {'queries_requested': 10, 'reference_sets_requested_per_query': 3}}
         if policy is not None:
@@ -125,6 +126,88 @@ class OrchestrationTests(unittest.TestCase):
         self.assertTrue(call.call_args.args[0][1].endswith('ics_eval.py'))
         self.assertEqual(before, (path.read_bytes(), path.with_suffix('.protocol.json').read_bytes()))
         self.assertEqual(json.loads((Path(plan['run_dir'])/'preflight.complete.json').read_text())['status'], 'PASS')
+
+    def test_reused_manifest_dataset_and_split_must_match_recipe(self):
+        for field, requested in (('dataset', 'lvis'), ('split', 'train')):
+            with self.subTest(field=field):
+                plan, path, _ = self.cached_manifest()
+                plan['manifests']['coco_f0']['prepare'][field] = requested
+                before = path.read_bytes(), path.with_suffix('.protocol.json').read_bytes()
+                with mock.patch('ics.orchestration.subprocess.run') as call:
+                    with self.assertRaisesRegex(ValueError, 'different ' + field):
+                        run_preflight(plan)
+                call.assert_not_called()
+                self.assertEqual(before, (path.read_bytes(), path.with_suffix('.protocol.json').read_bytes()))
+                self.assertFalse((Path(plan['run_dir'])/'preflight.complete.json').exists())
+
+    def test_reused_manifest_checks_every_episode_dataset_and_split(self):
+        from ics_eval import manifest_fingerprint
+        for field, changed in (('dataset', 'lvis'), ('split', 'train')):
+            with self.subTest(field=field):
+                plan, path, sidecar = self.cached_manifest()
+                manifest = json.loads(path.read_text())
+                manifest['episodes'].append({**manifest['episodes'][0], field: changed})
+                sidecar['manifest_sha256'] = manifest_fingerprint(manifest)
+                path.write_text(json.dumps(manifest))
+                path.with_suffix('.protocol.json').write_text(json.dumps(sidecar))
+                with mock.patch('ics.orchestration.subprocess.run') as call:
+                    with self.assertRaisesRegex(ValueError, 'different ' + field):
+                        run_preflight(plan)
+                call.assert_not_called()
+
+    def test_reused_manifest_reference_shortfall_policy_must_match_recipe(self):
+        for stored, requested in ((None, 'error'), ('all', 'error'), ('error', None)):
+            with self.subTest(stored=stored, requested=requested):
+                plan, path, sidecar = self.cached_manifest()
+                if stored is not None:
+                    sidecar['sampling']['insufficient_references'] = stored
+                    path.with_suffix('.protocol.json').write_text(json.dumps(sidecar))
+                if requested is not None:
+                    plan['manifests']['coco_f0']['prepare']['insufficient_references'] = requested
+                with mock.patch('ics.orchestration.subprocess.run') as call:
+                    with self.assertRaisesRegex(ValueError, 'different insufficient_references'):
+                        run_preflight(plan)
+                call.assert_not_called()
+
+    def test_legacy_default_dataset_split_and_shortfall_policies_remain_reusable(self):
+        for dataset in ('coco', 'lvis', 'fss'):
+            with self.subTest(dataset=dataset):
+                plan, path, _ = self.cached_manifest(dataset=dataset)
+                before = path.read_bytes(), path.with_suffix('.protocol.json').read_bytes()
+                with mock.patch('ics.orchestration.subprocess.run') as call:
+                    run_preflight(plan)
+                self.assertEqual(call.call_count, 1)
+                self.assertEqual(before, (path.read_bytes(), path.with_suffix('.protocol.json').read_bytes()))
+
+    def test_real_prepared_manifest_cannot_satisfy_different_dataset_recipe(self):
+        """Real prepared PNG assets/manifest: no mocked evaluator or preparation."""
+        import sys
+        import numpy as np
+        from PIL import Image
+        from ics.data import DatasetIndex, Sample, create_manifest
+        plan = self.plan()
+        entry = plan['manifests']['coco_f0']
+        data = Path(entry['dataset_root'])
+        data.mkdir()
+        samples = []
+        for number in range(3):
+            image, mask = data/f'image{number}.png', data/f'mask{number}.png'
+            Image.fromarray(np.full((4, 4, 3), number*50, dtype=np.uint8)).save(image)
+            Image.fromarray(np.ones((4, 4), dtype=np.uint8)).save(mask)
+            samples.append(Sample('one', image, mask))
+        index = DatasetIndex('coco', 'fixture', 'val', 0, {'one': samples})
+        manifest, sidecar = create_manifest(index, data, queries=1)
+        path = Path(entry['path'])
+        path.write_text(json.dumps(manifest))
+        path.with_suffix('.protocol.json').write_text(json.dumps(sidecar))
+        entry['prepare'] = {'dataset': 'coco', 'fold': 0, 'queries': 1}
+        plan['cluster']['resources']['preflight']['python'] = sys.executable
+        run_preflight(plan)
+        (Path(plan['run_dir'])/'preflight.complete.json').unlink()
+        entry['prepare']['dataset'] = 'lvis'
+        with self.assertRaisesRegex(ValueError, 'different dataset'):
+            run_preflight(plan)
+        self.assertFalse((Path(plan['run_dir'])/'preflight.complete.json').exists())
 
     def test_exclusion_policy_cannot_reuse_legacy_strict_manifest(self):
         plan, path, _ = self.cached_manifest(dataset='lvis')

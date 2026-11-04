@@ -173,6 +173,34 @@ class QueueCliTests(unittest.TestCase):
             self.assertEqual(build.call_args.args[0], snapshot / 'configs/suite.json')
         self.assertEqual(cli.manager_status(self.run)['manager'], 'STOPPED')
 
+    def test_bad_previous_manager_metadata_does_not_fail_live_background_start(self):
+        snapshot = self.freeze()
+        plan = {'manifests': {'m': {'prepare': {'dataset': 'coco'},
+                                    'dataset_root': str(self.runtime / 'data')}}}
+        metadata = self.run / 'manager.json'
+        for content in ('[]', 'null', 'true', '123', '"old"', '{invalid json'):
+            with self.subTest(content=content):
+                metadata.write_text(content)
+                args = argparse.Namespace(run_dir=self.run, runtime=self.runtime,
+                    suite=Path('configs/suite.json'), cluster=Path('configs/cluster.local.json'),
+                    max_inflight=8, shared_limit=60, reserved_slots=0, data_workers=2, interval=60)
+                with mock.patch.object(cli, 'ROOT', snapshot), mock.patch.dict(os.environ), \
+                        mock.patch.object(cli, 'build_plan', return_value=plan), \
+                        mock.patch.object(cli, 'write_plan', return_value=self.run / 'plan.json'), \
+                        mock.patch('ics.rolling_queue.initialize_queue'), \
+                        mock.patch('ics.rolling_queue.queue_status', return_value={'terminal': False}), \
+                        mock.patch.object(cli.shutil, 'which', return_value='/fake/slurm'), \
+                        mock.patch.object(cli.subprocess, 'Popen') as popen, \
+                        mock.patch.object(cli.time, 'monotonic', side_effect=[0, .1, .2]), \
+                        mock.patch.object(cli.time, 'sleep', side_effect=lambda _: metadata.write_text('{"pid":424242}')), \
+                        contextlib.redirect_stdout(io.StringIO()) as output:
+                    popen.return_value.pid = 424242
+                    popen.return_value.poll.return_value = None
+                    self.assertEqual(cli.start(args), 0)
+                    popen.return_value.kill.assert_not_called()
+                    popen.return_value.terminate.assert_not_called()
+                self.assertEqual(json.loads(output.getvalue())['manager'], 'STARTED')
+
     def test_inherited_flock_survives_parent_close(self):
         path = self.run / 'manager.lock'
         handle = cli.acquire_lock(path)

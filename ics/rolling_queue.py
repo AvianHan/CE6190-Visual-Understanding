@@ -252,6 +252,8 @@ def _marker_problem(plan: dict, task: dict) -> str | None:
         marker = load_json(path)
     except (OSError, ValueError):
         return "Unreadable completion marker"
+    if not isinstance(marker, dict):
+        return "Completion marker must be a JSON object"
     expected = {"status": "PASS", "plan_fingerprint": plan["fingerprint"],
                 "key": task["key"], "slurm_job_id": task["job_id"]}
     if any(marker.get(k) != v for k, v in expected.items()):
@@ -262,6 +264,8 @@ def _marker_problem(plan: dict, task: dict) -> str | None:
             original = load_json(path)
         except (OSError, ValueError):
             return "Missing or unreadable model-worker completion marker"
+        if not isinstance(original, dict):
+            return "Model-worker completion marker must be a JSON object"
         if any(original.get(k) != v for k, v in {
             "status": "PASS", "plan_fingerprint": plan["fingerprint"],
             "task_id": task["key"], "slurm_job_id": task["job_id"]}.items()):
@@ -407,8 +411,12 @@ def _submit(plan_path: Path, plan: dict, state: dict, task: dict, now: float):
     _atomic_json(run / STATE_NAME, state)
 
 
-def tick(plan_path: Path) -> dict:
-    """Reconcile and submit one bounded window; return without sleeping."""
+def tick(plan_path: Path, *, stop_requested=None) -> dict:
+    """Reconcile and submit one bounded window; return without sleeping.
+
+    A stop request prevents the next submission. An in-flight submission still
+    finishes recording its acknowledgement or uncertainty before returning.
+    """
     plan_path = Path(plan_path).resolve()
     plan = _plan(plan_path)
     run = Path(plan["run_dir"])
@@ -449,6 +457,8 @@ def tick(plan_path: Path) -> dict:
                 cap = plan["resources"][resource].get("max_parallel", plan["cluster"].get("max_parallel"))
                 if by_resource[resource] >= cap:
                     continue
+            if stop_requested is not None and stop_requested():
+                break
             _submit(plan_path, plan, state, task, now)
             if task["status"] in ACTIVE:
                 remaining -= 1

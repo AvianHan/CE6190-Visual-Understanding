@@ -1,0 +1,203 @@
+{
+  "schema_version": 1,
+  "date_utc": "2026-11-04T08:54:52.884115+00:00",
+  "source": {
+    "repository": "https://github.com/AvianHan/CE6190-Visual-Understanding",
+    "base_commit": "9f01d28f324a57522b3b904c591b1fabb45479fd",
+    "basis": "Fresh Git checkout matching the last user-confirmed Orion commit",
+    "commit_or_push_performed": false,
+    "modified_production_files_sha256": {
+      "ics/orchestration.py": "692e508bb2eba5b06f82cc374dd284625b21f2fb8456f35778fc00b096c42a58",
+      "ics/rolling_queue.py": "1bc70b3a098498b31449db9214890ddf605a4936d47b1d93d79a6db458b113cb",
+      "scripts/prepare_episodes.py": "2439bddb76dd6e138891c629ba74421f6cf879b0ae0da7b01454f46586387cbb",
+      "scripts/queue_ics.py": "a8b93d681cab32b36b75b6e2808f870a95fd92d411185d4a2f4abd5e343c3152",
+      "scripts/diagnose_queue.py": "f2f78f34f37cabee5fdd6b70497aeb259493df67becafdf3d27b87ecb1ed60f5"
+    }
+  },
+  "reported_server_state": {
+    "run": "ics-initial-20261104-lvisfix",
+    "manager": "STOPPED",
+    "saved_queue_status": "RUNNING",
+    "saved_stage_counts": {
+      "data": {
+        "PASS": 1
+      },
+      "preflight": {
+        "RUNNING": 1
+      },
+      "smoke": {
+        "PENDING": 36
+      },
+      "experiment": {
+        "PENDING": 1484
+      },
+      "collect": {
+        "PENDING": 1
+      }
+    },
+    "updated_at": 1793764423.4704173,
+    "actual_manager_exit_cause": "UNKNOWN: manager exit log and current Slurm evidence have not been supplied",
+    "current_slurm_job_state": "UNKNOWN: saved state is not a live query"
+  },
+  "workflow": "Targeted defect reproduction before fix, focused regression after fix, independent review, then full suite and real-process fake-scheduler integration before delivery.",
+  "red_to_green_evidence": [
+    {
+      "area": "Manager lifecycle and stale RUNNING status",
+      "before": {
+        "tests": 12,
+        "passed": 1,
+        "failures": 5,
+        "errors": 6
+      },
+      "after": "13 lifecycle tests pass including SIGTERM/SIGKILL/resume, with an additional stale-exit regression"
+    },
+    {
+      "area": "Stale or invalid old exit record",
+      "before": "1 new test with 11 failing subcases",
+      "after": "old or unverifiable exit records are historical only; current cause unknown"
+    },
+    {
+      "area": "Malformed startup readiness metadata",
+      "before": "1 new test with 6 error subcases after manager spawn",
+      "after": "17 queue CLI tests pass; bad metadata means not ready and does not falsely declare child failure"
+    },
+    {
+      "area": "Non-object JSON completion markers and stop during submission",
+      "before": "5 new tests with 13 error subcases",
+      "after": "47 rolling queue tests pass; malformed markers fail the task and an accepted submission retains its acknowledgement"
+    },
+    {
+      "area": "Manifest recipe reuse",
+      "before": "4 new regression tests with 8 failing subcases",
+      "after": "23 orchestration tests pass including real evaluator subprocess validation"
+    },
+    {
+      "area": "Interrupted manifest/sidecar publication",
+      "before": "2 error tests plus 3 failing subcases",
+      "after": "10 prepare tests pass; exact metadata match required for orphan recovery and racing writers cannot overwrite"
+    }
+  ],
+  "environment": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "packages": {
+      "torch": "2.7.1+cpu",
+      "torchvision": "0.22.1+cpu",
+      "pycocotools": "2.0.10",
+      "numpy": "2.3.5",
+      "Pillow": "13.0.0",
+      "einops": "0.8.2",
+      "scikit-learn": "1.8.0"
+    },
+    "torch_device": "CPU only",
+    "insid3_upstream_commit": "0c165a10cf52ab91f335883d06260de86854adbe",
+    "insid3_validation": "Pinned-source file hashes checked; actual upstream postprocessing compared with the adapter using the same synthetic encoder; no pretrained weights"
+  },
+  "full_suite": {
+    "command": "ICS_TEST_INSID3_SOURCE=/path/to/pinned/INSID3 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python -m unittest discover -s tests -v",
+    "tests": 227,
+    "passed": 227,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 13.517,
+    "per_module": {
+      "test_analysis": 6,
+      "test_cgics_adapter": 12,
+      "test_contract": 7,
+      "test_data": 23,
+      "test_diagnose_queue": 7,
+      "test_download_data": 23,
+      "test_insid3_adapter": 11,
+      "test_manager_lifecycle": 13,
+      "test_orchestration": 23,
+      "test_prepare_episodes": 10,
+      "test_python_environment_fix": 14,
+      "test_queue_cli": 17,
+      "test_queue_end_to_end": 2,
+      "test_resource_monitor": 4,
+      "test_rolling_queue": 47,
+      "test_runner": 8
+    },
+    "log": "research/validation_2026-11-04_manager_audit.tests.txt",
+    "log_sha256": "1a0fe195d9c17ba95a4413aa06bd4ac202dc8dc689344f7115652066443f1832",
+    "earlier_full_run": "218 passed with zero skips before independent review identified two further lifecycle boundaries; final suite rerun after those fixes and the diagnostic tool"
+  },
+  "end_to_end": {
+    "tests": 2,
+    "included_in_full_suite": true,
+    "real_processes": [
+      "background manager",
+      "generated shell worker",
+      "prepare_episodes.py",
+      "experiment runner",
+      "result collection and CSV analysis"
+    ],
+    "test_doubles": [
+      "local fake Slurm command executables",
+      "temporary fixture downloader",
+      "synthetic model adapter"
+    ],
+    "scenarios": [
+      "SIGKILL after preflight accepted; accepted worker continues; same-run resume retains job IDs; all seven jobs submitted once and data not rerun",
+      "Lost sbatch acknowledgement is reconciled by unique job name without duplicate submission; one failed smoke blocks only its experiment; independent branch and collector succeed"
+    ],
+    "synthetic_lvis": "One decoded empty sample excluded and three valid samples retained with protocol audit; actual manifests and result CSV generated"
+  },
+  "readonly_diagnostics": {
+    "tests": 7,
+    "included_in_full_suite": true,
+    "script": "scripts/diagnose_queue.py",
+    "coverage": [
+      "actual isolated CLI invocation",
+      "no queue submissions or state changes",
+      "only current-clone status and sacct commands",
+      "failure-tolerant collection",
+      "job ID and path checks",
+      "redaction and bounded output",
+      "timeout handling"
+    ]
+  },
+  "production_plan_check": {
+    "status": "PASS",
+    "manifests": 42,
+    "smoke": 36,
+    "experiment": 1484,
+    "rolling_total": 1523,
+    "smoke_datasets": {
+      "coco": 36
+    },
+    "submission": false,
+    "server_access": false,
+    "venv_interpreter_paths_preserved": true
+  },
+  "package_application_check": {
+    "status": "PASS",
+    "payload_files_checked_before_report": 17,
+    "backup_bytes_match": true,
+    "unlisted_files_preserved": true,
+    "previous_python_and_lvis_fixes_preserved": true,
+    "git_metadata_preserved": true,
+    "git_commit_or_push": false,
+    "second_apply": "UP_TO_DATE",
+    "scope": "All code and documentation before report addition; final ZIP CRC and every payload hash checked separately."
+  },
+  "limitations": [
+    "No Orion SSH or real Slurm submission was performed.",
+    "The actual manager stop cause remains unknown; locally reproduced defects are not evidence of the server cause.",
+    "No real checkpoint or GPU inference was executed. CPU synthetic tests cannot establish production model readiness.",
+    "The production suite still has 36 smoke tasks using COCO fold0 first two episodes; it has no separate LVIS model smoke.",
+    "Real full-volume LVIS preparation has not been observed to complete in this run.",
+    "A decoded nonempty source mask can become empty after CG-ICS nearest resize; this was reproduced on a synthetic single-pixel mask but is not evidence that this run contains such a reference. The scientific sampling protocol was not silently changed.",
+    "An existing run uses its frozen source. Pulling these fixes into the clone does not upgrade that run watcher or worker code.",
+    "SIGKILL, loss of the filesystem, or startup failure before watcher entry may leave no lifecycle exit record."
+  ],
+  "next_server_action": {
+    "action": "After user manual commit/push and server fast-forward pull, run scripts/diagnose_queue.py on the existing ics-initial-20261104-lvisfix only.",
+    "purpose": "Collect saved state, manager log, data/preflight logs and markers, and sacct state before choosing recovery.",
+    "restart": false,
+    "reset": false,
+    "new_run": false,
+    "repeat_data_download": false
+  }
+}
