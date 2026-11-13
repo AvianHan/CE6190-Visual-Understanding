@@ -109,15 +109,28 @@ def _task_table(plan: dict, queue_id: str) -> dict:
         resource = task["resource"]
         add(task["id"], "smoke", resource, ["preflight"], indices[resource])
         indices[resource] += 1
-        smoke_by_config[task["config_data"]["experiment_id"]] = task["id"]
+        smoke_by_config.setdefault(task["config_data"]["experiment_id"], []).append(task["id"])
     indices = Counter()
     for task in plan["tasks"]:
         resource = task["resource"]
         cid = task["config_data"]["experiment_id"]
         if cid not in smoke_by_config:
             raise ValueError(f"No smoke task for {cid}")
-        add(task["id"], "experiment", resource, [smoke_by_config[cid]], indices[resource])
+        add(task["id"], "experiment", resource, smoke_by_config[cid], indices[resource])
         indices[resource] += 1
+    if plan.get("recovery"):
+        definitions = {t["id"]: t for t in plan["smoke"] + plan["tasks"]}
+        def priority(item):
+            key, task = item
+            if task["kind"] in {"data", "preflight"}:
+                return 0 if task["kind"] == "data" else 1
+            definition = definitions[key]
+            main = definition["config_data"]["experiment_id"] in {"insid3_full", "cgics_full"}
+            if task["kind"] == "smoke":
+                return 2 if main else 4
+            standard = plan["manifests"][definition["manifest_id"]].get("cohort") == "standard"
+            return 3 if main and standard else 5
+        tasks = dict(sorted(tasks.items(), key=priority))
     add("collect", "collect", "preflight", list(tasks))
     return tasks
 
@@ -543,7 +556,10 @@ def execute_queue_task(plan_path: Path, key: str) -> None:
 
     signal.signal(signal.SIGTERM, interrupted)
     try:
-        if task["kind"] == "data":
+        if task["kind"] == "data" and plan.get("recovery"):
+            from .recovery import verify_recovery_assets
+            verify_recovery_assets(plan)
+        elif task["kind"] == "data":
             policy = state["policy"]
             python = resource_profile(plan["cluster"], "preflight")["python"]
             subprocess.run([python, str(PROJECT_ROOT / "scripts" / "download_data.py"),

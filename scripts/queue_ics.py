@@ -280,6 +280,8 @@ def watcher(run_dir: Path, *, interval: float = 60, once: bool = False,
 def start(args) -> int:
     from ics.rolling_queue import initialize_queue, queue_status
     run_dir, runtime = args.run_dir.resolve(), args.runtime.resolve()
+    if (run_dir / "plan.json").exists() and load_json(run_dir / "plan.json").get("recovery"):
+        raise ValueError("Selective recovery plan: use scripts/recover_ics.py start --run-dir instead")
     env = clean_environment(runtime)
     os.environ.clear()
     os.environ.update(env)

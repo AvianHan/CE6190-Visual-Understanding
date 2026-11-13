@@ -230,7 +230,8 @@ def sbatch_args(profile: dict, *, name: str, output: Path, array: str | None = N
     if int(profile.get("gpus", 0)):
         gres = profile.get("gres") or f"gpu:{profile['gpus']}"
         cmd.extend(["--gres", _safe_sbatch_value(gres, "gres")])
-    for key, flag in (("qos", "--qos"), ("constraint", "--constraint"), ("reservation", "--reservation")):
+    for key, flag in (("qos", "--qos"), ("constraint", "--constraint"),
+                      ("reservation", "--reservation"), ("exclude", "--exclude")):
         if profile.get(key):
             cmd.extend([flag, _safe_sbatch_value(profile[key], key)])
     if array:

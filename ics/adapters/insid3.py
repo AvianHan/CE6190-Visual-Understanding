@@ -251,15 +251,18 @@ def _build_encoder(config, settings, torch):
         if not (source / "hubconf.py").is_file():
             raise FileNotFoundError(f"Missing hubconf.py in {source}")
         if kind == "dinov3":
+            # The pinned ViT-L hub infers LVD/SAT architecture from weights and
+            # rejects renamed local checkpoint paths. Build the default LVD
+            # architecture offline, then load our authorized local checkpoint.
             encoder = torch.hub.load(str(source), f"dinov3_vit{name}16", source="local",
-                                     weights=str(checkpoint))
+                                     pretrained=False)
         else:
             encoder = torch.hub.load(str(source), f"dinov2_vit{name}14", source="local",
                                      pretrained=False)
-            state = torch.load(checkpoint, map_location="cpu", weights_only=True)
-            if "state_dict" in state:
-                state = state["state_dict"]
-            encoder.load_state_dict(state, strict=True)
+        state = torch.load(checkpoint, map_location="cpu", weights_only=True)
+        if "state_dict" in state:
+            state = state["state_dict"]
+        encoder.load_state_dict(state, strict=True)
         feature_level = "last_normalized_patch_tokens"
     else:
         _add_source(source, "sam3")
