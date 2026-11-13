@@ -378,14 +378,16 @@ def _submission_error(stderr: str) -> str:
     return "uncertain"
 
 
-def _submit(plan_path: Path, plan: dict, state: dict, task: dict, now: float, *, profile=None):
+def _submit(plan_path: Path, plan: dict, state: dict, task: dict, now: float, *, profile=None,
+            command=None):
     run = Path(plan["run_dir"])
     script = run / "rolling_slurm" / (task["key"] + ".sh")
     script.parent.mkdir(parents=True, exist_ok=True)
     (run / "logs").mkdir(exist_ok=True)
     launcher = plan["cluster"].get("launcher_python", "python3")
-    command = [launcher, str(Path(plan.get("project_root", PROJECT_ROOT)) / "scripts" / "queue_ics.py"), "worker",
-               "--plan", str(plan_path), "--key", task["key"]]
+    if command is None:
+        command = [launcher, str(Path(plan.get("project_root", PROJECT_ROOT)) / "scripts" / "queue_ics.py"), "worker",
+                   "--plan", str(plan_path), "--key", task["key"]]
     header = ("#!/usr/bin/env bash\nset -euo pipefail\n"
               "unset HF_TOKEN HUGGING_FACE_HUB_TOKEN ICS_DINOV3_URL PYTHONPATH PYTHONHOME\n"
               "export PYTHONNOUSERSITE=1 HF_HUB_DISABLE_IMPLICIT_TOKEN=1 HF_HUB_DISABLE_TELEMETRY=1 HF_DEBUG=0\n")
@@ -424,7 +426,51 @@ def _submit(plan_path: Path, plan: dict, state: dict, task: dict, now: float, *,
     _atomic_json(run / STATE_NAME, state)
 
 
-def tick(plan_path: Path, *, stop_requested=None, scheduling=False) -> dict:
+def _repair_infrastructure_failure(plan: dict, state: dict) -> dict | None:
+    """Stop new submissions when a repaired attempt reproduces an infrastructure error.
+
+    Only this repair's attempted tasks are considered. Historical failures were
+    archived by repair apply, so they cannot trip the new controller. A bounded
+    tail is sufficient for the concrete startup failures observed on Orion.
+    """
+    run = Path(plan["run_dir"])
+    for task in state["tasks"].values():
+        attempt = task.get("repair_attempt")
+        if task["status"] != "FAILED" or not attempt or not task.get("job_id"):
+            continue
+        paths = [run / "jobs" / task["key"] / name for name in ("runner.log", "vllm.log")]
+        paths.append(run / "logs" / (task["key"] + "-" + str(task["job_id"]) + ".log"))
+        for path in paths:
+            try:
+                if path.is_symlink():
+                    continue
+                with path.open("rb") as stream:
+                    stream.seek(0, os.SEEK_END)
+                    stream.seek(max(0, stream.tell() - 128 * 1024))
+                    lines = stream.read().decode("utf-8", errors="replace").splitlines()
+            except OSError:
+                continue
+            for line in lines:
+                lowered = line.lower()
+                reason = None
+                if "cuda is unavailable" in lowered or "no cuda gpus are available" in lowered:
+                    reason = "cuda_unavailable"
+                elif "provided ptx was compiled with an unsupported toolchain" in lowered:
+                    reason = "cuda_toolchain"
+                elif "repair worker error:" in lowered and "no such file or directory" in lowered:
+                    reason = "worker_startup_unreadable"
+                elif "no such file or directory" in lowered and "rolling_state.json" in lowered:
+                    reason = "queue_state_unreadable"
+                if reason:
+                    return {"reason": reason, "task_key": task["key"],
+                            "job_id": str(task["job_id"]),
+                            "policy_fingerprint": attempt["policy_fingerprint"],
+                            "observed_at": time.time(), "evidence_path": str(path),
+                            "evidence_tail_line": line[-1500:]}
+    return None
+
+
+def tick(plan_path: Path, *, stop_requested=None, scheduling=False, repair=False) -> dict:
     """Reconcile and submit one bounded window; return without sleeping.
 
     A stop request prevents the next submission. An in-flight submission still
@@ -436,6 +482,11 @@ def tick(plan_path: Path, *, stop_requested=None, scheduling=False) -> dict:
     with _lock(run):
         state = _read_state(plan)
         now = time.time()
+        if state.get("repair_circuit_breaker"):
+            state.update(last_error="Repair infrastructure circuit breaker is latched; review evidence before resuming",
+                         updated_at=now)
+            _atomic_json(run / STATE_NAME, state)
+            return _summary(plan, state)
         if (run / "submission.json").exists() or (run / "submission.lock").exists():
             state.update(last_error="Static submission appeared in this run; refusing mixed launchers", updated_at=now)
             _atomic_json(run / STATE_NAME, state)
@@ -448,17 +499,30 @@ def tick(plan_path: Path, *, stop_requested=None, scheduling=False) -> dict:
             return _summary(plan, state)
         state["last_error"] = None
         _reconcile(plan, state, queue, history, now)
+        repair_policy = None
+        if repair:
+            from .repair import load_repair_policy, make_worker_launch, effective_exclusions
+            repair_policy = load_repair_policy(plan)
+            failure = _repair_infrastructure_failure(plan, state)
+            if failure:
+                state.update(repair_circuit_breaker=failure,
+                             last_error="New repair attempt failed infrastructure checks; submissions paused",
+                             updated_at=now)
+                _atomic_json(run / STATE_NAME, state)
+                return _summary(plan, state)
         _propagate_blocks(state)
         policy = state["policy"]
         overlay, hardware = None, {}
-        if scheduling:
+        if scheduling or repair:
             from .scheduling import (load_policy, hardware_evidence, fair_tasks,
                                      effective_profile, retarget_pending_smokes)
             overlay = load_policy(plan)
             if overlay['inherited_shared_limit'] != policy['shared_limit']:
                 raise ValueError('Scheduling inherited shared limit changed')
             hardware, hardware_error = hardware_evidence(state)
-            updates = retarget_pending_smokes(plan, state, overlay, queue, stop_requested)
+            # Repair workers are submitted directly with the approved profile.
+            # Never reinterpret an accepted immutable-intent worker as a legacy script.
+            updates = [] if repair else retarget_pending_smokes(plan, state, overlay, queue, stop_requested)
             policy = {**policy, 'max_inflight': overlay['shared_limit'],
                       'shared_limit': overlay['shared_limit']}
             state['scheduling'] = {'fingerprint': overlay['fingerprint'],
@@ -489,9 +553,15 @@ def tick(plan_path: Path, *, stop_requested=None, scheduling=False) -> dict:
                 break
             if overlay:
                 profile = effective_profile(plan, state, task, overlay, hardware)
+                if repair_policy is not None:
+                    profile = effective_exclusions(profile, repair_policy)
                 task['scheduling'] = {'policy_fingerprint': overlay['fingerprint'],
                                       'profile': profile, 'worker_source': plan['project_root']}
-                _submit(plan_path, plan, state, task, now, profile=profile)
+                if repair_policy is not None:
+                    command = make_worker_launch(plan_path, plan, state, task)
+                    _submit(plan_path, plan, state, task, now, profile=profile, command=command)
+                else:
+                    _submit(plan_path, plan, state, task, now, profile=profile)
             else:
                 _submit(plan_path, plan, state, task, now)
             if task["status"] in ACTIVE:
@@ -543,6 +613,7 @@ def _summary(plan: dict, state: dict) -> dict:
             "scheduling": state.get("scheduling"),
             "effective_policy": (state.get("scheduling") or {}).get("effective_policy", state["policy"]),
             "last_error": state.get("last_error"), "updated_at": state["updated_at"],
+            "repair_circuit_breaker": state.get("repair_circuit_breaker"),
             "attention": attention_preview, "attention_total": len(attention),
             "attention_truncated": len(attention) > len(attention_preview)}
 

@@ -152,7 +152,7 @@ def saved_status(run_dir: Path) -> dict:
     reason = None
     if isinstance(exit_record, dict):
         ended = exit_record.get("ended_at")
-        known_reason = exit_record.get("reason") in ("signal", "terminal", "once", "fatal")
+        known_reason = exit_record.get("reason") in ("signal", "terminal", "once", "fatal", "infrastructure_failure")
         comparable = valid_time(updated) and valid_time(ended)
         stale = comparable and ended < updated
         summary["manager_lifecycle_stale"] = stale
@@ -172,7 +172,7 @@ def saved_status(run_dir: Path) -> dict:
     if summary["manager"] == "STOPPED" and summary.get("terminal") is False:
         summary["status"] = "MANAGER_STOPPED"
         summary["status_note"] += " The manager is stopped; saved task states do not establish current Slurm job states."
-        if reason == "fatal":
+        if reason in {"fatal", "infrastructure_failure"}:
             summary["recovery"] = (
                 "Inspect manager_lifecycle.exit and manager.log, and fix the recorded cause before resuming this run; "
                 "do not reset task state or create a duplicate run.")
@@ -202,7 +202,7 @@ def required_datasets(plan: dict, runtime: Path) -> tuple[str, ...]:
 
 
 def watcher(run_dir: Path, *, interval: float = 60, once: bool = False,
-            lock_fd: int | None = None, scheduling: bool = False) -> int:
+            lock_fd: int | None = None, scheduling: bool = False, repair: bool = False) -> int:
     from ics.rolling_queue import tick
     lock = os.fdopen(lock_fd, "a+") if lock_fd is not None else acquire_lock(run_dir / "manager.lock")
     if lock is None:
@@ -221,9 +221,11 @@ def watcher(run_dir: Path, *, interval: float = 60, once: bool = False,
                  "started_at": started, "source": str(ROOT), "interval": interval,
                  "phase": "initializing", "last_heartbeat_at": started,
                  "last_poll_started_at": None, "last_poll_completed_at": None, "exit": None}
-    if scheduling:
+    if scheduling or repair:
         lifecycle['worker_source'] = str(run_dir / 'source')
         lifecycle['scheduling_policy'] = str(run_dir / 'scheduling' / 'policy.json')
+    if repair:
+        lifecycle['repair_policy'] = str(run_dir / 'repair' / 'policy.json')
     def publish(phase):
         lifecycle.update(phase=phase, last_heartbeat_at=time.time())
         try:
@@ -246,7 +248,10 @@ def watcher(run_dir: Path, *, interval: float = 60, once: bool = False,
                     break
                 lifecycle["last_poll_started_at"] = time.time()
                 publish("polling")
-                if scheduling:
+                if repair:
+                    verify_snapshot(run_dir / 'source')
+                    summary = tick(run_dir / "plan.json", stop_requested=stop.is_set, scheduling=True, repair=True)
+                elif scheduling:
                     verify_snapshot(run_dir / 'source')
                     summary = tick(run_dir / "plan.json", stop_requested=stop.is_set, scheduling=True)
                 else:
@@ -255,6 +260,9 @@ def watcher(run_dir: Path, *, interval: float = 60, once: bool = False,
                 lifecycle["last_queue_status"] = summary["status"]
                 publish("logging")
                 print_json(summary)
+                if summary.get("repair_circuit_breaker"):
+                    reason, exit_code = "infrastructure_failure", 3
+                    return exit_code
                 if summary["terminal"]:
                     reason = "terminal"
                     exit_code = 0 if summary["status"] == "COMPLETE" else 2
