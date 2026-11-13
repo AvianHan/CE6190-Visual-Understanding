@@ -378,13 +378,13 @@ def _submission_error(stderr: str) -> str:
     return "uncertain"
 
 
-def _submit(plan_path: Path, plan: dict, state: dict, task: dict, now: float):
+def _submit(plan_path: Path, plan: dict, state: dict, task: dict, now: float, *, profile=None):
     run = Path(plan["run_dir"])
     script = run / "rolling_slurm" / (task["key"] + ".sh")
     script.parent.mkdir(parents=True, exist_ok=True)
     (run / "logs").mkdir(exist_ok=True)
     launcher = plan["cluster"].get("launcher_python", "python3")
-    command = [launcher, str(PROJECT_ROOT / "scripts" / "queue_ics.py"), "worker",
+    command = [launcher, str(Path(plan.get("project_root", PROJECT_ROOT)) / "scripts" / "queue_ics.py"), "worker",
                "--plan", str(plan_path), "--key", task["key"]]
     header = ("#!/usr/bin/env bash\nset -euo pipefail\n"
               "unset HF_TOKEN HUGGING_FACE_HUB_TOKEN ICS_DINOV3_URL PYTHONPATH PYTHONHOME\n"
@@ -392,7 +392,7 @@ def _submit(plan_path: Path, plan: dict, state: dict, task: dict, now: float):
     if task["kind"] in {"smoke", "experiment"}:
         header += "export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1\n"
     script.write_text(header + "exec " + shlex.join(command) + "\n")
-    sbatch = sbatch_args(_profile(plan, task), name=task["job_name"],
+    sbatch = sbatch_args(profile if profile is not None else _profile(plan, task), name=task["job_name"],
                          output=run / "logs" / (task["key"] + "-%j.log")) + [str(script)]
     # Durable intent must precede the side effect, including on a process crash.
     task.update(status="SUBMITTING", attempt_started_at=now, attempts=task["attempts"] + 1)
@@ -424,7 +424,7 @@ def _submit(plan_path: Path, plan: dict, state: dict, task: dict, now: float):
     _atomic_json(run / STATE_NAME, state)
 
 
-def tick(plan_path: Path, *, stop_requested=None) -> dict:
+def tick(plan_path: Path, *, stop_requested=None, scheduling=False) -> dict:
     """Reconcile and submit one bounded window; return without sleeping.
 
     A stop request prevents the next submission. An in-flight submission still
@@ -450,6 +450,20 @@ def tick(plan_path: Path, *, stop_requested=None) -> dict:
         _reconcile(plan, state, queue, history, now)
         _propagate_blocks(state)
         policy = state["policy"]
+        overlay, hardware = None, {}
+        if scheduling:
+            from .scheduling import (load_policy, hardware_evidence, fair_tasks,
+                                     effective_profile, retarget_pending_smokes)
+            overlay = load_policy(plan)
+            if overlay['inherited_shared_limit'] != policy['shared_limit']:
+                raise ValueError('Scheduling inherited shared limit changed')
+            hardware, hardware_error = hardware_evidence(state)
+            updates = retarget_pending_smokes(plan, state, overlay, queue, stop_requested)
+            policy = {**policy, 'max_inflight': overlay['shared_limit'],
+                      'shared_limit': overlay['shared_limit']}
+            state['scheduling'] = {'fingerprint': overlay['fingerprint'],
+                'effective_policy': policy, 'hardware_accounting_error': hardware_error,
+                'pending_updates': updates, 'hardware_evidence': hardware}
         shared = sum(r["qos"] == policy["qos"] for r in queue.values())
         active = [t for t in state["tasks"].values() if t["status"] in ACTIVE]
         # Reserve accepted/intended work not yet visible in this scheduler snapshot.
@@ -460,19 +474,26 @@ def tick(plan_path: Path, *, stop_requested=None) -> dict:
                              "own_active": len(active), "available_before_submission": remaining,
                              "observed_at": now}
         by_resource = Counter(t["resource"] for t in active)
-        for task in state["tasks"].values():
+        for task in (fair_tasks(plan, state) if overlay else state["tasks"].values()):
             if remaining <= 0:
                 break
             if not _ready(state, task, now):
                 continue
             resource = task["resource"]
             if resource != "preflight":
-                cap = plan["resources"][resource].get("max_parallel", plan["cluster"].get("max_parallel"))
+                cap = (overlay["shared_limit"] if overlay else
+                       plan["resources"][resource].get("max_parallel", plan["cluster"].get("max_parallel")))
                 if by_resource[resource] >= cap:
                     continue
             if stop_requested is not None and stop_requested():
                 break
-            _submit(plan_path, plan, state, task, now)
+            if overlay:
+                profile = effective_profile(plan, state, task, overlay, hardware)
+                task['scheduling'] = {'policy_fingerprint': overlay['fingerprint'],
+                                      'profile': profile, 'worker_source': plan['project_root']}
+                _submit(plan_path, plan, state, task, now, profile=profile)
+            else:
+                _submit(plan_path, plan, state, task, now)
             if task["status"] in ACTIVE:
                 remaining -= 1
                 by_resource[resource] += 1
@@ -519,6 +540,8 @@ def _summary(plan: dict, state: dict) -> dict:
             "plan_path": state["plan_path"], "plan_fingerprint": state["plan_fingerprint"],
             "queue_state_path": str(Path(plan["run_dir"]) / STATE_NAME),
             "policy": state["policy"], "capacity": state.get("capacity"),
+            "scheduling": state.get("scheduling"),
+            "effective_policy": (state.get("scheduling") or {}).get("effective_policy", state["policy"]),
             "last_error": state.get("last_error"), "updated_at": state["updated_at"],
             "attention": attention_preview, "attention_total": len(attention),
             "attention_truncated": len(attention) > len(attention_preview)}

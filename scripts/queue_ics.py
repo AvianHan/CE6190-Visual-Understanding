@@ -202,7 +202,7 @@ def required_datasets(plan: dict, runtime: Path) -> tuple[str, ...]:
 
 
 def watcher(run_dir: Path, *, interval: float = 60, once: bool = False,
-            lock_fd: int | None = None) -> int:
+            lock_fd: int | None = None, scheduling: bool = False) -> int:
     from ics.rolling_queue import tick
     lock = os.fdopen(lock_fd, "a+") if lock_fd is not None else acquire_lock(run_dir / "manager.lock")
     if lock is None:
@@ -221,6 +221,9 @@ def watcher(run_dir: Path, *, interval: float = 60, once: bool = False,
                  "started_at": started, "source": str(ROOT), "interval": interval,
                  "phase": "initializing", "last_heartbeat_at": started,
                  "last_poll_started_at": None, "last_poll_completed_at": None, "exit": None}
+    if scheduling:
+        lifecycle['worker_source'] = str(run_dir / 'source')
+        lifecycle['scheduling_policy'] = str(run_dir / 'scheduling' / 'policy.json')
     def publish(phase):
         lifecycle.update(phase=phase, last_heartbeat_at=time.time())
         try:
@@ -243,7 +246,11 @@ def watcher(run_dir: Path, *, interval: float = 60, once: bool = False,
                     break
                 lifecycle["last_poll_started_at"] = time.time()
                 publish("polling")
-                summary = tick(run_dir / "plan.json", stop_requested=stop.is_set)
+                if scheduling:
+                    verify_snapshot(run_dir / 'source')
+                    summary = tick(run_dir / "plan.json", stop_requested=stop.is_set, scheduling=True)
+                else:
+                    summary = tick(run_dir / "plan.json", stop_requested=stop.is_set)
                 lifecycle["last_poll_completed_at"] = time.time()
                 lifecycle["last_queue_status"] = summary["status"]
                 publish("logging")
