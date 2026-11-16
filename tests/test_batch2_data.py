@@ -331,15 +331,15 @@ class Batch2DataTests(unittest.TestCase):
 
     def test_transfer_acquisition_is_scope_local_and_not_repeated_on_resume(self):
         runs = self.old_runs([self.old_fixture()])
-        new = self.index({'dog': [self.sample(100 + i) for i in range(6)]}, dataset='suim')
-        output = self.runtime / 'batch2/suim'
+        new = self.index({'dog': [self.sample(100 + i) for i in range(6)]}, dataset='isic')
+        output = self.runtime / 'batch2/isic'
         with mock.patch('ics.batch2_sources.ensure_transfer_sources', return_value={'status': 'VERIFIED'}) as acquire, \
              mock.patch('ics.batch2_data.build_index', return_value=new):
-            receipt = prepare_scope(self.runtime, output, scope='suim', prior_runs=runs,
+            receipt = prepare_scope(self.runtime, output, scope='isic', prior_runs=runs,
                 transfer_queries=2, min_free_gib=0, allow_download=True)
-            acquire.assert_called_once_with(self.runtime, 'suim', allow_download=True, min_free_gib=0)
+            acquire.assert_called_once_with(self.runtime, 'isic', allow_download=True, min_free_gib=0)
             self.assertEqual(receipt['source_preparation'], {'status': 'VERIFIED'})
-            repeated = prepare_scope(self.runtime, output, scope='suim', prior_runs=runs,
+            repeated = prepare_scope(self.runtime, output, scope='isic', prior_runs=runs,
                 transfer_queries=2, min_free_gib=0, allow_download=True)
             self.assertEqual(repeated, receipt)
             self.assertEqual(acquire.call_count, 1)

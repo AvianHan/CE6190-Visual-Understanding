@@ -30,7 +30,7 @@ def current_status(run):
     return value
 
 
-def watch(run, interval=30, once=False, lock_fd=None):
+def watch(run, interval=30, once=False, lock_fd=None, tick_fn=None):
     run = Path(run).resolve()
     lock = os.fdopen(lock_fd, 'a+') if lock_fd is not None else acquire_lock(run / 'manager.lock')
     if lock is None: raise RuntimeError('A batch2 manager already holds the lock')
@@ -55,7 +55,7 @@ def watch(run, interval=30, once=False, lock_fd=None):
                 verify_snapshot(ROOT)
                 publish('polling')
                 lifecycle['last_poll_started_at'] = time.time()
-                state = batch2.tick_batch(run, stop_requested=stop.is_set)
+                state = (tick_fn or batch2.tick_batch)(run, stop_requested=stop.is_set)
                 lifecycle.update(last_poll_completed_at=time.time(),
                                  last_queue_status=state['batch2_status'])
                 print_json(state)

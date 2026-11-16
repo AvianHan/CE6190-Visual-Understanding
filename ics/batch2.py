@@ -160,7 +160,7 @@ def status(parent):
             'manager_metadata': load_json(parent / 'manager.json') if (parent / 'manager.json').exists() else None}
 
 
-def tick_batch(parent, stop_requested=None):
+def tick_batch(parent, stop_requested=None, *, scheduling=False):
     """Exactly one scheduler mutator at a time; account for every child intent."""
     meta = load_batch(parent)
     cursor_path = Path(parent) / 'scope_poll_cursor.json'
@@ -180,13 +180,16 @@ def tick_batch(parent, stop_requested=None):
             for task in rq._read_state(other_plan)['tasks'].values():
                 if task['status'] in rq.ACTIVE:
                     external.append(task.get('job_id'))
-        rq.tick(plan_path, stop_requested=stop_requested, external_active=external)
+        rq.tick(plan_path, stop_requested=stop_requested, external_active=external, scheduling=scheduling)
     rq._atomic_json(cursor_path, {'next_scope_index': (cursor + 1) % len(SCOPES)})
     return status(parent)
 
 
-def make_worker_launch(plan_path, plan, task):
+def make_worker_launch(plan_path, plan, task, *, _allow_data_repair=True):
     """Seal task identity BEFORE sbatch. Worker never reads mutable queue state."""
+    if _allow_data_repair and task.get('batch2_data_repair'):
+        from .batch2_recovery import make_data_worker_launch
+        return make_data_worker_launch(plan_path, plan, task)
     run = Path(plan['run_dir'])
     attempt = int(task['attempts']) + 1
     path = run / 'batch2_intents' / task['key'] / ('attempt-%05d.json' % attempt)
@@ -253,7 +256,7 @@ def _visible_read(path):
             time.sleep(.25)
 
 
-def execute_intent(intent_path, expected_sha):
+def execute_intent(intent_path, expected_sha, *, data_preparer=None, data_verifier=None):
     raw = _visible_read(intent_path)
     if hashlib.sha256(raw).hexdigest() != expected_sha:
         raise ValueError('Sealed batch2 intent SHA mismatch')
@@ -308,7 +311,8 @@ def execute_intent(intent_path, expected_sha):
         settings = plan['batch2']
         if task['kind'] == 'data':
             from .batch2_data import prepare_scope
-            prepare_scope(Path(settings['runtime']), Path(settings['data_output']),
+            prepare = data_preparer or prepare_scope
+            prepare(Path(settings['runtime']), Path(settings['data_output']),
                 scope=settings['scope'], prior_runs=[Path(p) for p in settings['prior_runs']],
                 queries_per_fold=settings['queries_per_fold'], transfer_queries=settings['transfer_queries'],
                 references_per_query=settings['references_per_query'], seed=settings['seed'],
@@ -316,7 +320,8 @@ def execute_intent(intent_path, expected_sha):
                 allow_download=settings['scope'] != 'core')
         elif task['kind'] == 'preflight':
             from .batch2_data import verify_scope
-            verify_scope(Path(settings['data_output']), runtime=Path(settings['runtime']),
+            verify = data_verifier or verify_scope
+            verify(Path(settings['data_output']), runtime=Path(settings['runtime']),
                          prior_runs=[Path(p) for p in settings['prior_runs']], expected_scope=settings['scope'])
             run_preflight(plan)
         elif task['kind'] == 'collect':

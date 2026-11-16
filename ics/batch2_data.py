@@ -28,6 +28,7 @@ from ics_eval import manifest_fingerprint, validate_manifest
 
 
 VERSION = 'ce6190-batch2-fresh-v1'
+SUIM_REPAIR_IMPLEMENTATION_ID = 'suim-strict-geometry-filter-v1'
 DEFAULT_PRIOR_RUNS = ('ics-initial-20261104-spacefix', 'ics-recovery-20261113')
 CORE_FOLDS = (('coco', 4), ('lvis', 10))
 
@@ -384,7 +385,7 @@ def _request(runtime, scope, prior_runs, queries_per_fold, transfer_queries,
     if type(seed) is not int or seed < 0:
         raise ValueError('Nonnegative integer seed required')
     layout = [(ds, f, queries_per_fold, 'fresh') for ds, folds in CORE_FOLDS for f in range(folds)] if scope == 'core' else [(scope, 0, transfer_queries, 'transfer')]
-    return {'version': VERSION, 'runtime': str(runtime), 'scope': scope,
+    request = {'version': VERSION, 'runtime': str(runtime), 'scope': scope,
         'prior_runs': [str(x) for x in prior_runs], 'queries_per_fold': queries_per_fold,
         'transfer_queries': transfer_queries, 'references_per_query': references_per_query,
         'seed': seed, 'trust_prepared_pickle': bool(trust_prepared_pickle),
@@ -392,6 +393,9 @@ def _request(runtime, scope, prior_runs, queries_per_fold, transfer_queries,
                           'manifest_id': f'batch2_{ds}_fold{fold}_{cohort}'}
                          for ds, fold, n, cohort in layout],
         'cohort_policy': 'Unique query bytes/source IDs; original class universe, explicit unavailable class and reference counts'}
+    if scope == 'suim':
+        request['geometry_policy'] = SUIM_REPAIR_IMPLEMENTATION_ID
+    return request
 
 
 def verify_scope(output_dir, *, runtime=None, prior_runs=None, expected_scope=None):
@@ -412,6 +416,19 @@ def verify_scope(output_dir, *, runtime=None, prior_runs=None, expected_scope=No
         raise ValueError('Batch2 scope does not match receipt')
     _verify_history(receipt['history'])
     root = Path(request['runtime']) / 'data'
+    geometry = None
+    if request['scope'] == 'suim':
+        from .suim_geometry import verify_suim_geometry
+        if request.get('geometry_policy') != SUIM_REPAIR_IMPLEMENTATION_ID:
+            raise ValueError('SUIM manifest does not declare the shape-valid subset policy')
+        record = receipt['geometry_eligibility']
+        geometry_path = Path(record['path'])
+        if (geometry_path.is_symlink() or geometry_path.resolve().parent != output_dir or
+                file_sha256(geometry_path) != record['file_sha256']):
+            raise ValueError('SUIM geometry receipt path/hash mismatch')
+        geometry = verify_suim_geometry(Path(request['runtime']), geometry_path)
+        if geometry['receipt_sha256'] != record['receipt_sha256']:
+            raise ValueError('SUIM geometry canonical receipt mismatch')
     excluded = {'sha256:' + x for x in receipt['history']['query_image_sha256']} | set(receipt['history']['canonical_source_image_ids'])
     expected_layout = {x['manifest_id']: x for x in request['cohort_layout']}
     if set(receipt['manifests']) != set(expected_layout):
@@ -436,6 +453,15 @@ def verify_scope(output_dir, *, runtime=None, prior_runs=None, expected_scope=No
                 Path(side['batch2']['exclusion_receipt_path']).resolve() != output_dir / 'data_receipt.json' or
                 side['batch2']['prior_exclusion_sha256'] != receipt['history']['exclusion_sha256']):
             raise ValueError('Manifest protocol/exclusion binding mismatch')
+        if geometry is not None:
+            from .suim_geometry import verify_manifest_pairs
+            declared = side['provenance']['suim_geometry']
+            if (declared['implementation_id'] != SUIM_REPAIR_IMPLEMENTATION_ID or
+                    declared['receipt_sha256'] != geometry['receipt_sha256'] or
+                    Path(declared['receipt_path']).resolve() != geometry_path.resolve() or
+                    not manifest['protocol_id'].endswith('-shape-valid-v1')):
+                raise ValueError('SUIM manifest geometry policy/provenance mismatch')
+            verify_manifest_pairs(manifest, root, geometry)
         for source in side['provenance'].get('source_files', []):
             source_path = _contained(root, Path(source['path']))
             if file_sha256(source_path) != source['sha256']:
@@ -503,17 +529,29 @@ def prepare_scope(runtime, output_dir, *, scope='core', prior_runs=None,
             from .batch2_sources import ensure_transfer_sources
             source_preparation = ensure_transfer_sources(runtime, scope, allow_download=allow_download,
                                                          min_free_gib=min_free_gib)
+        geometry = None
+        if scope == 'suim':
+            from .suim_geometry import prepare_suim_geometry
+            geometry = prepare_suim_geometry(runtime, output_dir)
         requests = [(x['dataset'], x['fold'], x['queries'], x['cohort']) for x in request['cohort_layout']]
         manifests, used, digest_cache = {}, set(), {}
         for dataset, fold, queries, cohort in requests:
             index = build_index(dataset, root, fold=fold, split='val',
                                 trust_prepared_pickle=trust_prepared_pickle)
+            if dataset == 'suim':
+                from .suim_geometry import apply_suim_geometry
+                index = apply_suim_geometry(index, root, geometry)
             manifest, sidecar = create_fresh_manifest(index, root, queries=queries,
                 references_per_query=references_per_query, seed=seed,
                 excluded_sha256=history['query_image_sha256'],
                 excluded_source_ids=history['canonical_source_image_ids'],
                 used_query_identities=used, digest_cache=digest_cache, cohort=cohort,
                 prior_exclusion_sha256=history['exclusion_sha256'])
+            if dataset == 'suim':
+                manifest['protocol_id'] += '-shape-valid-v1'
+                sidecar['protocol_id'] = manifest['protocol_id']
+                sidecar['manifest_sha256'] = manifest_fingerprint(manifest)
+                sidecar['provenance']['suim_geometry']['receipt_path'] = str(output_dir / 'suim_geometry_receipt.json')
             mid = f'batch2_{dataset}_fold{fold}_{cohort}'
             sidecar['batch2']['exclusion_receipt_path'] = str(receipt_path)
             path = output_dir / 'manifests' / (mid + '.json')
@@ -535,6 +573,11 @@ def prepare_scope(runtime, output_dir, *, scope='core', prior_runs=None,
             'query_images': sum(x['unique_query_images'] for x in manifests.values()),
             'episodes': sum(x['episodes'] for x in manifests.values()),
             'model_work_performed': False, 'existing_results_modified': False}
+        if geometry is not None:
+            geometry_path = output_dir / 'suim_geometry_receipt.json'
+            receipt['geometry_eligibility'] = {'implementation_id': SUIM_REPAIR_IMPLEMENTATION_ID,
+                'path': str(geometry_path), 'file_sha256': file_sha256(geometry_path),
+                'receipt_sha256': geometry['receipt_sha256']}
         receipt['receipt_sha256'] = _digest(receipt)
         _publish_json(receipt_path, receipt)
         return verify_scope(output_dir, runtime=runtime, prior_runs=prior_runs, expected_scope=scope)

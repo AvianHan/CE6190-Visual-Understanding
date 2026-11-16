@@ -535,7 +535,11 @@ def tick(plan_path: Path, *, stop_requested=None, scheduling=False, repair=False
             hardware, hardware_error = hardware_evidence(state)
             # Repair workers are submitted directly with the approved profile.
             # Never reinterpret an accepted immutable-intent worker as a legacy script.
-            updates = [] if repair else retarget_pending_smokes(plan, state, overlay, queue, stop_requested)
+            if plan.get("batch2") and not repair:
+                from .batch2_scheduling import retarget_pending_smokes as retarget_batch2_smokes
+                updates = retarget_batch2_smokes(plan, state, overlay, queue, stop_requested)
+            else:
+                updates = [] if repair else retarget_pending_smokes(plan, state, overlay, queue, stop_requested)
             policy = {**policy, 'max_inflight': overlay['shared_limit'],
                       'shared_limit': overlay['shared_limit']}
             state['scheduling'] = {'fingerprint': overlay['fingerprint'],
