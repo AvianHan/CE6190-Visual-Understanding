@@ -272,6 +272,48 @@ def _row_key(episode_id):
     return hashlib.sha256(episode_id.encode()).hexdigest()
 
 
+def _validated_alternatives(prediction, shape, variant):
+    masks = getattr(prediction, "alternative_masks", {})
+    if not isinstance(masks, dict):
+        raise ValueError("alternative_masks must be a rule-name to mask mapping")
+    if variant == "fixed_pool_scores" and set(masks) != {"ref_only", "query_only"}:
+        raise ValueError("fixed_pool_scores requires exactly ref_only and query_only alternative masks")
+    if variant in {"agreement_gate", "random_gate"} and set(masks) != {"gate_text", "gate_visual"}:
+        raise ValueError("Gate requires exactly gate_text and gate_visual audit masks")
+    output = {}
+    for rule, value in masks.items():
+        if not isinstance(rule, str) or not re.fullmatch(r"[a-z][a-z0-9_]{0,63}", rule):
+            raise ValueError("Unsafe alternative prediction rule name")
+        mask = np.asarray(value)
+        if mask.shape != shape or not np.all(np.isin(mask, [0, 1])):
+            raise ValueError(f"Alternative {rule} must be a binary original-resolution mask {shape}")
+        output[rule] = mask
+    return output
+
+
+def _verify_saved_predictions(output, row, variant):
+    """Fail closed on changed/escaped primary or paired-control assets."""
+    records = [("primary", row)]
+    alternatives = row.get("alternative_predictions", {})
+    if not isinstance(alternatives, dict):
+        raise ValueError("Saved alternative_predictions must be a mapping")
+    if variant == "fixed_pool_scores" and set(alternatives) != {"ref_only", "query_only"}:
+        raise ValueError("Saved fixed-pool result is missing its paired alternatives")
+    if variant in {"agreement_gate", "random_gate"} and set(alternatives) != {"gate_text", "gate_visual"}:
+        raise ValueError("Saved gate result is missing its exact prediction probes")
+    records += list(alternatives.items())
+    for rule, record in records:
+        if rule != "primary" and not re.fullmatch(r"[a-z][a-z0-9_]{0,63}", rule):
+            raise ValueError("Unsafe saved alternative rule name")
+        if not isinstance(record, dict) or record.get("status", "ok") != "ok":
+            raise ValueError("Successful episode has an invalid alternative prediction")
+        pred = (output / record["prediction_path"]).resolve()
+        if not pred.is_relative_to(output.resolve()):
+            raise ValueError("Saved prediction path escapes output directory")
+        if file_sha256(pred) != record["prediction_sha256"]:
+            raise ValueError(f"Saved prediction has changed ({rule}); do not silently reuse it")
+
+
 def _row_base(ep, binding, config):
     return {"result_schema_version": 2, "run_id": binding["run_id"],
             "experiment_id": config["experiment_id"], "method": config["method"],
@@ -352,9 +394,7 @@ def run_experiment(config, *, manifest_path, dataset_root, output_dir,
             if row["run_id"] != binding["run_id"]:
                 raise ValueError("Existing episode belongs to a different run")
             if row["status"] == "ok":
-                pred = output / row["prediction_path"]
-                if file_sha256(pred) != row["prediction_sha256"]:
-                    raise ValueError("Saved prediction has changed; do not silently reuse it")
+                _verify_saved_predictions(output, row, config["variant"])
     todo = [ep for ep, path in zip(selected, existing)
             if not path.exists() or (retry_failed and json.loads(path.read_text())["status"] != "ok")]
     if adapter_factory is None:
@@ -428,6 +468,7 @@ def run_experiment(config, *, manifest_path, dataset_root, output_dir,
                         mask = np.asarray(prediction.mask)
                         if mask.shape != (height, width) or not np.all(np.isin(mask, [0, 1])):
                             raise ValueError(f"Adapter must return binary original-resolution mask {(height, width)}, got {mask.shape}")
+                        alternatives = _validated_alternatives(prediction, (height, width), config["variant"])
                         # Query GT is decoded only AFTER the adapter has returned.
                         with Image.open(root / ep["query"]["mask"]) as image:
                             truth = np.asarray(image).copy()
@@ -444,6 +485,21 @@ def run_experiment(config, *, manifest_path, dataset_root, output_dir,
                                     "inference_seconds": infer_seconds, "cuda_memory": peaks,
                                     "memory_scope": process["memory_scope"],
                                     "telemetry": prediction.telemetry, "artifacts": prediction.artifacts})
+                        if alternatives:
+                            paired = {}
+                            for rule, alternative in sorted(alternatives.items()):
+                                alt_counts = numpy_binary_counts(alternative, truth, ignore_label=ep["ignore_label"])
+                                alt_union = alt_counts["tp"] + alt_counts["fp"] + alt_counts["fn"]
+                                alt_path = f"predictions/{key}--{rule}.png"
+                                atomic_png(output / alt_path, alternative)
+                                paired[rule] = {"status": "ok", "counts": alt_counts,
+                                                "iou": alt_counts["tp"] / alt_union if alt_union else None,
+                                                "prediction_path": alt_path,
+                                                "prediction_sha256": file_sha256(output / alt_path)}
+                            row["alternative_predictions"] = paired
+                            row["alternative_prediction_scope"] = (
+                                "Same input and shared candidate pool; nested paired controls, not independent episodes. "
+                                "inference_seconds is the entire jointly executed workload, not per-rule latency.")
                         # Reject non-JSON/non-finite telemetry before marking complete.
                         json.dumps(row, allow_nan=False)
                         completed += 1
@@ -452,6 +508,7 @@ def run_experiment(config, *, manifest_path, dataset_root, output_dir,
                         # A failed prediction is not fabricated as an all-background mask.
                         row = _row_base(ep, binding, config) | {
                             "episode_seed": episode_seed, "status": "error", "counts": None,
+                            "shard_index": shard_index, "num_shards": num_shards,
                             "iou": None, "error_type": type(exc).__name__, "error": str(exc),
                             "traceback": traceback.format_exc(limit=10)}
                         if infer_start is not None:

@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "experiment_id": "batch2_cgics_random_p25",
+  "method": "cgics",
+  "variant": "random_gate",
+  "seed": 0,
+  "adapter": {
+    "upstream_dir": "${ICS_RUNTIME}/sources/CG-ICS",
+    "sam3_checkpoint": "${ICS_RUNTIME}/weights/sam3.pt",
+    "device": "cuda",
+    "variant": "random_gate",
+    "image_size": 512,
+    "endpoint": "http://127.0.0.1:22002/v1",
+    "mllm_model": "qwen3-vl-4b",
+    "BON": 5,
+    "num_loops": 3,
+    "num_expand_per_node": 5,
+    "alpha": 1.0,
+    "beta": 1.0,
+    "expansion_threshold": 0.5,
+    "max_restarts": 3,
+    "early_stop_threshold": 0.8,
+    "seg_type": "object",
+    "llm_seed": 0,
+    "llm_seed_from_episode": true,
+    "random_search_probability": 0.25
+  },
+  "study": {
+    "group": "B1_B2_B3_B4",
+    "protocol": "batch2_fresh_query_original_gt",
+    "status": "IMPLEMENTED_NOT_GPU_VALIDATED",
+    "role": "random_p25",
+    "primary": false,
+    "parameter_selection": "Primary agreement threshold 0.7 predeclared; 0.5/0.9 and random rates are sensitivity/budget controls, never test-selected winners.",
+    "cost_scope": "All probe, initial generation, fallback and final inference included; startup reported separately."
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "description": "Second batch suim: fixed-pool score controls, fresh-query efficiency, cross-domain verification and agreement-gated additional search. No test tuning. Existing Phase2/author/part matrix remains retained separately.",
+  "prepare_missing_manifests": false,
+  "smoke_episodes": 2,
+  "shards": 12,
+  "manifests": [
+    {
+      "id": "batch2_suim_fold0_transfer",
+      "cohort": "transfer",
+      "dataset": "suim",
+      "fold": 0,
+      "path": "${ICS_BATCH2_ROOT}/scopes/suim/data/manifests/batch2_suim_fold0_transfer.json",
+      "dataset_root": "${ICS_RUNTIME}/data"
+    }
+  ],
+  "experiments": [
+    {
+      "config": "configs/experiments/batch2_cgics_full.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "batch2_suim_fold0_transfer"
+      ]
+    },
+    {
+      "config": "configs/experiments/batch2_cgics_single.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "batch2_suim_fold0_transfer"
+      ]
+    },
+    {
+      "config": "configs/experiments/batch2_cgics_bon1.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "batch2_suim_fold0_transfer"
+      ]
+    },
+    {
+      "config": "configs/experiments/batch2_cgics_score_pool.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "batch2_suim_fold0_transfer"
+      ]
+    },
+    {
+      "config": "configs/experiments/batch2_cgics_gate_t05.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "batch2_suim_fold0_transfer"
+      ]
+    },
+    {
+      "config": "configs/experiments/batch2_cgics_gate_t07.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "batch2_suim_fold0_transfer"
+      ]
+    },
+    {
+      "config": "configs/experiments/batch2_cgics_gate_t09.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "batch2_suim_fold0_transfer"
+      ]
+    },
+    {
+      "config": "configs/experiments/batch2_cgics_random_p25.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "batch2_suim_fold0_transfer"
+      ]
+    },
+    {
+      "config": "configs/experiments/batch2_cgics_random_p50.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "batch2_suim_fold0_transfer"
+      ]
+    },
+    {
+      "config": "configs/experiments/batch2_cgics_random_p75.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "batch2_suim_fold0_transfer"
+      ]
+    },
+    {
+      "config": "configs/experiments/batch2_cgics_staged_search.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "batch2_suim_fold0_transfer"
+      ]
+    },
+    {
+      "config": "configs/experiments/batch2_cgics_score_gate.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "batch2_suim_fold0_transfer"
+      ]
+    },
+    {
+      "config": "configs/experiments/batch2_insid3_full.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "batch2_suim_fold0_transfer"
+      ]
+    }
+  ]
+}

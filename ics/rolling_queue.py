@@ -109,11 +109,14 @@ def _task_table(plan: dict, queue_id: str) -> dict:
         resource = task["resource"]
         add(task["id"], "smoke", resource, ["preflight"], indices[resource])
         indices[resource] += 1
-        smoke_by_config.setdefault(task["config_data"]["experiment_id"], []).append(task["id"])
+        group = ((task["config_data"]["experiment_id"], task["dataset"])
+                 if plan.get("batch2") else task["config_data"]["experiment_id"])
+        smoke_by_config.setdefault(group, []).append(task["id"])
     indices = Counter()
     for task in plan["tasks"]:
         resource = task["resource"]
-        cid = task["config_data"]["experiment_id"]
+        cid = ((task["config_data"]["experiment_id"], task["dataset"])
+               if plan.get("batch2") else task["config_data"]["experiment_id"])
         if cid not in smoke_by_config:
             raise ValueError(f"No smoke task for {cid}")
         add(task["id"], "experiment", resource, smoke_by_config[cid], indices[resource])
@@ -292,6 +295,12 @@ def _reconcile(plan: dict, state: dict, queue: dict, history: dict, now: float):
     for task in state["tasks"].values():
         if task["status"] not in ACTIVE:
             continue
+        if plan.get("batch2"):
+            from .batch2 import reconcile_intent_identity
+            problem = reconcile_intent_identity(plan, task, queue, history)
+            if problem:
+                task.update(status="UNCERTAIN", error=problem)
+                continue
         if not task.get("job_id"):
             matches = {jid for jid, r in records.items()
                        if r["job_name"] == task["job_name"] and r["qos"] == state["policy"]["qos"]}
@@ -385,6 +394,9 @@ def _submit(plan_path: Path, plan: dict, state: dict, task: dict, now: float, *,
     script.parent.mkdir(parents=True, exist_ok=True)
     (run / "logs").mkdir(exist_ok=True)
     launcher = plan["cluster"].get("launcher_python", "python3")
+    if command is None and plan.get("batch2"):
+        from .batch2 import make_worker_launch
+        command = make_worker_launch(plan_path, plan, task)
     if command is None:
         command = [launcher, str(Path(plan.get("project_root", PROJECT_ROOT)) / "scripts" / "queue_ics.py"), "worker",
                    "--plan", str(plan_path), "--key", task["key"]]
@@ -470,7 +482,8 @@ def _repair_infrastructure_failure(plan: dict, state: dict) -> dict | None:
     return None
 
 
-def tick(plan_path: Path, *, stop_requested=None, scheduling=False, repair=False) -> dict:
+def tick(plan_path: Path, *, stop_requested=None, scheduling=False, repair=False,
+         external_active=()) -> dict:
     """Reconcile and submit one bounded window; return without sleeping.
 
     A stop request prevents the next submission. An in-flight submission still
@@ -532,9 +545,11 @@ def tick(plan_path: Path, *, stop_requested=None, scheduling=False, repair=False
         active = [t for t in state["tasks"].values() if t["status"] in ACTIVE]
         # Reserve accepted/intended work not yet visible in this scheduler snapshot.
         invisible = sum(not t.get("job_id") or t["job_id"] not in queue for t in active)
+        external_invisible = sum(not jid or jid not in queue for jid in external_active)
         remaining = max(0, min(policy["max_inflight"] - len(active),
-                               policy["shared_limit"] - policy["reserved_slots"] - shared - invisible))
+                               policy["shared_limit"] - policy["reserved_slots"] - shared - invisible - external_invisible))
         state["capacity"] = {"shared_observed": shared, "unseen_own_reservations": invisible,
+                             "unseen_other_batch2_scope_reservations": external_invisible,
                              "own_active": len(active), "available_before_submission": remaining,
                              "observed_at": now}
         by_resource = Counter(t["resource"] for t in active)

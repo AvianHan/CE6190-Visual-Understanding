@@ -538,6 +538,8 @@ def run_task(plan: dict, task: dict, *, devices: list[str] | None = None) -> Non
                 raise FileNotFoundError(f"Missing model asset {field}: {value}")
         if task["phase"] == "experiment":
             smokes = [s for s in plan["smoke"] if s["config_data"]["experiment_id"] == task["config_data"]["experiment_id"]]
+            if plan.get("batch2"):
+                smokes = [s for s in smokes if s["dataset"] == task["dataset"]]
             bad = [s["id"] for s in smokes if not (Path(plan["run_dir"]) / "jobs" / s["id"] / "complete.json").exists()]
             if bad:
                 raise RuntimeError("Resource family smoke validation has not passed: " + ", ".join(bad))

@@ -1,0 +1,383 @@
+{
+  "schema_version": 1,
+  "description": "Second batch core: fixed-pool score controls, fresh-query efficiency, cross-domain verification and agreement-gated additional search. No test tuning. Existing Phase2/author/part matrix remains retained separately.",
+  "prepare_missing_manifests": false,
+  "smoke_episodes": 2,
+  "shards": 4,
+  "manifests": [
+    {
+      "id": "batch2_coco_fold0_fresh",
+      "cohort": "fresh",
+      "dataset": "coco",
+      "fold": 0,
+      "path": "${ICS_BATCH2_ROOT}/scopes/core/data/manifests/batch2_coco_fold0_fresh.json",
+      "dataset_root": "${ICS_RUNTIME}/data"
+    },
+    {
+      "id": "batch2_coco_fold1_fresh",
+      "cohort": "fresh",
+      "dataset": "coco",
+      "fold": 1,
+      "path": "${ICS_BATCH2_ROOT}/scopes/core/data/manifests/batch2_coco_fold1_fresh.json",
+      "dataset_root": "${ICS_RUNTIME}/data"
+    },
+    {
+      "id": "batch2_coco_fold2_fresh",
+      "cohort": "fresh",
+      "dataset": "coco",
+      "fold": 2,
+      "path": "${ICS_BATCH2_ROOT}/scopes/core/data/manifests/batch2_coco_fold2_fresh.json",
+      "dataset_root": "${ICS_RUNTIME}/data"
+    },
+    {
+      "id": "batch2_coco_fold3_fresh",
+      "cohort": "fresh",
+      "dataset": "coco",
+      "fold": 3,
+      "path": "${ICS_BATCH2_ROOT}/scopes/core/data/manifests/batch2_coco_fold3_fresh.json",
+      "dataset_root": "${ICS_RUNTIME}/data"
+    },
+    {
+      "id": "batch2_lvis_fold0_fresh",
+      "cohort": "fresh",
+      "dataset": "lvis",
+      "fold": 0,
+      "path": "${ICS_BATCH2_ROOT}/scopes/core/data/manifests/batch2_lvis_fold0_fresh.json",
+      "dataset_root": "${ICS_RUNTIME}/data"
+    },
+    {
+      "id": "batch2_lvis_fold1_fresh",
+      "cohort": "fresh",
+      "dataset": "lvis",
+      "fold": 1,
+      "path": "${ICS_BATCH2_ROOT}/scopes/core/data/manifests/batch2_lvis_fold1_fresh.json",
+      "dataset_root": "${ICS_RUNTIME}/data"
+    },
+    {
+      "id": "batch2_lvis_fold2_fresh",
+      "cohort": "fresh",
+      "dataset": "lvis",
+      "fold": 2,
+      "path": "${ICS_BATCH2_ROOT}/scopes/core/data/manifests/batch2_lvis_fold2_fresh.json",
+      "dataset_root": "${ICS_RUNTIME}/data"
+    },
+    {
+      "id": "batch2_lvis_fold3_fresh",
+      "cohort": "fresh",
+      "dataset": "lvis",
+      "fold": 3,
+      "path": "${ICS_BATCH2_ROOT}/scopes/core/data/manifests/batch2_lvis_fold3_fresh.json",
+      "dataset_root": "${ICS_RUNTIME}/data"
+    },
+    {
+      "id": "batch2_lvis_fold4_fresh",
+      "cohort": "fresh",
+      "dataset": "lvis",
+      "fold": 4,
+      "path": "${ICS_BATCH2_ROOT}/scopes/core/data/manifests/batch2_lvis_fold4_fresh.json",
+      "dataset_root": "${ICS_RUNTIME}/data"
+    },
+    {
+      "id": "batch2_lvis_fold5_fresh",
+      "cohort": "fresh",
+      "dataset": "lvis",
+      "fold": 5,
+      "path": "${ICS_BATCH2_ROOT}/scopes/core/data/manifests/batch2_lvis_fold5_fresh.json",
+      "dataset_root": "${ICS_RUNTIME}/data"
+    },
+    {
+      "id": "batch2_lvis_fold6_fresh",
+      "cohort": "fresh",
+      "dataset": "lvis",
+      "fold": 6,
+      "path": "${ICS_BATCH2_ROOT}/scopes/core/data/manifests/batch2_lvis_fold6_fresh.json",
+      "dataset_root": "${ICS_RUNTIME}/data"
+    },
+    {
+      "id": "batch2_lvis_fold7_fresh",
+      "cohort": "fresh",
+      "dataset": "lvis",
+      "fold": 7,
+      "path": "${ICS_BATCH2_ROOT}/scopes/core/data/manifests/batch2_lvis_fold7_fresh.json",
+      "dataset_root": "${ICS_RUNTIME}/data"
+    },
+    {
+      "id": "batch2_lvis_fold8_fresh",
+      "cohort": "fresh",
+      "dataset": "lvis",
+      "fold": 8,
+      "path": "${ICS_BATCH2_ROOT}/scopes/core/data/manifests/batch2_lvis_fold8_fresh.json",
+      "dataset_root": "${ICS_RUNTIME}/data"
+    },
+    {
+      "id": "batch2_lvis_fold9_fresh",
+      "cohort": "fresh",
+      "dataset": "lvis",
+      "fold": 9,
+      "path": "${ICS_BATCH2_ROOT}/scopes/core/data/manifests/batch2_lvis_fold9_fresh.json",
+      "dataset_root": "${ICS_RUNTIME}/data"
+    }
+  ],
+  "experiments": [
+    {
+      "config": "configs/experiments/batch2_cgics_full.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "batch2_coco_fold0_fresh",
+        "batch2_coco_fold1_fresh",
+        "batch2_coco_fold2_fresh",
+        "batch2_coco_fold3_fresh",
+        "batch2_lvis_fold0_fresh",
+        "batch2_lvis_fold1_fresh",
+        "batch2_lvis_fold2_fresh",
+        "batch2_lvis_fold3_fresh",
+        "batch2_lvis_fold4_fresh",
+        "batch2_lvis_fold5_fresh",
+        "batch2_lvis_fold6_fresh",
+        "batch2_lvis_fold7_fresh",
+        "batch2_lvis_fold8_fresh",
+        "batch2_lvis_fold9_fresh"
+      ]
+    },
+    {
+      "config": "configs/experiments/batch2_cgics_single.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "batch2_coco_fold0_fresh",
+        "batch2_coco_fold1_fresh",
+        "batch2_coco_fold2_fresh",
+        "batch2_coco_fold3_fresh",
+        "batch2_lvis_fold0_fresh",
+        "batch2_lvis_fold1_fresh",
+        "batch2_lvis_fold2_fresh",
+        "batch2_lvis_fold3_fresh",
+        "batch2_lvis_fold4_fresh",
+        "batch2_lvis_fold5_fresh",
+        "batch2_lvis_fold6_fresh",
+        "batch2_lvis_fold7_fresh",
+        "batch2_lvis_fold8_fresh",
+        "batch2_lvis_fold9_fresh"
+      ]
+    },
+    {
+      "config": "configs/experiments/batch2_cgics_bon1.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "batch2_coco_fold0_fresh",
+        "batch2_coco_fold1_fresh",
+        "batch2_coco_fold2_fresh",
+        "batch2_coco_fold3_fresh",
+        "batch2_lvis_fold0_fresh",
+        "batch2_lvis_fold1_fresh",
+        "batch2_lvis_fold2_fresh",
+        "batch2_lvis_fold3_fresh",
+        "batch2_lvis_fold4_fresh",
+        "batch2_lvis_fold5_fresh",
+        "batch2_lvis_fold6_fresh",
+        "batch2_lvis_fold7_fresh",
+        "batch2_lvis_fold8_fresh",
+        "batch2_lvis_fold9_fresh"
+      ]
+    },
+    {
+      "config": "configs/experiments/batch2_cgics_score_pool.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "batch2_coco_fold0_fresh",
+        "batch2_coco_fold1_fresh",
+        "batch2_coco_fold2_fresh",
+        "batch2_coco_fold3_fresh",
+        "batch2_lvis_fold0_fresh",
+        "batch2_lvis_fold1_fresh",
+        "batch2_lvis_fold2_fresh",
+        "batch2_lvis_fold3_fresh",
+        "batch2_lvis_fold4_fresh",
+        "batch2_lvis_fold5_fresh",
+        "batch2_lvis_fold6_fresh",
+        "batch2_lvis_fold7_fresh",
+        "batch2_lvis_fold8_fresh",
+        "batch2_lvis_fold9_fresh"
+      ]
+    },
+    {
+      "config": "configs/experiments/batch2_cgics_gate_t05.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "batch2_coco_fold0_fresh",
+        "batch2_coco_fold1_fresh",
+        "batch2_coco_fold2_fresh",
+        "batch2_coco_fold3_fresh",
+        "batch2_lvis_fold0_fresh",
+        "batch2_lvis_fold1_fresh",
+        "batch2_lvis_fold2_fresh",
+        "batch2_lvis_fold3_fresh",
+        "batch2_lvis_fold4_fresh",
+        "batch2_lvis_fold5_fresh",
+        "batch2_lvis_fold6_fresh",
+        "batch2_lvis_fold7_fresh",
+        "batch2_lvis_fold8_fresh",
+        "batch2_lvis_fold9_fresh"
+      ]
+    },
+    {
+      "config": "configs/experiments/batch2_cgics_gate_t07.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "batch2_coco_fold0_fresh",
+        "batch2_coco_fold1_fresh",
+        "batch2_coco_fold2_fresh",
+        "batch2_coco_fold3_fresh",
+        "batch2_lvis_fold0_fresh",
+        "batch2_lvis_fold1_fresh",
+        "batch2_lvis_fold2_fresh",
+        "batch2_lvis_fold3_fresh",
+        "batch2_lvis_fold4_fresh",
+        "batch2_lvis_fold5_fresh",
+        "batch2_lvis_fold6_fresh",
+        "batch2_lvis_fold7_fresh",
+        "batch2_lvis_fold8_fresh",
+        "batch2_lvis_fold9_fresh"
+      ]
+    },
+    {
+      "config": "configs/experiments/batch2_cgics_gate_t09.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "batch2_coco_fold0_fresh",
+        "batch2_coco_fold1_fresh",
+        "batch2_coco_fold2_fresh",
+        "batch2_coco_fold3_fresh",
+        "batch2_lvis_fold0_fresh",
+        "batch2_lvis_fold1_fresh",
+        "batch2_lvis_fold2_fresh",
+        "batch2_lvis_fold3_fresh",
+        "batch2_lvis_fold4_fresh",
+        "batch2_lvis_fold5_fresh",
+        "batch2_lvis_fold6_fresh",
+        "batch2_lvis_fold7_fresh",
+        "batch2_lvis_fold8_fresh",
+        "batch2_lvis_fold9_fresh"
+      ]
+    },
+    {
+      "config": "configs/experiments/batch2_cgics_random_p25.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "batch2_coco_fold0_fresh",
+        "batch2_coco_fold1_fresh",
+        "batch2_coco_fold2_fresh",
+        "batch2_coco_fold3_fresh",
+        "batch2_lvis_fold0_fresh",
+        "batch2_lvis_fold1_fresh",
+        "batch2_lvis_fold2_fresh",
+        "batch2_lvis_fold3_fresh",
+        "batch2_lvis_fold4_fresh",
+        "batch2_lvis_fold5_fresh",
+        "batch2_lvis_fold6_fresh",
+        "batch2_lvis_fold7_fresh",
+        "batch2_lvis_fold8_fresh",
+        "batch2_lvis_fold9_fresh"
+      ]
+    },
+    {
+      "config": "configs/experiments/batch2_cgics_random_p50.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "batch2_coco_fold0_fresh",
+        "batch2_coco_fold1_fresh",
+        "batch2_coco_fold2_fresh",
+        "batch2_coco_fold3_fresh",
+        "batch2_lvis_fold0_fresh",
+        "batch2_lvis_fold1_fresh",
+        "batch2_lvis_fold2_fresh",
+        "batch2_lvis_fold3_fresh",
+        "batch2_lvis_fold4_fresh",
+        "batch2_lvis_fold5_fresh",
+        "batch2_lvis_fold6_fresh",
+        "batch2_lvis_fold7_fresh",
+        "batch2_lvis_fold8_fresh",
+        "batch2_lvis_fold9_fresh"
+      ]
+    },
+    {
+      "config": "configs/experiments/batch2_cgics_random_p75.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "batch2_coco_fold0_fresh",
+        "batch2_coco_fold1_fresh",
+        "batch2_coco_fold2_fresh",
+        "batch2_coco_fold3_fresh",
+        "batch2_lvis_fold0_fresh",
+        "batch2_lvis_fold1_fresh",
+        "batch2_lvis_fold2_fresh",
+        "batch2_lvis_fold3_fresh",
+        "batch2_lvis_fold4_fresh",
+        "batch2_lvis_fold5_fresh",
+        "batch2_lvis_fold6_fresh",
+        "batch2_lvis_fold7_fresh",
+        "batch2_lvis_fold8_fresh",
+        "batch2_lvis_fold9_fresh"
+      ]
+    },
+    {
+      "config": "configs/experiments/batch2_cgics_staged_search.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "batch2_coco_fold0_fresh",
+        "batch2_coco_fold1_fresh",
+        "batch2_coco_fold2_fresh",
+        "batch2_coco_fold3_fresh",
+        "batch2_lvis_fold0_fresh",
+        "batch2_lvis_fold1_fresh",
+        "batch2_lvis_fold2_fresh",
+        "batch2_lvis_fold3_fresh",
+        "batch2_lvis_fold4_fresh",
+        "batch2_lvis_fold5_fresh",
+        "batch2_lvis_fold6_fresh",
+        "batch2_lvis_fold7_fresh",
+        "batch2_lvis_fold8_fresh",
+        "batch2_lvis_fold9_fresh"
+      ]
+    },
+    {
+      "config": "configs/experiments/batch2_cgics_score_gate.json",
+      "resource": "cgics_mllm",
+      "manifest_ids": [
+        "batch2_coco_fold0_fresh",
+        "batch2_coco_fold1_fresh",
+        "batch2_coco_fold2_fresh",
+        "batch2_coco_fold3_fresh",
+        "batch2_lvis_fold0_fresh",
+        "batch2_lvis_fold1_fresh",
+        "batch2_lvis_fold2_fresh",
+        "batch2_lvis_fold3_fresh",
+        "batch2_lvis_fold4_fresh",
+        "batch2_lvis_fold5_fresh",
+        "batch2_lvis_fold6_fresh",
+        "batch2_lvis_fold7_fresh",
+        "batch2_lvis_fold8_fresh",
+        "batch2_lvis_fold9_fresh"
+      ]
+    },
+    {
+      "config": "configs/experiments/batch2_insid3_full.json",
+      "resource": "insid3",
+      "manifest_ids": [
+        "batch2_coco_fold0_fresh",
+        "batch2_coco_fold1_fresh",
+        "batch2_coco_fold2_fresh",
+        "batch2_coco_fold3_fresh",
+        "batch2_lvis_fold0_fresh",
+        "batch2_lvis_fold1_fresh",
+        "batch2_lvis_fold2_fresh",
+        "batch2_lvis_fold3_fresh",
+        "batch2_lvis_fold4_fresh",
+        "batch2_lvis_fold5_fresh",
+        "batch2_lvis_fold6_fresh",
+        "batch2_lvis_fold7_fresh",
+        "batch2_lvis_fold8_fresh",
+        "batch2_lvis_fold9_fresh"
+      ]
+    }
+  ]
+}

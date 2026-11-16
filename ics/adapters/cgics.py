@@ -20,6 +20,9 @@ import types
 from urllib.parse import urlparse
 
 from .base import Adapter, Prediction
+from ..cgics_batch2 import (BATCH2_VARIANTS, RULES, agreement_requires_search,
+                            finite_probability, input_content_fingerprint,
+                            make_score_audit, prediction_agreement, random_search_decision)
 
 PIN = "8da845743f15c18ec490567fbd86dba58c8a388f"
 _PREFIX = "_ce6190_cgics_8da8457"
@@ -31,6 +34,10 @@ _VARIANTS = {
     "no_search": ("candidates", "boxes"),
     "single_concept_text": ("single", "none"),
     "single_concept_full": ("single", "boxes"),
+    "fixed_pool_scores": ("fixed_pool", "boxes"),
+    "agreement_gate": ("gate", "boxes"),
+    "random_gate": ("gate", "boxes"),
+    "initial_score_gate": ("gate", "boxes"),
 }
 
 
@@ -46,8 +53,10 @@ def component_settings(config):
             raise ValueError("Component overrides require variant='custom'; do not relabel them as an original variant")
     else:
         raise ValueError(f"Unknown CG-ICS variant: {variant}")
-    if concept not in {"search", "candidates", "single", "none"}:
-        raise ValueError("concept_mode must be search, candidates, single, or none")
+    if concept not in {"search", "candidates", "single", "none", "fixed_pool", "gate"}:
+        raise ValueError("Unknown concept_mode")
+    if concept in {"fixed_pool", "gate"} and variant not in BATCH2_VARIANTS:
+        raise ValueError("Batch2 policies require their explicitly named variant")
     if visual not in {"boxes", "concat", "none"}:
         raise ValueError("visual_mode must be boxes, concat, or none")
     if visual == "concat" and concept != "none":
@@ -71,6 +80,13 @@ def component_settings(config):
             raise ValueError(f"{key} must be in [0, 1]")
     if config.get("seg_type", "object") not in {"object", "part"}:
         raise ValueError("seg_type must be object or part")
+    if variant in BATCH2_VARIANTS:
+        for name, default in (("gate_threshold", .7), ("random_search_probability", .5),
+                              ("score_gate_threshold", .8)):
+            finite_probability(config.get(name, default), name)
+        if any(isinstance(config.get(key, 1.), bool) or config.get(key, 1.) != 1.
+               for key in ("alpha", "beta")):
+            raise ValueError("Batch2 policies keep original alpha=beta=1; score rules are isolated on a shared pool")
     return {"concept": concept, "visual": visual}
 
 
@@ -102,7 +118,8 @@ class CGICSAdapter(Adapter):
         return {
             "method": "CG-ICS", "variant": self.config.get("variant", "full"),
             "components": dict(self.components), "upstream_commit": PIN,
-            "execution_kind": "pinned_source_on_fixed_manifest",
+            "execution_kind": ("project_policy_on_pinned_components" if self.config.get("variant") in BATCH2_VARIANTS
+                               else "pinned_source_on_fixed_manifest"),
             "prediction_resolution": "original query; nearest resize from CG-ICS working resolution",
             "cache_policy": "within-episode image states only; cleared between episodes",
             "mllm_memory_scope": "external server excluded from this process GPU peak",
@@ -112,6 +129,8 @@ class CGICSAdapter(Adapter):
     def predict(self, inputs: dict, *, seed: int = 0) -> Prediction:
         self._diagnostics_active = False
         _validate_inputs(inputs)
+        if self.config.get("variant") in BATCH2_VARIANTS and len(inputs["references"]) != 1:
+            raise ValueError("Batch2 scoring/gating policies are explicitly defined for 1-shot")
         self.backend.reset(seed)
         self._diagnostics_active = True
         stages = {}
@@ -132,15 +151,19 @@ class CGICSAdapter(Adapter):
             prepared = run_stage("input_preprocessing_s", lambda: self.backend.prepare(inputs))
             run_stage("image_encoding_s", lambda: self.backend.build_state(prepared, self.components))
             prompt = None
-            if self.components["concept"] != "none":
-                prompt = run_stage("concept_reasoning_s", lambda: self.backend.select(prepared, self.components["concept"]))
-            visual_masks = None
-            if self.components["visual"] != "none":
-                visual_masks = run_stage("visual_route_s", lambda: self.backend.visual(prepared))
-            if self.components["visual"] == "concat":
-                mask = run_stage("output_restore_s", lambda: self.backend.direct_mask(prepared, visual_masks))
+            alternative_masks = {}
+            if self.config.get("variant") in BATCH2_VARIANTS:
+                mask, prompt, alternative_masks = self._predict_batch2(prepared, inputs, seed, run_stage, stages)
             else:
-                mask = run_stage("final_sam_and_restore_s", lambda: self.backend.final(prepared, prompt, visual_masks))
+                if self.components["concept"] != "none":
+                    prompt = run_stage("concept_reasoning_s", lambda: self.backend.select(prepared, self.components["concept"]))
+                visual_masks = None
+                if self.components["visual"] != "none":
+                    visual_masks = run_stage("visual_route_s", lambda: self.backend.visual(prepared))
+                if self.components["visual"] == "concat":
+                    mask = run_stage("output_restore_s", lambda: self.backend.direct_mask(prepared, visual_masks))
+                else:
+                    mask = run_stage("final_sam_and_restore_s", lambda: self.backend.final(prepared, prompt, visual_masks))
             telemetry = copy.deepcopy(self.backend.telemetry)
             if telemetry.get("mllm_usage_missing_requests", 0):
                 for key in ("mllm_prompt_tokens", "mllm_completion_tokens"):
@@ -151,9 +174,80 @@ class CGICSAdapter(Adapter):
             artifacts = copy.deepcopy(self.backend.artifacts)
             artifacts["selected_concept"] = prompt
             artifacts["components"] = dict(self.components)
-            return Prediction(mask=mask, telemetry=telemetry, artifacts=artifacts)
+            return Prediction(mask=mask, telemetry=telemetry, artifacts=artifacts,
+                              alternative_masks=alternative_masks)
         finally:
             self.backend.clear()
+
+    def _predict_batch2(self, prepared, inputs, seed, run_stage, stages):
+        variant = self.config["variant"]
+        if variant == "fixed_pool_scores":
+            audit = run_stage("fixed_pool_generation_and_scoring_s", lambda: self.backend.fixed_pool(prepared))
+            self.backend.artifacts["batch2_score_audit"] = audit
+            visual = run_stage("visual_route_s", lambda: self.backend.visual(prepared))
+            # Rotate evaluation order independently of model RNG to avoid always
+            # measuring the combined rule first. No selection depends on GT.
+            shift = int(audit["pool_fingerprint"][:8], 16) % len(RULES)
+            order = RULES[shift:] + RULES[:shift]
+            audit["final_rule_order"] = list(order)
+            predictions = {}
+            for rule in order:
+                selected = audit["rules"][rule]
+                before = dict(self.backend.telemetry)
+                stage = f"final_rule_{rule}_s"
+                predictions[rule] = run_stage(stage, lambda selected=selected: self.backend.final(
+                    prepared, selected["selected_concept"], visual))
+                selected["final_inference_seconds"] = stages[stage]
+                for source, destination in (("sam_calls", "final_sam_calls"),
+                                            ("sam_prompt_head_calls", "final_prompt_head_calls")):
+                    selected[destination] = self.backend.telemetry.get(source, 0) - before.get(source, 0)
+            return predictions["combined"], audit["rules"]["combined"]["selected_concept"], {
+                rule: predictions[rule] for rule in ("ref_only", "query_only")}
+
+        initial = run_stage("initial_concept_s", lambda: self.backend.select(prepared, "single"))
+        visual = run_stage("visual_route_s", lambda: self.backend.visual(prepared))
+        gate = {"schema_version": 1, "policy": variant, "initial_concept": initial,
+                "query_gt_used": False, "threshold_predeclared": True,
+                "fallback": "original full tree search with episode-seed sampling stream; all work counted"}
+        self.backend.artifacts["batch2_gate"] = gate
+        probes = {}
+        if variant == "initial_score_gate":
+            score = run_stage("initial_original_score_s", lambda: self.backend.initial_score(prepared, initial))
+            threshold = self.config.get("score_gate_threshold", .8)
+            gate.update(initial_score=score, threshold=threshold,
+                        signal="original ref_iou * query_presence; no mask-agreement cue")
+            needs_search = score["combined_score"] < threshold
+        else:
+            text_mask = run_stage("gate_text_prediction_s", lambda: self.backend.final(prepared, initial, None))
+            visual_mask = run_stage("gate_visual_prediction_s", lambda: self.backend.final(prepared, None, visual))
+            agreement = run_stage("gate_agreement_s", lambda: prediction_agreement(text_mask, visual_mask))
+            gate.update(agreement=agreement, agreement_iou=agreement["iou"],
+                        text_nonempty=bool(agreement["text_area"]),
+                        visual_nonempty=bool(agreement["visual_area"]),
+                        signal="text-only versus visual-only prediction IoU")
+            if variant == "agreement_gate":
+                threshold = self.config.get("gate_threshold", .7)
+                needs_search = agreement_requires_search(agreement, threshold)
+                gate["threshold"] = threshold
+            else:
+                identity = run_stage("gate_input_hash_s", lambda: input_content_fingerprint(inputs))
+                decision = random_search_decision(identity, seed, self.config.get("random_search_probability", .5))
+                gate["random_decision"] = decision
+                gate.update(random_probability=decision["probability"], random_draw=decision["uniform_draw"])
+                gate["signal"] = "independent hash coin; agreement measured but unused"
+                needs_search = decision["requires_search"]
+            # Persist these exact predictions for gate auditing and qualitative
+            # cases; evaluator-only GT scores cannot affect the decision above.
+            probes = {"gate_text": text_mask, "gate_visual": visual_mask}
+        gate["search_triggered"] = bool(needs_search)
+        gate["triggered_search"] = bool(needs_search)
+        prompt = initial
+        if needs_search:
+            run_stage("fallback_setup_s", lambda: self.backend.begin_search(prepared))
+            prompt = run_stage("fallback_search_s", lambda: self.backend.select(prepared, "search"))
+        gate["final_concept"] = prompt
+        mask = run_stage("final_sam_and_restore_s", lambda: self.backend.final(prepared, prompt, visual))
+        return mask, prompt, probes
 
     def close(self):
         self.backend.close()
@@ -327,13 +421,14 @@ class _OfficialBackend:
         class MeasuredMLLM(self.mllm_module.MLLM):
             def _call_api_once(self, messages, max_tokens=128):
                 call_index = outer.telemetry["mllm_requests"]
+                sampling_index = call_index - getattr(outer, "_sampling_offset", 0)
                 outer.telemetry["mllm_requests"] += 1
                 kwargs = {"model": self.api_model, "messages": messages, "max_tokens": max_tokens}
                 if config.get("llm_temperature") is not None:
                     kwargs["temperature"] = config["llm_temperature"]
                 requested_seed = outer.seed if config.get("llm_seed_from_episode", False) else config.get("llm_seed")
                 if requested_seed is not None:
-                    kwargs["seed"] = (int(requested_seed) + call_index) % (2**31)
+                    kwargs["seed"] = (int(requested_seed) + sampling_index) % (2**31)
                 started = time.perf_counter()
                 try:
                     response = self.client.chat.completions.create(**kwargs)
@@ -391,6 +486,7 @@ class _OfficialBackend:
 
     def reset(self, seed):
         self.seed = int(seed)
+        self._sampling_offset = 0
         random.seed(seed)
         self.np.random.seed(seed % (2**32))
         self.torch.manual_seed(seed)
@@ -443,9 +539,57 @@ class _OfficialBackend:
     def build_state(self, prepared, components):
         with self.torch.inference_mode():
             # Full reproduces build_state; ablations omit encodings for removed branches.
-            self.segmenter.ref_states = [self.segmenter.processor.set_image(ref) for ref in prepared["refs"]] if components["concept"] in {"search", "candidates"} else []
+            self.segmenter.ref_states = [self.segmenter.processor.set_image(ref) for ref in prepared["refs"]] if components["concept"] in {"search", "candidates", "fixed_pool"} else []
             self.segmenter.query_state = self.segmenter.processor.set_image(prepared["query"]) if components["visual"] != "concat" else None
             self.segmenter.cat_states = [self.segmenter.processor.set_image(cat) for cat in prepared["cats"]] if components["visual"] != "none" else None
+
+    def ensure_reference_states(self, prepared):
+        with self.torch.inference_mode():
+            if not self.segmenter.ref_states:
+                self.segmenter.ref_states = [self.segmenter.processor.set_image(ref) for ref in prepared["refs"]]
+
+    def begin_search(self, prepared):
+        # Full-search sampling starts from the same episode seed as the original
+        # full baseline, without discarding the initial request/cost diagnostics.
+        self.ensure_reference_states(prepared)
+        self._sampling_offset = self.telemetry["mllm_requests"]
+        random.seed(self.seed)
+        self.np.random.seed(self.seed % (2**32))
+        self.torch.manual_seed(self.seed)
+        if self.torch.cuda.is_available():
+            self.torch.cuda.manual_seed_all(self.seed)
+        self.artifacts["fallback_sampling_stream"] = {
+            "episode_seed": self.seed, "first_actual_request_index": self._sampling_offset,
+            "counter_reset": False,
+            "note": "same requested sampling seeds as full baseline; does not guarantee deterministic server execution"}
+
+    def initial_score(self, prepared, prompt):
+        self.ensure_reference_states(prepared)
+        with self.torch.inference_mode():
+            row = self.searcher._score_single_ref_raw(0, prepared["masks"][0], [prompt], 1., 1.)[0]
+            # Fail closed on NaN/out-of-range scores rather than accidentally
+            # accepting a concept because NaN < threshold is False.
+            make_score_audit([row], PIN, requested_candidates=1, generated_candidates=1)
+            return row
+
+    def fixed_pool(self, prepared):
+        if len(prepared["refs"]) != 1:
+            raise ValueError("Fixed-pool score study is defined for 1-shot only")
+        with self.torch.inference_mode():
+            ref_mask = self.split(prepared["masks"][0])
+            highlighted, _ = self.tree_module.make_ref_image_for_llm(
+                prepared["ref_tensors"][0], ref_mask, crop=True, alpha=.3)
+            generated = self.mllm.generate(mode="initial", ref_image=prepared["refs"][0],
+                                           ref_image_masked=highlighted,
+                                           num_candidates=self.config.get("BON", 5))
+            if not generated or any(not isinstance(x, str) or not x.strip() for x in generated):
+                raise ValueError("MLLM returned an invalid fixed candidate pool")
+            candidates = list(dict.fromkeys(generated))
+            rows = self.searcher._score_single_ref_raw(0, prepared["masks"][0], candidates, 1., 1.)
+            if [r["prompt"] for r in rows] != candidates:
+                raise ValueError("Pinned scorer changed fixed candidate ordering")
+            return make_score_audit(rows, PIN, requested_candidates=self.config.get("BON", 5),
+                                    generated_candidates=len(generated))
 
     def select(self, prepared, mode):
         with self.torch.inference_mode():
