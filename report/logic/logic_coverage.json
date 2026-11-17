@@ -1,0 +1,32 @@
+{
+  "narrative_units": 272,
+  "per_source": {
+    "introduction": 33,
+    "related_work": 21,
+    "methods": 33,
+    "experiments": 82,
+    "interaction_analysis": 5,
+    "extension": 22,
+    "gate_analysis": 8,
+    "discussion": 29,
+    "appendix": 25,
+    "mathematical_appendix": 14
+  },
+  "excluded": [
+    "old_evaluation.tex",
+    "old_extension.tex"
+  ],
+  "scope": "All active narrative sentences and equation lead-ins; figures/tables/equations separately mapped. Reference bibliography entries are audited separately.",
+  "source_sha256": {
+    "introduction": "cb9436eee4fcef962fc2d436fce53056ae99108115364916efb34e22d11e8fa3",
+    "related_work": "b294438bc5c836792bb886e592745142de5f941da85439f4f92ea66a7f137797",
+    "methods": "4ca525501cfd5b967b174eb2b4bcb92394bb2d69623df2bac464ced9ef13e819",
+    "experiments": "c44a20abe26ca524f964ed77d776832fb44583afaaeb2f6527e11e1c0c1c15cc",
+    "interaction_analysis": "64bc8458a7e676be5c11c42ac67168486d880f4e1be264074149128a0510673b",
+    "extension": "ce0c75a2d720acaf233c433a0fe4853a4cc6382b28009f89270bf92ab59e7df9",
+    "gate_analysis": "19a03d62f795288818cd50b5433052b15b7362c29246e62707a9d8b39706f10b",
+    "discussion": "4708fcd1e548c080de6c787f2751f3236a32e11fd2dcb9d172bb098df8d41168",
+    "appendix": "93f7a8896edb6cf6631e10741347ac922be2a71171afd783ec987d7fc5f6eec2",
+    "mathematical_appendix": "79fc442003bddb7fa5993909157ad5dc2442a444315e13a3cf757e69a392f048"
+  }
+}

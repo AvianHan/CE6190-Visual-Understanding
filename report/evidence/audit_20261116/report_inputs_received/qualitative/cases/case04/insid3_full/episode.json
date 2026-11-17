@@ -1,0 +1,78 @@
+{
+  "result_schema_version": 2,
+  "run_id": "insid3_full-eb8e14565542842a",
+  "experiment_id": "insid3_full",
+  "method": "insid3",
+  "variant": "full",
+  "protocol_id": "ce6190-unified-v1-coco-val-f2",
+  "evaluation_protocol": "unified_original_resolution",
+  "config_sha256": "9ad689ff9432f1de6c4c3d9845c5605c0f4072ef3a134ab833e5c0e15b74a40e",
+  "manifest_sha256": "dbd2103c6daae5aadaadc8399494086b2837f9867cddd5b6ab21f0419d01535b",
+  "episode_id": "coco-f2-q000517-afdf01f663e37787-r000",
+  "dataset": "coco",
+  "dataset_version": "COCO2014-author-semantic-masks",
+  "split": "val",
+  "fold": 2,
+  "track": "semantic",
+  "concept_id": "62",
+  "reference_seed": 0,
+  "nshot": 1,
+  "query_image_sha256": "2aeb6446d671bc2b9da19951a60c69554b39442e9aae62cd24f5e616bbabb552",
+  "query_mask_sha256": "0819d8b216b4465df41b1cb10188ee163af1692e33617815d6a22cdb88ab18d3",
+  "reference_image_sha256": [
+    "aee6cea5432994df19687acca9a15157a02200658e62bed5dc641564b54ef422"
+  ],
+  "mask_semantics": "binary foreground union of prompted class; reference void=background",
+  "base_seed": 0,
+  "episode_seed": 3032057282,
+  "started_at": "2026-11-13T08:32:57.225793+00:00",
+  "shard_index": 1,
+  "num_shards": 4,
+  "status": "ok",
+  "counts": {
+    "tp": 0,
+    "fp": 23677,
+    "fn": 14617,
+    "tn": 234986,
+    "ignored": 0
+  },
+  "iou": 0.0,
+  "target_area_fraction": 0.05348726580796253,
+  "prediction_path": "predictions/876937fb57c02b7a7cf3ab011941bb75f4c1fe712c0f6484767f264d9bbc62e2.png",
+  "prediction_sha256": "5345c815d189a0bec63baa3120f15c78703eb97ba97a1d59794cc7d1daaa6324",
+  "inference_seconds": 0.4522985019721091,
+  "cuda_memory": {
+    "0": {
+      "peak_allocated_bytes": 1900942336,
+      "peak_reserved_bytes": 2355101696,
+      "device_name": "NVIDIA L40S"
+    }
+  },
+  "memory_scope": "current Python process; excludes external MLLM server/other processes",
+  "telemetry": {
+    "preprocess_seconds": 0.08441148395650089,
+    "segmentation_seconds": 0.36759947903919965,
+    "encoder_seconds": 0.08034791599493474,
+    "encoder_calls": 1,
+    "encoder_images": 2,
+    "feature_grid": [
+      64,
+      64
+    ],
+    "instrumentation": "get_intermediate_layers actual entry; includes image batch, excludes one-time basis construction"
+  },
+  "artifacts": {
+    "processing": {
+      "cluster_count": 40,
+      "feature_grid": [
+        64,
+        64
+      ],
+      "candidate_patch_count": 638
+    },
+    "seed": 3032057282
+  },
+  "episode_wall_seconds": 0.4647072460502386,
+  "attempt_number": 1,
+  "finished_at": "2026-11-13T08:32:57.690509+00:00"
+}

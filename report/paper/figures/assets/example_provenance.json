@@ -1,0 +1,393 @@
+{
+  "episode_id": "coco-f3-q000061-c0bcbff23c1abff2-r000",
+  "dataset": "COCO2014",
+  "fold": 3,
+  "purpose": "Actual reference/query pair and actual method predictions for explanatory method schematics",
+  "source_manifest": {
+    "manifest_path": "/scratch/prj0000000262_1/hansy/ce6190-ics-runtime/manifests/coco_fold3_standard.json",
+    "manifest_sha256": "680909f618993f8809f43e13dd427f5d76e52b5361dec23a1f54ed2af47376d4",
+    "manifest_index": 61,
+    "episode": {
+      "episode_id": "coco-f3-q000061-c0bcbff23c1abff2-r000",
+      "dataset": "coco",
+      "dataset_version": "COCO2014-author-semantic-masks",
+      "split": "val",
+      "fold": 3,
+      "track": "semantic",
+      "concept_id": "11",
+      "reference_seed": 0,
+      "query": {
+        "image": "COCO2014/val2014/COCO_val2014_000000305634.jpg",
+        "image_sha256": "88e08496aacfb79201834606f364f81fddca5c6b855fde84f5423d26971bab33",
+        "mask": "ics_generated_masks/coco/query/ac4b1655e1de7970d33020c1e04c3e78e4a9b55e24b3b35bd275f5be35df2eae.png",
+        "mask_sha256": "eefaab0bc535633251ec48eb80618e5ac9f409c09afa8bb3ba79163d5818d5d2"
+      },
+      "references": [
+        {
+          "image": "COCO2014/val2014/COCO_val2014_000000050360.jpg",
+          "image_sha256": "6da282a3f42fc590baa20e5ec06126fdeb67a43091be96456b62a9a3f15f5d98",
+          "mask": "ics_generated_masks/coco/reference/db862bc0ec5f9e189ce97e9d4e5a8f74e590ba4474fa0a72a1800f6675f6bdd5.png",
+          "mask_sha256": "5019f2c2393bf433167c14050adf408e6715dff914ecd340dead89e16bca798b"
+        }
+      ],
+      "mask_semantics": "binary foreground union of prompted class; reference void=background",
+      "ignore_label": null
+    }
+  },
+  "selected_concept": "red octagon",
+  "candidate_events": [
+    {
+      "mode": "initial",
+      "parent": null,
+      "candidates": [
+        "stop sign",
+        "wrong way sign",
+        "traffic sign",
+        "red octagon",
+        "warning sign"
+      ]
+    }
+  ],
+  "candidate_scores": [
+    {
+      "prompt": "stop sign",
+      "ref_iou": 0.7668955326080322,
+      "query_score": 0.9950835704803467,
+      "combined_score": 0.7631251447730278
+    },
+    {
+      "prompt": "wrong way sign",
+      "ref_iou": 0.757784366607666,
+      "query_score": 0.6423834562301636,
+      "combined_score": 0.48678814049861785
+    },
+    {
+      "prompt": "traffic sign",
+      "ref_iou": 0.7446121573448181,
+      "query_score": 0.965711236000061,
+      "combined_score": 0.7190803268101362
+    },
+    {
+      "prompt": "red octagon",
+      "ref_iou": 0.9463752508163452,
+      "query_score": 0.9549546241760254,
+      "combined_score": 0.9037454219728147
+    },
+    {
+      "prompt": "warning sign",
+      "ref_iou": 0.7601531147956848,
+      "query_score": 0.004085205029696226,
+      "combined_score": 0.0031053813279025844
+    },
+    {
+      "prompt": "red octagon",
+      "ref_iou": 0.9463752508163452,
+      "query_score": 0.9549546241760254,
+      "combined_score": 0.9037454219728147
+    }
+  ],
+  "insid3_record": {
+    "result_schema_version": 2,
+    "run_id": "insid3_full-aae10bb8d870b0bd",
+    "experiment_id": "insid3_full",
+    "method": "insid3",
+    "variant": "full",
+    "protocol_id": "ce6190-unified-v1-coco-val-f3",
+    "evaluation_protocol": "unified_original_resolution",
+    "config_sha256": "9ad689ff9432f1de6c4c3d9845c5605c0f4072ef3a134ab833e5c0e15b74a40e",
+    "manifest_sha256": "680909f618993f8809f43e13dd427f5d76e52b5361dec23a1f54ed2af47376d4",
+    "episode_id": "coco-f3-q000061-c0bcbff23c1abff2-r000",
+    "dataset": "coco",
+    "dataset_version": "COCO2014-author-semantic-masks",
+    "split": "val",
+    "fold": 3,
+    "track": "semantic",
+    "concept_id": "11",
+    "reference_seed": 0,
+    "nshot": 1,
+    "query_image_sha256": "88e08496aacfb79201834606f364f81fddca5c6b855fde84f5423d26971bab33",
+    "query_mask_sha256": "eefaab0bc535633251ec48eb80618e5ac9f409c09afa8bb3ba79163d5818d5d2",
+    "reference_image_sha256": [
+      "6da282a3f42fc590baa20e5ec06126fdeb67a43091be96456b62a9a3f15f5d98"
+    ],
+    "mask_semantics": "binary foreground union of prompted class; reference void=background",
+    "base_seed": 0,
+    "episode_seed": 4015690042,
+    "started_at": "2026-11-13T06:23:43.273220+00:00",
+    "shard_index": 1,
+    "num_shards": 4,
+    "status": "ok",
+    "counts": {
+      "tp": 57751,
+      "fp": 1495,
+      "fn": 398,
+      "tn": 214276,
+      "ignored": 0
+    },
+    "iou": 0.9682616860036215,
+    "target_area_fraction": 0.21228460864485982,
+    "prediction_path": "predictions/16a2926e95616f9c5125851cb013b270ed0397cad490c78f5b7dbb4ae4a09120.png",
+    "prediction_sha256": "a2553ea4d98253a3397ab9487e6428ae7d87972282efc4bf8d295c18d4c5843d",
+    "inference_seconds": 0.3987849489785731,
+    "cuda_memory": {
+      "0": {
+        "peak_allocated_bytes": 1897214976,
+        "peak_reserved_bytes": 2355101696,
+        "device_name": "NVIDIA L40S"
+      }
+    },
+    "memory_scope": "current Python process; excludes external MLLM server/other processes",
+    "telemetry": {
+      "preprocess_seconds": 0.03728171798866242,
+      "segmentation_seconds": 0.36123568506445736,
+      "encoder_seconds": 0.08182311791460961,
+      "encoder_calls": 1,
+      "encoder_images": 2,
+      "feature_grid": [
+        64,
+        64
+      ],
+      "instrumentation": "get_intermediate_layers actual entry; includes image batch, excludes one-time basis construction"
+    },
+    "artifacts": {
+      "processing": {
+        "cluster_count": 6,
+        "feature_grid": [
+          64,
+          64
+        ],
+        "candidate_patch_count": 888
+      },
+      "seed": 4015690042
+    },
+    "episode_wall_seconds": 0.41089399706106633,
+    "attempt_number": 1,
+    "finished_at": "2026-11-13T06:23:43.684123+00:00"
+  },
+  "cgics_record": {
+    "result_schema_version": 2,
+    "run_id": "cgics_full-637db2e46f2e638e",
+    "experiment_id": "cgics_full",
+    "method": "cgics",
+    "variant": "full",
+    "protocol_id": "ce6190-unified-v1-coco-val-f3",
+    "evaluation_protocol": "unified_original_resolution",
+    "config_sha256": "7ee9ccfb109c94fd1119addd844e98c937666841f32ec45314d3159b710ddaf7",
+    "manifest_sha256": "680909f618993f8809f43e13dd427f5d76e52b5361dec23a1f54ed2af47376d4",
+    "episode_id": "coco-f3-q000061-c0bcbff23c1abff2-r000",
+    "dataset": "coco",
+    "dataset_version": "COCO2014-author-semantic-masks",
+    "split": "val",
+    "fold": 3,
+    "track": "semantic",
+    "concept_id": "11",
+    "reference_seed": 0,
+    "nshot": 1,
+    "query_image_sha256": "88e08496aacfb79201834606f364f81fddca5c6b855fde84f5423d26971bab33",
+    "query_mask_sha256": "eefaab0bc535633251ec48eb80618e5ac9f409c09afa8bb3ba79163d5818d5d2",
+    "reference_image_sha256": [
+      "6da282a3f42fc590baa20e5ec06126fdeb67a43091be96456b62a9a3f15f5d98"
+    ],
+    "mask_semantics": "binary foreground union of prompted class; reference void=background",
+    "base_seed": 0,
+    "episode_seed": 4015690042,
+    "started_at": "2026-11-13T10:02:43.694149+00:00",
+    "shard_index": 1,
+    "num_shards": 4,
+    "status": "ok",
+    "counts": {
+      "tp": 56848,
+      "fp": 188,
+      "fn": 1301,
+      "tn": 215583,
+      "ignored": 0
+    },
+    "iou": 0.9744758900869088,
+    "target_area_fraction": 0.21228460864485982,
+    "prediction_path": "predictions/16a2926e95616f9c5125851cb013b270ed0397cad490c78f5b7dbb4ae4a09120.png",
+    "prediction_sha256": "895c3d50a3a849c4eee843ca120f0751e25634abe73a4dd8c429b8c436ede4ba",
+    "inference_seconds": 2.173419727012515,
+    "cuda_memory": {
+      "0": {
+        "peak_allocated_bytes": 4676379136,
+        "peak_reserved_bytes": 4959764480,
+        "device_name": "NVIDIA L40S"
+      }
+    },
+    "memory_scope": "current Python process; excludes external MLLM server/other processes",
+    "telemetry": {
+      "sam_calls": 14,
+      "sam_image_encoder_calls": 3,
+      "sam_prompt_head_calls": 16,
+      "mllm_requests": 1,
+      "mllm_prompt_tokens": 930,
+      "mllm_completion_tokens": 27,
+      "mllm_usage_missing_requests": 0,
+      "candidate_score_evaluations": 6,
+      "mllm_request_wall_s": 0.6048577550100163,
+      "cache_policy": "within_episode_only",
+      "mllm_server_gpu_memory_bytes": null,
+      "search_nodes": 5,
+      "search_restarts": 0,
+      "search_max_depth_reached": 0,
+      "search_reported_evaluations_excluding_rerank": 5,
+      "stages": {
+        "input_preprocessing_s": 0.03794538707006723,
+        "image_encoding_s": 0.3225891999900341,
+        "concept_reasoning_s": 1.4811169580789283,
+        "visual_route_s": 0.242290401016362,
+        "final_sam_and_restore_s": 0.08883484592661262
+      },
+      "adapter_wall_s": 2.1729411219712347
+    },
+    "artifacts": {
+      "generation_events": [
+        {
+          "mode": "initial",
+          "parent": null,
+          "candidates": [
+            "stop sign",
+            "wrong way sign",
+            "traffic sign",
+            "red octagon",
+            "warning sign"
+          ]
+        }
+      ],
+      "mllm_responses": [
+        {
+          "text": "1. stop sign\n2. wrong way sign\n3. traffic sign\n4. red octagon\n5. warning sign",
+          "request_seed": 0
+        }
+      ],
+      "score_events": [
+        {
+          "prompt": "stop sign",
+          "ref_iou": 0.7668955326080322,
+          "query_score": 0.9950835704803467,
+          "combined_score": 0.7631251447730278
+        },
+        {
+          "prompt": "wrong way sign",
+          "ref_iou": 0.757784366607666,
+          "query_score": 0.6423834562301636,
+          "combined_score": 0.48678814049861785
+        },
+        {
+          "prompt": "traffic sign",
+          "ref_iou": 0.7446121573448181,
+          "query_score": 0.965711236000061,
+          "combined_score": 0.7190803268101362
+        },
+        {
+          "prompt": "red octagon",
+          "ref_iou": 0.9463752508163452,
+          "query_score": 0.9549546241760254,
+          "combined_score": 0.9037454219728147
+        },
+        {
+          "prompt": "warning sign",
+          "ref_iou": 0.7601531147956848,
+          "query_score": 0.004085205029696226,
+          "combined_score": 0.0031053813279025844
+        },
+        {
+          "prompt": "red octagon",
+          "ref_iou": 0.9463752508163452,
+          "query_score": 0.9549546241760254,
+          "combined_score": 0.9037454219728147
+        }
+      ],
+      "search_best_score": 0.9037454219728147,
+      "search_nodes": [
+        {
+          "prompt": "stop sign",
+          "score": 0.7631251447730278,
+          "ref_iou": 0.7668955326080322,
+          "query_presence": 0.9950835704803467,
+          "depth": 0,
+          "mode": "initial",
+          "parent": null
+        },
+        {
+          "prompt": "wrong way sign",
+          "score": 0.48678814049861785,
+          "ref_iou": 0.757784366607666,
+          "query_presence": 0.6423834562301636,
+          "depth": 0,
+          "mode": "initial",
+          "parent": null
+        },
+        {
+          "prompt": "traffic sign",
+          "score": 0.7190803268101362,
+          "ref_iou": 0.7446121573448181,
+          "query_presence": 0.965711236000061,
+          "depth": 0,
+          "mode": "initial",
+          "parent": null
+        },
+        {
+          "prompt": "red octagon",
+          "score": 0.9037454219728147,
+          "ref_iou": 0.9463752508163452,
+          "query_presence": 0.9549546241760254,
+          "depth": 0,
+          "mode": "initial",
+          "parent": null
+        },
+        {
+          "prompt": "warning sign",
+          "score": 0.0031053813279025844,
+          "ref_iou": 0.7601531147956848,
+          "query_presence": 0.004085205029696226,
+          "depth": 0,
+          "mode": "initial",
+          "parent": null
+        }
+      ],
+      "visual_query_instance_count_including_empty": 3,
+      "visual_nonempty_query_instance_count": 1,
+      "selected_concept": "red octagon",
+      "components": {
+        "concept": "search",
+        "visual": "boxes"
+      }
+    },
+    "episode_wall_seconds": 2.1908122149761766,
+    "attempt_number": 1,
+    "finished_at": "2026-11-13T10:02:45.884975+00:00"
+  },
+  "files": [
+    {
+      "file": "reference.jpg",
+      "source": "audit_20261116/report_inputs_received/qualitative/cases/case06/assets/reference00_image.jpg",
+      "sha256": "6da282a3f42fc590baa20e5ec06126fdeb67a43091be96456b62a9a3f15f5d98",
+      "bytes": 188936
+    },
+    {
+      "file": "reference_mask.png",
+      "source": "audit_20261116/report_inputs_received/qualitative/cases/case06/assets/reference00_mask.png",
+      "sha256": "5019f2c2393bf433167c14050adf408e6715dff914ecd340dead89e16bca798b",
+      "bytes": 1033
+    },
+    {
+      "file": "query.jpg",
+      "source": "audit_20261116/report_inputs_received/qualitative/cases/case06/assets/query_image.jpg",
+      "sha256": "88e08496aacfb79201834606f364f81fddca5c6b855fde84f5423d26971bab33",
+      "bytes": 288836
+    },
+    {
+      "file": "insid3_prediction.png",
+      "source": "audit_20261116/report_inputs_received/qualitative/cases/case06/insid3_full/prediction.png",
+      "sha256": "a2553ea4d98253a3397ab9487e6428ae7d87972282efc4bf8d295c18d4c5843d",
+      "bytes": 1715
+    },
+    {
+      "file": "cgics_prediction.png",
+      "source": "audit_20261116/report_inputs_received/qualitative/cases/case06/cgics_full/prediction.png",
+      "sha256": "895c3d50a3a849c4eee843ca120f0751e25634abe73a4dd8c429b8c436ede4ba",
+      "bytes": 1814
+    }
+  ]
+}

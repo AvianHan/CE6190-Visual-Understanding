@@ -1,0 +1,249 @@
+{
+  "date": "2026-11-17",
+  "reference_count": 36,
+  "key_citation_occurrences": 46,
+  "undefined": [],
+  "uncited": [],
+  "uses": [
+    {
+      "key": "insid3",
+      "file": "paper/sections/introduction.tex",
+      "line": 8
+    },
+    {
+      "key": "dinov3",
+      "file": "paper/sections/introduction.tex",
+      "line": 8
+    },
+    {
+      "key": "cgics",
+      "file": "paper/sections/introduction.tex",
+      "line": 8
+    },
+    {
+      "key": "sam3",
+      "file": "paper/sections/introduction.tex",
+      "line": 8
+    },
+    {
+      "key": "vit",
+      "file": "paper/sections/related_work.tex",
+      "line": 3
+    },
+    {
+      "key": "dino",
+      "file": "paper/sections/related_work.tex",
+      "line": 3
+    },
+    {
+      "key": "dinov2",
+      "file": "paper/sections/related_work.tex",
+      "line": 3
+    },
+    {
+      "key": "dinov3",
+      "file": "paper/sections/related_work.tex",
+      "line": 3
+    },
+    {
+      "key": "sam",
+      "file": "paper/sections/related_work.tex",
+      "line": 5
+    },
+    {
+      "key": "sam2",
+      "file": "paper/sections/related_work.tex",
+      "line": 5
+    },
+    {
+      "key": "sam3",
+      "file": "paper/sections/related_work.tex",
+      "line": 5
+    },
+    {
+      "key": "clip",
+      "file": "paper/sections/related_work.tex",
+      "line": 5
+    },
+    {
+      "key": "qwen3vl",
+      "file": "paper/sections/related_work.tex",
+      "line": 5
+    },
+    {
+      "key": "oslsm",
+      "file": "paper/sections/related_work.tex",
+      "line": 8
+    },
+    {
+      "key": "panet",
+      "file": "paper/sections/related_work.tex",
+      "line": 8
+    },
+    {
+      "key": "hsnet",
+      "file": "paper/sections/related_work.tex",
+      "line": 8
+    },
+    {
+      "key": "visualprompt",
+      "file": "paper/sections/related_work.tex",
+      "line": 8
+    },
+    {
+      "key": "painter",
+      "file": "paper/sections/related_work.tex",
+      "line": 8
+    },
+    {
+      "key": "seggpt",
+      "file": "paper/sections/related_work.tex",
+      "line": 8
+    },
+    {
+      "key": "segic",
+      "file": "paper/sections/related_work.tex",
+      "line": 10
+    },
+    {
+      "key": "sine",
+      "file": "paper/sections/related_work.tex",
+      "line": 10
+    },
+    {
+      "key": "vrpsam",
+      "file": "paper/sections/related_work.tex",
+      "line": 10
+    },
+    {
+      "key": "persam",
+      "file": "paper/sections/related_work.tex",
+      "line": 10
+    },
+    {
+      "key": "matcher",
+      "file": "paper/sections/related_work.tex",
+      "line": 10
+    },
+    {
+      "key": "insid3",
+      "file": "paper/sections/related_work.tex",
+      "line": 10
+    },
+    {
+      "key": "cgics",
+      "file": "paper/sections/related_work.tex",
+      "line": 10
+    },
+    {
+      "key": "goodexamples",
+      "file": "paper/sections/related_work.tex",
+      "line": 12
+    },
+    {
+      "key": "unicl",
+      "file": "paper/sections/related_work.tex",
+      "line": 12
+    },
+    {
+      "key": "cgics",
+      "file": "paper/sections/related_work.tex",
+      "line": 12
+    },
+    {
+      "key": "repri",
+      "file": "paper/sections/related_work.tex",
+      "line": 12
+    },
+    {
+      "key": "abcdfss",
+      "file": "paper/sections/related_work.tex",
+      "line": 12
+    },
+    {
+      "key": "insid3",
+      "file": "paper/sections/methods.tex",
+      "line": 10
+    },
+    {
+      "key": "dinov3",
+      "file": "paper/sections/methods.tex",
+      "line": 10
+    },
+    {
+      "key": "cgics",
+      "file": "paper/sections/methods.tex",
+      "line": 23
+    },
+    {
+      "key": "qwen3vl",
+      "file": "paper/sections/methods.tex",
+      "line": 42
+    },
+    {
+      "key": "coco",
+      "file": "paper/sections/experiments.tex",
+      "line": 4
+    },
+    {
+      "key": "lvis",
+      "file": "paper/sections/experiments.tex",
+      "line": 4
+    },
+    {
+      "key": "matcher",
+      "file": "paper/sections/experiments.tex",
+      "line": 4
+    },
+    {
+      "key": "bootstrap",
+      "file": "paper/sections/experiments.tex",
+      "line": 23
+    },
+    {
+      "key": "clusterbootstrap",
+      "file": "paper/sections/experiments.tex",
+      "line": 23
+    },
+    {
+      "key": "branchynet",
+      "file": "paper/sections/extension.tex",
+      "line": 3
+    },
+    {
+      "key": "adaptiveinference",
+      "file": "paper/sections/extension.tex",
+      "line": 3
+    },
+    {
+      "key": "suim",
+      "file": "paper/sections/extension.tex",
+      "line": 26
+    },
+    {
+      "key": "isic",
+      "file": "paper/sections/extension.tex",
+      "line": 26
+    },
+    {
+      "key": "ham10000",
+      "file": "paper/sections/extension.tex",
+      "line": 26
+    },
+    {
+      "key": "kosub2019",
+      "file": "paper/sections/mathematical_appendix.tex",
+      "line": 7
+    }
+  ],
+  "source_groups": [
+    "bib_ics.json",
+    "bib_foundations.json",
+    "bib_stats_data.json"
+  ],
+  "bibliography_sha256": {
+    "references.bib": "5c90a107e0e2c869a874cfc365fbd5faf5ebe4cbc0e440be56de1e9fd6cb9adc",
+    "references_full.bib": "7af4ed017785f550b2ce0a2ddfbbaac71c3d825e56223bdaf4ecb9843b768e0d"
+  },
+  "second_batch_metrics_added": false
+}

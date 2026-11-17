@@ -1,0 +1,966 @@
+{
+  "audit_date": "2026-11-16",
+  "count": 36,
+  "source_lists": [
+    {
+      "paper": "INSID3",
+      "source": "https://arxiv.org/html/2603.28480v1",
+      "ref": "turn46view0",
+      "read": "Related work and reference list; checked reference entries for the selected ICS methods"
+    },
+    {
+      "paper": "CG-ICS",
+      "source": "/workspace/scratch/792be578b3e4/report_revision_20261116/method_sources/cgics_original.pdf",
+      "version": "arXiv:2606.28149v2, 16 July 2026",
+      "read": "Introduction, Related Work, method overview, references; refs 5/22/23/24/28/29/35/36/41/42 used as literature leads"
+    }
+  ],
+  "ics_audit": {
+    "audited_at": "2026-11-16",
+    "scope": "17 ICS/few-shot/personalized segmentation references; 3 existing anchors and 14 additions",
+    "selection_policy": "Use base-paper references as leads, then independently verify primary metadata and retain a concrete citation purpose. No new experiment claims are implied.",
+    "base_reference_lists_read": [
+      {
+        "paper": "INSID3",
+        "source": "https://arxiv.org/html/2603.28480v1",
+        "ref": "turn46view0",
+        "read": "Related work and reference list; checked reference entries for the selected ICS methods"
+      },
+      {
+        "paper": "CG-ICS",
+        "source": "/workspace/scratch/792be578b3e4/report_revision_20261116/method_sources/cgics_original.pdf",
+        "version": "arXiv:2606.28149v2, 16 July 2026",
+        "read": "Introduction, Related Work, method overview, references; refs 5/22/23/24/28/29/35/36/41/42 used as literature leads"
+      }
+    ],
+    "source_records": [
+      {
+        "key": "insid3",
+        "title": "{INSID3}: Training-Free In-Context Segmentation with {DINOv3}",
+        "author": "Cuttano, Claudia and Trivigno, Gabriele and Reich, Christoph and Cremers, Daniel and Masone, Carlo and Roth, Stefan",
+        "year": "2026",
+        "booktitle": "Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+        "eprint": "2603.28480",
+        "archivePrefix": "arXiv",
+        "primaryClass": "cs.CV",
+        "url": "https://arxiv.org/abs/2603.28480",
+        "refs": [
+          "turn73view0",
+          "turn46view0"
+        ],
+        "secondary_url": "https://arxiv.org/html/2603.28480v1",
+        "lead": "base paper",
+        "verification": "Full author list, title, arXiv date and CVPR 2026 stated in primary arXiv record; full HTML methods and references opened.",
+        "claim": "Frozen DINOv3 supports matching and mask construction within one backbone.",
+        "placement": "Introduction; Methods/INSID3",
+        "caution": "A complete system, not a backbone-only competitor; do not transfer paper leaderboard numbers into project results.",
+        "primary_sources": [
+          {
+            "url": "https://arxiv.org/abs/2603.28480",
+            "retrieval_refs": [
+              "turn73view0",
+              "turn46view0"
+            ]
+          },
+          {
+            "url": "https://arxiv.org/html/2603.28480v1",
+            "type": "additional primary source"
+          }
+        ]
+      },
+      {
+        "key": "cgics",
+        "title": "Toward Robust In-Context Segmentation via Concept Guidance",
+        "author": "Chen, Zhigang and Zheng, Xiawu and Ji, Rongrong",
+        "year": "2026",
+        "booktitle": "Computer Vision -- ECCV 2026",
+        "pages": "336--352",
+        "series": "Lecture Notes in Computer Science",
+        "volume": "17074",
+        "publisher": "Springer",
+        "doi": "10.1007/978-3-032-37029-7_20",
+        "eprint": "2606.28149",
+        "archivePrefix": "arXiv",
+        "primaryClass": "cs.CV",
+        "url": "https://link.springer.com/chapter/10.1007/978-3-032-37029-7_20",
+        "refs": [
+          "turn46view2",
+          "turn47view1"
+        ],
+        "lead": "base paper",
+        "verification": "Publisher verifies all three authors, ECCV 2026, LNCS 17074, pages 336–352 and DOI; original arXiv v2 PDF locally read, including references.",
+        "claim": "MLLM concept proposals, SAM3-based scoring/tree search and visual exemplars jointly condition prediction.",
+        "placement": "Introduction; Methods/CG-ICS; Reference stability",
+        "caution": "Robustness is a hypothesis to evaluate on this manifest, not an unconditional guarantee.",
+        "primary_sources": [
+          {
+            "url": "https://link.springer.com/chapter/10.1007/978-3-032-37029-7_20",
+            "retrieval_refs": [
+              "turn46view2",
+              "turn47view1"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "persam",
+        "title": "Personalize Segment Anything Model with One Shot",
+        "author": "Zhang, Renrui and Jiang, Zhengkai and Guo, Ziyu and Yan, Shilin and Pan, Junting and Dong, Hao and Qiao, Yu and Gao, Peng and Li, Hongsheng",
+        "year": "2024",
+        "booktitle": "International Conference on Learning Representations",
+        "url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/4f44e5c82dc7b0ba4472083e5dedb08e-Paper-Conference.pdf",
+        "refs": [
+          "turn71view1"
+        ],
+        "lead": "INSID3 and CG-ICS reference lists",
+        "verification": "Final ICLR 2024 PDF first page verifies title, year and nine authors.",
+        "claim": "A reference image and mask provide target semantics and localization priors for frozen SAM; PerSAM-F is a distinct fine-tuning variant.",
+        "placement": "Related Work / In-Context Segmentation: frozen model compositions",
+        "caution": "Use final ICLR author list with Yu Qiao, not earlier arXiv list with Xianzheng Ma; PerSeg is personalized-instance segmentation, not our semantic-only first batch.",
+        "primary_sources": [
+          {
+            "url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/4f44e5c82dc7b0ba4472083e5dedb08e-Paper-Conference.pdf",
+            "retrieval_refs": [
+              "turn71view1"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "painter",
+        "title": "Images Speak in Images: A Generalist Painter for In-Context Visual Learning",
+        "author": "Wang, Xinlong and Wang, Wen and Cao, Yue and Shen, Chunhua and Huang, Tiejun",
+        "year": "2023",
+        "booktitle": "Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+        "pages": "6830--6839",
+        "url": "https://openaccess.thecvf.com/content/CVPR2023/html/Wang_Images_Speak_in_Images_A_Generalist_Painter_for_In-Context_Visual_CVPR_2023_paper.html",
+        "refs": [
+          "turn48search16",
+          "turn71view0"
+        ],
+        "secondary_url": "https://arxiv.org/abs/2212.02499",
+        "lead": "both base reference lists",
+        "verification": "Official CVF indexed BibTeX verifies final CVPR 2023 pages/authors; primary arXiv abstract opened. CVF direct HTML/PDF returned 403.",
+        "claim": "Casts multiple vision tasks and their output conditions as images within a learned generalist.",
+        "placement": "Related Work / In-Context Segmentation: visual prompting",
+        "caution": "Training is required to establish this in-context capability; no per-query fine-tuning is a separate property.",
+        "primary_sources": [
+          {
+            "url": "https://openaccess.thecvf.com/content/CVPR2023/html/Wang_Images_Speak_in_Images_A_Generalist_Painter_for_In-Context_Visual_CVPR_2023_paper.html",
+            "retrieval_refs": [
+              "turn48search16",
+              "turn71view0"
+            ]
+          },
+          {
+            "url": "https://arxiv.org/abs/2212.02499",
+            "type": "additional primary source"
+          }
+        ]
+      },
+      {
+        "key": "seggpt",
+        "title": "{SegGPT}: Towards Segmenting Everything in Context",
+        "author": "Wang, Xinlong and Zhang, Xiaosong and Cao, Yue and Wang, Wen and Shen, Chunhua and Huang, Tiejun",
+        "year": "2023",
+        "booktitle": "Proceedings of the IEEE/CVF International Conference on Computer Vision",
+        "pages": "1130--1140",
+        "url": "https://openaccess.thecvf.com/content/ICCV2023/html/Wang_SegGPT_Towards_Segmenting_Everything_in_Context_ICCV_2023_paper.html",
+        "refs": [
+          "turn48search0",
+          "turn61view1"
+        ],
+        "secondary_url": "https://openaccess.thecvf.com/content/ICCV2023/papers/Wang_SegGPT_Towards_Segmenting_Everything_in_Context_ICCV_2023_paper.pdf",
+        "lead": "both base reference lists",
+        "verification": "Official CVF metadata and full conference PDF verify title, six authors, ICCV 2023 pages. Final title includes Towards.",
+        "claim": "Learns image segmentation as context-conditioned coloring with randomized output colors.",
+        "placement": "Related Work / In-Context Segmentation: visual prompting",
+        "caution": "Use final ICCV title, not shorter arXiv title.",
+        "primary_sources": [
+          {
+            "url": "https://openaccess.thecvf.com/content/ICCV2023/html/Wang_SegGPT_Towards_Segmenting_Everything_in_Context_ICCV_2023_paper.html",
+            "retrieval_refs": [
+              "turn48search0",
+              "turn61view1"
+            ]
+          },
+          {
+            "url": "https://openaccess.thecvf.com/content/ICCV2023/papers/Wang_SegGPT_Towards_Segmenting_Everything_in_Context_ICCV_2023_paper.pdf",
+            "type": "additional primary source"
+          }
+        ]
+      },
+      {
+        "key": "segic",
+        "title": "{SegIC}: Unleashing the Emergent Correspondence for In-Context Segmentation",
+        "author": "Meng, Lingchen and Lan, Shiyi and Li, Hengduo and Alvarez, Jose M. and Wu, Zuxuan and Jiang, Yu-Gang",
+        "year": "2024",
+        "booktitle": "Computer Vision -- ECCV 2024",
+        "pages": "203--220",
+        "doi": "10.1007/978-3-031-72920-1_12",
+        "url": "https://www.ecva.net/papers/eccv_2024/papers_ECCV/html/5519_ECCV_2024_paper.php",
+        "refs": [
+          "turn58view2",
+          "turn71view5",
+          "turn72view1"
+        ],
+        "secondary_url": "https://link.springer.com/chapter/10.1007/978-3-031-72920-1_12",
+        "lead": "both base reference lists",
+        "verification": "Official ECVA ECCV 2024 record verifies six authors and conference; Springer verifies pages and DOI.",
+        "claim": "Uses foundation-model correspondence to generate geometric, visual and meta instructions for a learned decoder.",
+        "placement": "Related Work / In-Context Segmentation: learned conditioning",
+        "caution": "Use conference year 2024: Springer page says first online Oct 2024 but autogenerated citation/copyright says 2025. Audit preserves that discrepancy.",
+        "primary_sources": [
+          {
+            "url": "https://www.ecva.net/papers/eccv_2024/papers_ECCV/html/5519_ECCV_2024_paper.php",
+            "retrieval_refs": [
+              "turn58view2",
+              "turn71view5",
+              "turn72view1"
+            ]
+          },
+          {
+            "url": "https://link.springer.com/chapter/10.1007/978-3-031-72920-1_12",
+            "type": "additional primary source"
+          }
+        ]
+      },
+      {
+        "key": "matcher",
+        "title": "Matcher: Segment Anything with One Shot Using All-Purpose Feature Matching",
+        "author": "Liu, Yang and Zhu, Muzhi and Li, Hengtao and Chen, Hao and Wang, Xinlong and Shen, Chunhua",
+        "year": "2024",
+        "booktitle": "International Conference on Learning Representations",
+        "url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/4df9a5e6bad9e64ebcea453e031142bb-Abstract-Conference.html",
+        "refs": [
+          "turn58view3",
+          "turn48search48"
+        ],
+        "secondary_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/4df9a5e6bad9e64ebcea453e031142bb-Paper-Conference.pdf",
+        "lead": "both base reference lists",
+        "verification": "Official ICLR 2024 landing page verifies all six authors and title; paper first page/abstract retrieved.",
+        "claim": "Composes generic feature matching with a promptable segmenter; introduced LVIS-92i for one-shot semantic segmentation.",
+        "placement": "Related Work frozen compositions; Evaluation protocol dataset lineage",
+        "caution": "Cite ICLR 2024 version, not later journal extension; a shared manifest does not establish exact reproduction of its sampling.",
+        "primary_sources": [
+          {
+            "url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/4df9a5e6bad9e64ebcea453e031142bb-Abstract-Conference.html",
+            "retrieval_refs": [
+              "turn58view3",
+              "turn48search48"
+            ]
+          },
+          {
+            "url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/4df9a5e6bad9e64ebcea453e031142bb-Paper-Conference.pdf",
+            "type": "additional primary source"
+          }
+        ]
+      },
+      {
+        "key": "abcdfss",
+        "title": "Adapt Before Comparison: A New Perspective on Cross-Domain Few-Shot Segmentation",
+        "author": "Herzog, Jonas",
+        "year": "2024",
+        "booktitle": "Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+        "pages": "23605--23615",
+        "url": "https://openaccess.thecvf.com/content/CVPR2024/html/Herzog_Adapt_Before_Comparison_A_New_Perspective_on_Cross-Domain_Few-Shot_Segmentation_CVPR_2024_paper.html",
+        "refs": [
+          "turn77search1",
+          "turn77view0",
+          "turn76view1"
+        ],
+        "secondary_url": "https://arxiv.org/abs/2402.17614",
+        "lead": "INSID3 cross-domain comparison lineage; independently checked",
+        "verification": "CVF indexed official BibTeX and arXiv verify single author Jonas Herzog, title, CVPR 2024 pages; author repository opened.",
+        "claim": "Adapts small feature-processing layers at test time to address cross-domain few-shot segmentation.",
+        "placement": "Related Work / Generalization or experimental setup cross-domain motivation",
+        "caution": "No dedicated segmentation training stage does not mean parameter-free inference: this is test-time task adaptation.",
+        "primary_sources": [
+          {
+            "url": "https://openaccess.thecvf.com/content/CVPR2024/html/Herzog_Adapt_Before_Comparison_A_New_Perspective_on_Cross-Domain_Few-Shot_Segmentation_CVPR_2024_paper.html",
+            "retrieval_refs": [
+              "turn77search1",
+              "turn77view0",
+              "turn76view1"
+            ]
+          },
+          {
+            "url": "https://arxiv.org/abs/2402.17614",
+            "type": "additional primary source"
+          }
+        ]
+      },
+      {
+        "key": "oslsm",
+        "title": "One-Shot Learning for Semantic Segmentation",
+        "author": "Shaban, Amirreza and Bansal, Shray and Liu, Zhen and Essa, Irfan and Boots, Byron",
+        "year": "2017",
+        "booktitle": "Proceedings of the British Machine Vision Conference",
+        "pages": "167.1--167.13",
+        "publisher": "BMVA Press",
+        "doi": "10.5244/C.31.167",
+        "url": "https://www.bmva-archive.org.uk/bmvc/2017/papers/paper167/index.html",
+        "refs": [
+          "turn58view4",
+          "turn52search2"
+        ],
+        "lead": "foundational task lineage, independently chosen",
+        "verification": "Official BMVA page verifies all five authors, BMVC 2017 paper 167, pages and DOI.",
+        "claim": "Established one-shot semantic segmentation by conditioning prediction on a labeled support example.",
+        "placement": "Related Work / In-Context Segmentation: one-sentence historical origin",
+        "caution": "Older few-shot learning framework; do not equate its training protocol with frozen modern foundation models.",
+        "primary_sources": [
+          {
+            "url": "https://www.bmva-archive.org.uk/bmvc/2017/papers/paper167/index.html",
+            "retrieval_refs": [
+              "turn58view4",
+              "turn52search2"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "panet",
+        "title": "{PANet}: Few-Shot Image Semantic Segmentation With Prototype Alignment",
+        "author": "Wang, Kaixin and Liew, Jun Hao and Zou, Yingtian and Zhou, Daquan and Feng, Jiashi",
+        "year": "2019",
+        "booktitle": "Proceedings of the IEEE/CVF International Conference on Computer Vision",
+        "pages": "9197--9206",
+        "url": "https://openaccess.thecvf.com/content_ICCV_2019/html/Wang_PANet_Few-Shot_Image_Semantic_Segmentation_With_Prototype_Alignment_ICCV_2019_paper.html",
+        "refs": [
+          "turn52search1",
+          "turn61view2"
+        ],
+        "secondary_url": "https://openaccess.thecvf.com/content_ICCV_2019/papers/Wang_PANet_Few-Shot_Image_Semantic_Segmentation_With_Prototype_Alignment_ICCV_2019_paper.pdf",
+        "lead": "INSID3 reference list",
+        "verification": "CVF official BibTeX and full PDF verify five authors/title/ICCV 2019; use CVF page span 9197–9206.",
+        "claim": "Masked support prototypes and pixelwise matching connect sparse annotation to dense segmentation; prototype alignment regularizes training.",
+        "placement": "Related Work task lineage; optional Methods explanation of reference prototypes",
+        "caution": "Nonparametric matching does not imply that the whole method has no supervised training.",
+        "primary_sources": [
+          {
+            "url": "https://openaccess.thecvf.com/content_ICCV_2019/html/Wang_PANet_Few-Shot_Image_Semantic_Segmentation_With_Prototype_Alignment_ICCV_2019_paper.html",
+            "retrieval_refs": [
+              "turn52search1",
+              "turn61view2"
+            ]
+          },
+          {
+            "url": "https://openaccess.thecvf.com/content_ICCV_2019/papers/Wang_PANet_Few-Shot_Image_Semantic_Segmentation_With_Prototype_Alignment_ICCV_2019_paper.pdf",
+            "type": "additional primary source"
+          }
+        ]
+      },
+      {
+        "key": "hsnet",
+        "title": "Hypercorrelation Squeeze for Few-Shot Segmentation",
+        "author": "Min, Juhong and Kang, Dahyun and Cho, Minsu",
+        "year": "2021",
+        "booktitle": "Proceedings of the IEEE/CVF International Conference on Computer Vision",
+        "pages": "6941--6952",
+        "url": "https://openaccess.thecvf.com/content/ICCV2021/html/Min_Hypercorrelation_Squeeze_for_Few-Shot_Segmentation_ICCV_2021_paper.html",
+        "refs": [
+          "turn52search0",
+          "turn73view2"
+        ],
+        "secondary_url": "https://cvlab.postech.ac.kr/research/HSNet/",
+        "lead": "foundational correspondence method independently selected",
+        "verification": "Official CVF metadata verifies three authors/year/pages; author project abstract and architecture opened.",
+        "claim": "Multilevel dense correlations and learned 4D processing model fine correspondence.",
+        "placement": "Related Work task lineage paired with PANet",
+        "caution": "This is a learned correlation-processing model, not a frozen-backbone simple-similarity control.",
+        "primary_sources": [
+          {
+            "url": "https://openaccess.thecvf.com/content/ICCV2021/html/Min_Hypercorrelation_Squeeze_for_Few-Shot_Segmentation_ICCV_2021_paper.html",
+            "retrieval_refs": [
+              "turn52search0",
+              "turn73view2"
+            ]
+          },
+          {
+            "url": "https://cvlab.postech.ac.kr/research/HSNet/",
+            "type": "additional primary source"
+          }
+        ]
+      },
+      {
+        "key": "repri",
+        "title": "Few-Shot Segmentation Without Meta-Learning: A Good Transductive Inference Is All You Need?",
+        "author": "Boudiaf, Malik and Kervadec, Hoel and Masud, Ziko Imtiaz and Piantanida, Pablo and Ben Ayed, Ismail and Dolz, Jose",
+        "year": "2021",
+        "booktitle": "Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+        "pages": "13979--13988",
+        "url": "https://openaccess.thecvf.com/content/CVPR2021/html/Boudiaf_Few-Shot_Segmentation_Without_Meta-Learning_A_Good_Transductive_Inference_Is_All_CVPR_2021_paper.html",
+        "refs": [
+          "turn52search5",
+          "turn70view0",
+          "turn76view0"
+        ],
+        "secondary_url": "https://arxiv.org/pdf/2012.06166",
+        "lead": "independently selected inference-stage contrast",
+        "verification": "CVF metadata and arXiv PDF verify six authors and title; use conference 2021, not submission year 2020. Author name Ziko Imtiaz Masud follows primary PDF and CVF BibTeX.",
+        "claim": "Transductive inference optimizes a classifier using support labels and unlabeled query statistics.",
+        "placement": "Related Work inference and cross-domain generalization",
+        "caution": "Without meta-learning is not without optimization; no query labels are used by the described objective.",
+        "primary_sources": [
+          {
+            "url": "https://openaccess.thecvf.com/content/CVPR2021/html/Boudiaf_Few-Shot_Segmentation_Without_Meta-Learning_A_Good_Transductive_Inference_Is_All_CVPR_2021_paper.html",
+            "retrieval_refs": [
+              "turn52search5",
+              "turn70view0",
+              "turn76view0"
+            ]
+          },
+          {
+            "url": "https://arxiv.org/pdf/2012.06166",
+            "type": "additional primary source"
+          }
+        ]
+      },
+      {
+        "key": "visualprompt",
+        "title": "Visual Prompting via Image Inpainting",
+        "author": "Bar, Amir and Gandelsman, Yossi and Darrell, Trevor and Globerson, Amir and Efros, Alexei",
+        "year": "2022",
+        "booktitle": "Advances in Neural Information Processing Systems",
+        "pages": "25005--25017",
+        "volume": "35",
+        "doi": "10.52202/068431-1813",
+        "url": "https://papers.nips.cc/paper_files/paper/2022/hash/9f09f316a3eaf59d9ced5ffaefe97e0f-Abstract-Conference.html",
+        "refs": [
+          "turn70view1"
+        ],
+        "lead": "CG-ICS reference list",
+        "verification": "Official NeurIPS page opened and its exact BibTeX downloaded locally, verifying five authors, volume 35, pages, year, DOI.",
+        "claim": "Image inpainting on composed input-output examples is an early visual in-context formulation.",
+        "placement": "Related Work visual prompting origin",
+        "caution": "Relevant framing only; it is not an experimental baseline in our current matrix.",
+        "primary_sources": [
+          {
+            "url": "https://papers.nips.cc/paper_files/paper/2022/hash/9f09f316a3eaf59d9ced5ffaefe97e0f-Abstract-Conference.html",
+            "retrieval_refs": [
+              "turn70view1"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "goodexamples",
+        "title": "What Makes Good Examples for Visual In-Context Learning?",
+        "author": "Zhang, Yuanhan and Zhou, Kaiyang and Liu, Ziwei",
+        "year": "2023",
+        "booktitle": "Advances in Neural Information Processing Systems",
+        "pages": "17773--17794",
+        "volume": "36",
+        "doi": "10.52202/075280-0780",
+        "url": "https://proceedings.neurips.cc/paper_files/paper/2023/hash/398ae57ed4fda79d0781c65c926d667b-Abstract-Conference.html",
+        "refs": [
+          "turn70view2"
+        ],
+        "lead": "CG-ICS reference list",
+        "verification": "Official NeurIPS page opened and exact BibTeX downloaded; three authors, volume 36, pages, year, DOI verified.",
+        "claim": "Visual in-context performance depends strongly on example choice; prompt retrieval can exploit this.",
+        "placement": "Related Work reference robustness; reference-cohort evaluation motivation",
+        "caution": "Do not claim this project first discovers reference sensitivity. Retrieval and stability under arbitrary supplied references address different decisions.",
+        "primary_sources": [
+          {
+            "url": "https://proceedings.neurips.cc/paper_files/paper/2023/hash/398ae57ed4fda79d0781c65c926d667b-Abstract-Conference.html",
+            "retrieval_refs": [
+              "turn70view2"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "vrpsam",
+        "title": "{VRP-SAM}: {SAM} with Visual Reference Prompt",
+        "author": "Sun, Yanpeng and Chen, Jiahui and Zhang, Shan and Zhang, Xinyu and Chen, Qiang and Zhang, Gang and Ding, Errui and Wang, Jingdong and Li, Zechao",
+        "year": "2024",
+        "booktitle": "Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+        "pages": "23565--23574",
+        "url": "https://openaccess.thecvf.com/content/CVPR2024/html/Sun_VRP-SAM_SAM_with_Visual_Reference_Prompt_CVPR_2024_paper.html",
+        "refs": [
+          "turn54search1",
+          "turn54search36",
+          "turn77search0"
+        ],
+        "lead": "CG-ICS reference list",
+        "verification": "Official CVF indexed BibTeX and PDF first-page retrieval verify final conference title, nine authors, 2024 pages.",
+        "claim": "A learned visual-reference prompt encoder adapts SAM to example-based segmentation.",
+        "placement": "Related Work learned conditioning",
+        "caution": "Use final conference nine-author list, not later arXiv author expansion. Frozen SAM does not mean its added prompt encoder is never trained.",
+        "primary_sources": [
+          {
+            "url": "https://openaccess.thecvf.com/content/CVPR2024/html/Sun_VRP-SAM_SAM_with_Visual_Reference_Prompt_CVPR_2024_paper.html",
+            "retrieval_refs": [
+              "turn54search1",
+              "turn54search36",
+              "turn77search0"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "unicl",
+        "title": "{UNICL-SAM}: Uncertainty-Driven In-Context Segmentation with Part Prototype Discovery",
+        "author": "Sheng, Dianmo and Chen, Dongdong and Tan, Zhentao and Liu, Qiankun and Chu, Qi and Gong, Tao and Liu, Bin and Han, Jing and Tu, Wenbin and Xu, Shengwei and Yu, Nenghai",
+        "year": "2025",
+        "booktitle": "Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+        "pages": "20201--20211",
+        "url": "https://openaccess.thecvf.com/content/CVPR2025/html/Sheng_UNICL-SAM_Uncertainty-Driven_In-Context_Segmentation_with_Part_Prototype_Discovery_CVPR_2025_paper.html",
+        "refs": [
+          "turn54search0",
+          "turn77search2",
+          "turn77search35"
+        ],
+        "lead": "CG-ICS reference list",
+        "verification": "Official CVF indexed BibTeX/PDF retrieval verify all eleven authors, CVPR 2025 and pages; direct fetch later returned 403.",
+        "claim": "Models uncertain examples and part prototypes to improve reference robustness.",
+        "placement": "Related Work reference robustness",
+        "caution": "Its trained uncertainty modules are different from a confidence rule applied to fixed predictions; avoid claiming equivalence.",
+        "primary_sources": [
+          {
+            "url": "https://openaccess.thecvf.com/content/CVPR2025/html/Sheng_UNICL-SAM_Uncertainty-Driven_In-Context_Segmentation_with_Part_Prototype_Discovery_CVPR_2025_paper.html",
+            "retrieval_refs": [
+              "turn54search0",
+              "turn77search2",
+              "turn77search35"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "sine",
+        "title": "A Simple Image Segmentation Framework via In-Context Examples",
+        "author": "Liu, Yang and Jing, Chenchen and Li, Hengtao and Zhu, Muzhi and Chen, Hao and Wang, Xinlong and Shen, Chunhua",
+        "year": "2024",
+        "booktitle": "Advances in Neural Information Processing Systems",
+        "pages": "25095--25119",
+        "volume": "37",
+        "doi": "10.52202/079017-0791",
+        "url": "https://papers.nips.cc/paper_files/paper/2024/hash/2cc0b08447bf9668db268e6c86364a6e-Abstract-Conference.html",
+        "refs": [
+          "turn70view3"
+        ],
+        "lead": "both base reference lists",
+        "verification": "Official NeurIPS page and downloaded BibTeX verify seven authors, volume 37, pages, 2024 and DOI.",
+        "claim": "An encoder-decoder framework uses in-context interaction and multiple task outputs to resolve task ambiguity.",
+        "placement": "Related Work learned conditioning",
+        "caution": "Targets several segmentation tasks; this project first-batch evidence only evaluates semantic masks.",
+        "primary_sources": [
+          {
+            "url": "https://papers.nips.cc/paper_files/paper/2024/hash/2cc0b08447bf9668db268e6c86364a6e-Abstract-Conference.html",
+            "retrieval_refs": [
+              "turn70view3"
+            ]
+          }
+        ]
+      }
+    ],
+    "local_primary_sources": [
+      {
+        "path": "/workspace/scratch/792be578b3e4/report_revision_20261116/bibliography_audit/ics_primary_visualprompt.bib",
+        "sha256": "ab3335af8b82bbbae091eb633653d0cb248ad0bb21fc2446be0454d542165822",
+        "role": "Unmodified publisher BibTeX download"
+      },
+      {
+        "path": "/workspace/scratch/792be578b3e4/report_revision_20261116/bibliography_audit/ics_primary_goodexamples.bib",
+        "sha256": "4f27d66f31a684df6913baaefe03d10f62939312d46e804e1a3f0b8766afc272",
+        "role": "Unmodified publisher BibTeX download"
+      },
+      {
+        "path": "/workspace/scratch/792be578b3e4/report_revision_20261116/bibliography_audit/ics_primary_sine.bib",
+        "sha256": "7fdacf8e41375d0302d97f3434a06f5461d95ad4c15639b812814905f0442787",
+        "role": "Unmodified publisher BibTeX download"
+      },
+      {
+        "path": "/workspace/scratch/792be578b3e4/report_revision_20261116/method_sources/cgics_original.pdf",
+        "sha256": "f8478bdb95d8b938af4e3fe108c11b88e865e8bdaa806f027007e486c665be61",
+        "role": "Original CG-ICS arXiv v2, supplied by parallel primary-source audit; actual methods and references read"
+      }
+    ],
+    "limits": [
+      "Some CVF direct HTML/PDF retrievals returned 403. Official search-indexed CVF BibTeX, accessible author arXiv versions or official project pages were checked instead, recorded per entry.",
+      "No DOI was invented where only secondary records supplied it; DOI is optional for those entries.",
+      "SegIC publisher auto-citation year conflicts with first-online date and ECCV year; bib uses ECVA conference year 2024 and records the discrepancy.",
+      "References support literature positioning; benchmark coverage and numerical claims must still come from the audited local episodes."
+    ]
+  },
+  "foundation_audit": {
+    "audit_date": "2026-11-16",
+    "owner": "report_refs_foundation",
+    "count": 19,
+    "existing_rechecked": [
+      "dinov3",
+      "dinov2",
+      "sam3",
+      "coco",
+      "lvis",
+      "sam",
+      "qwen3vl",
+      "suim",
+      "isic",
+      "ham10000"
+    ],
+    "new_keys": [
+      "dino",
+      "vit",
+      "sam2",
+      "clip",
+      "branchynet",
+      "adaptiveinference",
+      "bootstrap",
+      "clusterbootstrap",
+      "kosub2019"
+    ],
+    "primary_sources_only": true,
+    "records": [
+      {
+        "key": "dinov3",
+        "primary_source_urls": [
+          "https://arxiv.org/abs/2508.10104"
+        ],
+        "web_source_refs": [
+          "turn49view0"
+        ],
+        "verified_metadata": "Title; complete ordered author list; first submission 2025-08-13; arXiv 2508.10104; DOI.",
+        "recommended_placement": "Related Work / Visual Foundation Models; INSID3 implementation and trunk matrix.",
+        "supports": "Frozen DINOv3 produces general visual features; Gram anchoring addresses dense-feature degradation during extended training.",
+        "audit_note": "Cite the verified arXiv version as 2025; no unverified conference venue. Model citation does not establish runtime checkpoint identity."
+      },
+      {
+        "key": "dinov2",
+        "primary_source_urls": [
+          "https://arxiv.org/abs/2304.07193"
+        ],
+        "web_source_refs": [
+          "turn49view1"
+        ],
+        "verified_metadata": "Title; complete ordered author list; first submission 2023; arXiv 2304.07193; DOI.",
+        "recommended_placement": "Related Work / Visual Foundation Models; trunk matrix.",
+        "supports": "Self-supervised pretraining yields general image-level and pixel-level visual features.",
+        "audit_note": "Retain verified arXiv-2023 metadata consistently rather than mixing it with another publication version."
+      },
+      {
+        "key": "sam3",
+        "primary_source_urls": [
+          "https://arxiv.org/abs/2511.16719"
+        ],
+        "web_source_refs": [
+          "turn49view2"
+        ],
+        "verified_metadata": "Title; complete ordered 38-author list; first submission 2025; arXiv 2511.16719; DOI.",
+        "recommended_placement": "Related Work / Visual Foundation Models; CG-ICS segmenter.",
+        "supports": "Promptable concept segmentation supports noun phrases, image exemplars, or their combination.",
+        "audit_note": "The repository asterisk about partial LVIS training refers to the OWLv2 comparator, not SAM3; do not repeat the earlier mistaken interpretation."
+      },
+      {
+        "key": "coco",
+        "primary_source_urls": [
+          "https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48"
+        ],
+        "web_source_refs": [
+          "turn66view0"
+        ],
+        "verified_metadata": "Publisher title; eight ordered authors; ECCV 2014; LNCS 8693; pp.740-755; DOI.",
+        "recommended_placement": "Experimental Setup / Datasets, first COCO mention.",
+        "supports": "Source dataset for the natural-image segmentation benchmark.",
+        "audit_note": "Use the publisher's eight-author chapter list, not the later arXiv list. Dataset citation does not imply reproduction of an author's episode protocol."
+      },
+      {
+        "key": "lvis",
+        "primary_source_urls": [
+          "https://openaccess.thecvf.com/content_CVPR_2019/html/Gupta_LVIS_A_Dataset_for_Large_Vocabulary_Instance_Segmentation_CVPR_2019_paper.html"
+        ],
+        "web_source_refs": [
+          "turn68search0"
+        ],
+        "verified_metadata": "Title; Agrim Gupta, Piotr Dollar, Ross Girshick; CVPR2019; pp.5356-5364.",
+        "recommended_placement": "Experimental Setup / Datasets, first LVIS mention.",
+        "supports": "Large-vocabulary instance segmentation with a long-tailed category distribution.",
+        "audit_note": "CVF direct open returned 403, but the official CVF indexed page supplied title/authors/venue/pages; no secondary source was used."
+      },
+      {
+        "key": "sam",
+        "primary_source_urls": [
+          "https://openaccess.thecvf.com/content/ICCV2023/html/Kirillov_Segment_Anything_ICCV_2023_paper.html",
+          "https://arxiv.org/abs/2304.02643"
+        ],
+        "web_source_refs": [
+          "turn68search1",
+          "turn66view2"
+        ],
+        "verified_metadata": "Title; complete ordered twelve-author list; ICCV2023; pp.4015-4026.",
+        "recommended_placement": "Related Work / Visual Foundation Models, promptable segmentation lineage.",
+        "supports": "Promptable segmentation can transfer across tasks through prompts.",
+        "audit_note": "Upgraded original bibliography's arXiv misc entry to the verified final conference proceedings; keep key sam."
+      },
+      {
+        "key": "qwen3vl",
+        "primary_source_urls": [
+          "https://arxiv.org/abs/2511.21631"
+        ],
+        "web_source_refs": [
+          "turn49view3"
+        ],
+        "verified_metadata": "Title; complete ordered author list; first submission 2025; arXiv2511.21631; DOI.",
+        "recommended_placement": "Methods / CG-ICS, where the Qwen3-VL-4B implementation is named; one related-work citation if useful.",
+        "supports": "A vision-language model family capable of visual-language interpretation, including a dense 4B variant.",
+        "audit_note": "Actual 4B model identity is established by local configuration, not this citation alone."
+      },
+      {
+        "key": "suim",
+        "primary_source_urls": [
+          "https://arxiv.org/abs/2004.01241",
+          "https://github.com/IRVLab/SUIM",
+          "https://experts.umn.edu/en/publications/semantic-segmentation-of-underwater-imagery-dataset-and-benchmark-2/"
+        ],
+        "web_source_refs": [
+          "turn66view3",
+          "turn67view3",
+          "turn68search3"
+        ],
+        "verified_metadata": "Title; eight ordered authors; IROS2020; pp.1769-1776; DOI10.1109/IROS45743.2020.9340821.",
+        "recommended_placement": "Second-batch Experimental Setup / Domain Transfer.",
+        "supports": "An underwater semantic segmentation dataset with eight categories including background.",
+        "audit_note": "Original release has 1,525 train/validation images and 110 test images. Our merged pool and shape-valid filtering are project protocol facts, not an original-test-only evaluation."
+      },
+      {
+        "key": "isic",
+        "primary_source_urls": [
+          "https://arxiv.org/abs/1902.03368",
+          "https://challenge.isic-archive.com/landing/2018/"
+        ],
+        "web_source_refs": [
+          "turn67view0",
+          "turn67view2"
+        ],
+        "verified_metadata": "Title; complete ordered twelve-author list; first arXiv submission2019; arXiv1902.03368; DOI.",
+        "recommended_placement": "Second-batch Experimental Setup / Domain Transfer, alongside ham10000 attribution.",
+        "supports": "ISIC2018 includes a lesion-segmentation Task1, with public images and masks.",
+        "audit_note": "Year2019 is correct for the paper despite2018 in the challenge title; do not describe this experiment as an official challenge-test or patient-independent medical evaluation."
+      },
+      {
+        "key": "ham10000",
+        "primary_source_urls": [
+          "https://www.nature.com/articles/sdata2018161",
+          "https://challenge.isic-archive.com/landing/2018/"
+        ],
+        "web_source_refs": [
+          "turn68search2",
+          "turn67view2"
+        ],
+        "verified_metadata": "Title; Philipp Tschandl, Cliff Rosendahl, Harald Kittler; Scientific Data5,180161;2018; DOI.",
+        "recommended_placement": "ISIC data-source attribution only; cite with isic in the domain-transfer paragraph.",
+        "supports": "Companion dataset attribution explicitly requested by the official ISIC2018 landing page.",
+        "audit_note": "Do not claim that our Task1 binary segmentation evaluates the HAM10000 Task3 diagnosis benchmark or its10,015 diagnosis images."
+      },
+      {
+        "key": "dino",
+        "primary_source_urls": [
+          "https://openaccess.thecvf.com/content/ICCV2021/html/Caron_Emerging_Properties_in_Self-Supervised_Vision_Transformers_ICCV_2021_paper.html",
+          "https://openaccess.thecvf.com/content/ICCV2021/papers/Caron_Emerging_Properties_in_Self-Supervised_Vision_Transformers_ICCV_2021_paper.pdf"
+        ],
+        "web_source_refs": [
+          "turn59search0",
+          "turn59search6"
+        ],
+        "verified_metadata": "Title; seven ordered authors; ICCV2021; pp.9650-9660.",
+        "recommended_placement": "Related Work / Visual Foundation Models, alongside ViT and DINOv2/v3.",
+        "supports": "Self-supervised ViT features exhibit semantic structures useful for dense correspondence.",
+        "audit_note": "Historical foundation, not an additional evaluated baseline."
+      },
+      {
+        "key": "vit",
+        "primary_source_urls": [
+          "https://openreview.net/forum?id=YicbFdNTTy",
+          "https://openreview.net/pdf/a4aa24aed16fcb6f23d1067f1a5ecf47d7115f63.pdf",
+          "https://research.google/pubs/an-image-is-worth-16x16-words-transformers-for-image-recognition-at-scale/"
+        ],
+        "web_source_refs": [
+          "turn59search7",
+          "turn59search1"
+        ],
+        "verified_metadata": "Title; twelve authors ordered as in the official PDF; ICLR2021.",
+        "recommended_placement": "Related Work / Visual Foundation Models, a single introductory sentence.",
+        "supports": "Patch-token transformers provide the representation architecture used by these visual foundation models.",
+        "audit_note": "OpenReview forum challenge was bypassed with the official paper PDF and author-institution publication record; do not use the alphabetically reordered author list from the latter."
+      },
+      {
+        "key": "sam2",
+        "primary_source_urls": [
+          "https://arxiv.org/abs/2408.00714"
+        ],
+        "web_source_refs": [
+          "turn57view2"
+        ],
+        "verified_metadata": "Title; complete ordered eighteen-author list; first submission2024; arXiv2408.00714; DOI.",
+        "recommended_placement": "Related Work / Visual Foundation Models, one sentence connecting SAM to SAM3.",
+        "supports": "Promptable segmentation extends from images to videos through streaming memory.",
+        "audit_note": "Use arXiv2024 metadata; do not add an unverified later venue. This study does not evaluate SAM2."
+      },
+      {
+        "key": "clip",
+        "primary_source_urls": [
+          "https://proceedings.mlr.press/v139/radford21a.html"
+        ],
+        "web_source_refs": [
+          "turn57view3"
+        ],
+        "verified_metadata": "Title; twelve ordered authors; ICML2021; PMLR139; pp.8748-8763.",
+        "recommended_placement": "Related Work / Visual Foundation Models, language-based semantic specification.",
+        "supports": "Natural-language supervision aligns visual representation with textual concepts.",
+        "audit_note": "Contextual lineage only; do not imply that CG-ICS's audited implementation uses CLIP."
+      },
+      {
+        "key": "branchynet",
+        "primary_source_urls": [
+          "https://doi.org/10.1109/ICPR.2016.7900006",
+          "https://ieeexplore.ieee.org/abstract/document/7900006/authors",
+          "https://dash.harvard.edu/entities/publication/73120379-30e9-6bd4-e053-0100007fdf3b",
+          "https://github.com/kunglab/branchynet/blob/master/README.md"
+        ],
+        "web_source_refs": [
+          "turn75search0",
+          "turn75search3",
+          "turn75search1",
+          "turn74view0"
+        ],
+        "verified_metadata": "Title; Surat Teerapittayanon, Bradley McDanel, H.T.Kung; ICPR2016; pp.2464-2469; DOI.",
+        "recommended_placement": "Related Work / Adaptive Inference, or first proposal paragraph if keeping only two Related Work subsections.",
+        "supports": "Input-dependent early exits allocate less computation to samples that can be inferred earlier.",
+        "audit_note": "Conference year2016 is verified even though IEEE added the record and Harvard deposited it in2017. Ours gates concept search rather than adding trained network exits."
+      },
+      {
+        "key": "adaptiveinference",
+        "primary_source_urls": [
+          "https://proceedings.mlr.press/v70/bolukbasi17a.html"
+        ],
+        "web_source_refs": [
+          "turn59search3",
+          "turn64view3"
+        ],
+        "verified_metadata": "Title; Tolga Bolukbasi, Joseph Wang, Ofer Dekel, Venkatesh Saligrama; ICML2017; PMLR70; pp.527-536.",
+        "recommended_placement": "Related Work / Adaptive Inference and rationale for the conditional-search proposal.",
+        "supports": "Inference can adapt computation to input difficulty using early-exit or model-selection policies.",
+        "audit_note": "A conceptual precedent; do not present our fixed agreement rule as their trained adaptive policy."
+      },
+      {
+        "key": "bootstrap",
+        "primary_source_urls": [
+          "https://doi.org/10.1214/aos/1176344552",
+          "https://projecteuclid.org/journals/annals-of-statistics/volume-7/issue-1/Bootstrap-Methods-Another-Look-at-the-Jackknife/10.1214/aos/1176344552.full"
+        ],
+        "web_source_refs": [
+          "turn65search0",
+          "turn64view1"
+        ],
+        "verified_metadata": "Title; B.Efron; Annals of Statistics7(1):1-26;1979; DOI.",
+        "recommended_placement": "Evaluation / Statistical Analysis, first explanation of bootstrap intervals.",
+        "supports": "Bootstrap resampling estimates sampling uncertainty.",
+        "audit_note": "This general method citation alone does not justify treating repeated references as independent samples."
+      },
+      {
+        "key": "clusterbootstrap",
+        "primary_source_urls": [
+          "https://academic.oup.com/jrsssb/article-abstract/69/3/369/7109361",
+          "https://bemlar.ism.ac.jp/zhuang/Refs/Refs/field2007jrssb.pdf"
+        ],
+        "web_source_refs": [
+          "turn59search4",
+          "turn59search8"
+        ],
+        "verified_metadata": "Title; C.A.Field and A.H.Welsh; JRSS Series B69(3):369-390;2007; DOI10.1111/j.1467-9868.2007.00593.x.",
+        "recommended_placement": "Evaluation / Statistical Analysis, same sentence as image-cluster resampling.",
+        "supports": "Cluster-level resampling respects within-cluster dependence under the modelling conditions studied in the paper.",
+        "audit_note": "Do not claim its consistency theorem automatically establishes coverage for every project metric or sampling protocol."
+      },
+      {
+        "key": "kosub2019",
+        "primary_source_urls": [
+          "https://www.sciencedirect.com/science/article/pii/S0167865518309188",
+          "https://arxiv.org/abs/1612.02696"
+        ],
+        "web_source_refs": [
+          "turn65search1",
+          "turn65search3"
+        ],
+        "verified_metadata": "Title; Sven Kosub; Pattern Recognition Letters120:36-38;2019; DOI10.1016/j.patrec.2018.12.007.",
+        "recommended_placement": "Agreement analysis / proposition or appendix immediately before the reverse-triangle bound.",
+        "supports": "The Jaccard distance satisfies the triangle inequality; the report's reverse-triangle inequality follows as a corollary.",
+        "audit_note": "High mutual mask agreement bounds the difference between their IoUs against one target; it does not establish that either mask or the fused output is accurate."
+      }
+    ],
+    "editorial_policy": "Cite entries at substantive uses rather than adding a blanket bibliography-only citation. Keep full metadata in BibTeX; abbreviate long author lists only through bibliography rendering if needed."
+  },
+  "print_author_policy": "More than eight authors: first six plus et al.; full verified list retained in references_full.bib",
+  "shortened_lists": [
+    {
+      "first_author": "Zhang, Renrui",
+      "author_count": 9,
+      "printed": 6
+    },
+    {
+      "first_author": "Sun, Yanpeng",
+      "author_count": 9,
+      "printed": 6
+    },
+    {
+      "first_author": "Sheng, Dianmo",
+      "author_count": 11,
+      "printed": 6
+    },
+    {
+      "first_author": "Sim{\\'e}oni, Oriane",
+      "author_count": 26,
+      "printed": 6
+    },
+    {
+      "first_author": "Oquab, Maxime",
+      "author_count": 26,
+      "printed": 6
+    },
+    {
+      "first_author": "Carion, Nicolas",
+      "author_count": 38,
+      "printed": 6
+    },
+    {
+      "first_author": "Kirillov, Alexander",
+      "author_count": 12,
+      "printed": 6
+    },
+    {
+      "first_author": "Bai, Shuai",
+      "author_count": 64,
+      "printed": 6
+    },
+    {
+      "first_author": "Codella, Noel",
+      "author_count": 12,
+      "printed": 6
+    },
+    {
+      "first_author": "Dosovitskiy, Alexey",
+      "author_count": 12,
+      "printed": 6
+    },
+    {
+      "first_author": "Ravi, Nikhila",
+      "author_count": 18,
+      "printed": 6
+    },
+    {
+      "first_author": "Radford, Alec",
+      "author_count": 12,
+      "printed": 6
+    }
+  ],
+  "references_full_sha256": "c26ce045225580e7ee35fbf27c85fb2c1a556171722f6937fc22403dec911e74",
+  "references_print_sha256": "d48c289db77ac09e862c68359972db5d23efaadd77f7cd222aac5942a32abee2",
+  "superseded_by_20261117": "../audit/BIBLIOGRAPHY_AUDIT_20261117.md",
+  "current_bibliography_sha256": {
+    "references.bib": "5c90a107e0e2c869a874cfc365fbd5faf5ebe4cbc0e440be56de1e9fd6cb9adc",
+    "references_full.bib": "7af4ed017785f550b2ce0a2ddfbbaac71c3d825e56223bdaf4ecb9843b768e0d"
+  }
+}

@@ -1,0 +1,2450 @@
+[
+  {
+    "id": "I.1.1",
+    "source": "paper/sections/introduction.tex",
+    "block": 1,
+    "sentence": 1,
+    "english": "In-context segmentation transfers a target from an annotated reference image to a query image.",
+    "chinese": "定义 ICS：把 annotated reference 中指定的目标迁移到 query。",
+    "role_evidence": "任务定义"
+  },
+  {
+    "id": "I.1.2",
+    "source": "paper/sections/introduction.tex",
+    "block": 1,
+    "sentence": 2,
+    "english": "We compare two training-free systems, INSID3 and CG-ICS, to examine how visual correspondence and concept-guided search affect accuracy, reference sensitivity, and inference cost.",
+    "chinese": "交代比较对象 INSID3 / CG-ICS，以及 accuracy、reference sensitivity、inference cost 三条评价轴。",
+    "role_evidence": "研究问题"
+  },
+  {
+    "id": "I.1.3",
+    "source": "paper/sections/introduction.tex",
+    "block": 1,
+    "sentence": 3,
+    "english": "On COCO-$20^i$ and LVIS-$92^i$, CG-ICS achieves mean-fold class-pooled IoU of 72.17\\% and 47.44\\%, versus 57.65\\% and 40.77\\% for INSID3.",
+    "chinese": "给出主结果：CG-ICS 的 COCO/LVIS mean-fold class-pooled IoU 为 72.17/47.44，INSID3 为 57.65/40.77。",
+    "role_evidence": "第一批主表"
+  },
+  {
+    "id": "I.1.4",
+    "source": "paper/sections/introduction.tex",
+    "block": 1,
+    "sentence": 4,
+    "english": "This improvement comes with 7.37--10.63 times greater mean inference latency on input pairs with the same runner GPU model and an additional language-model GPU.",
+    "chinese": "说明 accuracy 的代价：匹配 runner GPU model 后 mean inference latency 为 7.37–10.63 倍，且另占 MLLM GPU。",
+    "role_evidence": "第一批成本"
+  },
+  {
+    "id": "I.1.5",
+    "source": "paper/sections/introduction.tex",
+    "block": 1,
+    "sentence": 5,
+    "english": "Component experiments identify distinct sources of performance: INSID3 benefits from feature debiasing and region aggregation, whereas CG-ICS benefits strongly from combining a semantic concept with visual prompts.",
+    "chinese": "归纳两系统的有效成分：INSID3 的 debiasing / aggregation，CG-ICS 的 semantic concept + visual prompts。",
+    "role_evidence": "第一批 ablation"
+  },
+  {
+    "id": "I.1.6",
+    "source": "paper/sections/introduction.tex",
+    "block": 1,
+    "sentence": 6,
+    "english": "Additional concept search yields only a 0.22-point equal-query IoU gain on COCO but a 2.30-point gain on LVIS.",
+    "chinese": "指出额外 concept search 的平均收益不一致：COCO 0.22 pp，LVIS 2.30 pp。",
+    "role_evidence": "第一批 ablation"
+  },
+  {
+    "id": "I.1.7",
+    "source": "paper/sections/introduction.tex",
+    "block": 1,
+    "sentence": 7,
+    "english": "In the paired-input cohort, visual prompting reduces the marginal gain from search.",
+    "chinese": "概括 search–prompt interaction：加入 visual prompting 后 search 的边际收益降低。",
+    "role_evidence": "第一批配对 interaction"
+  },
+  {
+    "id": "I.1.8",
+    "source": "paper/sections/introduction.tex",
+    "block": 1,
+    "sentence": 8,
+    "english": "Reference variation and small-target failures further distinguish the systems.",
+    "chinese": "补充 reference variation 与 small-target failure，避免只看均值。",
+    "role_evidence": "第一批 robustness / failure"
+  },
+  {
+    "id": "I.1.9",
+    "source": "paper/sections/introduction.tex",
+    "block": 1,
+    "sentence": 9,
+    "english": "These findings motivate Agreement-Gated Search (AGS), for which we derive a cost--accuracy decomposition and specify a controlled evaluation.",
+    "chinese": "从证据导向 AGS proposal，并引出 cost–accuracy decomposition 与 controlled evaluation。",
+    "role_evidence": "方法动机＋数学分析"
+  },
+  {
+    "id": "I.1.10",
+    "source": "paper/sections/introduction.tex",
+    "block": 1,
+    "sentence": 10,
+    "english": "The report combines completed comparative evidence with this extension, whose experimental results are pending.",
+    "chinese": "界定当前贡献状态：比较实验完成，extension 的 empirical results 尚待验收。",
+    "role_evidence": "状态边界"
+  },
+  {
+    "id": "I.1.11",
+    "source": "paper/sections/introduction.tex",
+    "block": 1,
+    "sentence": 11,
+    "english": "Code is available at \\url{https://github.com/AvianHan/CE6190-Visual-Understanding}.",
+    "chinese": "提供可点击GitHub repo link，与Group report的abstract末尾做法一致。",
+    "role_evidence": "代码入口"
+  },
+  {
+    "id": "I.2.1",
+    "source": "paper/sections/introduction.tex",
+    "block": 2,
+    "sentence": 1,
+    "english": "In-context segmentation (ICS) identifies a target in a query image from a reference image and its binary mask.",
+    "chinese": "给出 ICS 的三项输入和目标。",
+    "role_evidence": "任务定义"
+  },
+  {
+    "id": "I.2.2",
+    "source": "paper/sections/introduction.tex",
+    "block": 2,
+    "sentence": 2,
+    "english": "This interface allows a user to specify the target visually, without annotating each query or fitting a new task-specific model.",
+    "chinese": "解释这种接口的价值：用户给 visual example，无需逐张 query 标注或重新训练 task-specific model。",
+    "role_evidence": "应用动机"
+  },
+  {
+    "id": "I.2.3",
+    "source": "paper/sections/introduction.tex",
+    "block": 2,
+    "sentence": 3,
+    "english": "Reliable transfer remains difficult: the same category can change appearance, the reference may emphasize only part of an object, and the query can contain visually or semantically similar distractors.",
+    "chinese": "列出 transfer 的困难：appearance change、partial reference、distractors。",
+    "role_evidence": "问题来源"
+  },
+  {
+    "id": "I.2.4",
+    "source": "paper/sections/introduction.tex",
+    "block": 2,
+    "sentence": 4,
+    "english": "A practical system must resolve these ambiguities at an acceptable inference cost.",
+    "chinese": "把困难收束为一个工程目标：在可接受 inference cost 下消歧。",
+    "role_evidence": "引出 accuracy–cost trade-off"
+  },
+  {
+    "id": "I.3.1",
+    "source": "paper/sections/introduction.tex",
+    "block": 3,
+    "sentence": 1,
+    "english": "Recent foundation models support two distinct solutions.",
+    "chinese": "引入 foundation model 提供的两条解决路线。",
+    "role_evidence": "方法分叉"
+  },
+  {
+    "id": "I.3.2",
+    "source": "paper/sections/introduction.tex",
+    "block": 3,
+    "sentence": 2,
+    "english": "INSID3 constructs a mask from frozen DINOv3 features through debiasing, clustering, and similarity aggregation~\\cite{insid3,dinov3}.",
+    "chinese": "INSID3 通过 frozen DINOv3 的 debiasing、clustering、similarity aggregation 构造 mask。",
+    "role_evidence": "引用主方法"
+  },
+  {
+    "id": "I.3.3",
+    "source": "paper/sections/introduction.tex",
+    "block": 3,
+    "sentence": 3,
+    "english": "CG-ICS generates language concepts from the reference, evaluates and searches these concepts, and combines them with visual prompts in SAM~3~\\cite{cgics,sam3}.",
+    "chinese": "CG-ICS 通过 reference-derived concepts、search 和 SAM 3 visual prompts 构造 mask。",
+    "role_evidence": "引用主方法"
+  },
+  {
+    "id": "I.3.4",
+    "source": "paper/sections/introduction.tex",
+    "block": 3,
+    "sentence": 4,
+    "english": "Their central difference is how the reference becomes actionable evidence: direct visual correspondence in one system, and concept-guided segmentation supported by visual transfer in the other.",
+    "chinese": "总结比较轴：reference 如何转化为可用于 query 的 evidence。",
+    "role_evidence": "概念对照"
+  },
+  {
+    "id": "I.4.1",
+    "source": "paper/sections/introduction.tex",
+    "block": 4,
+    "sentence": 1,
+    "english": "A headline accuracy comparison leaves important behavior unresolved.",
+    "chinese": "指出 headline accuracy comparison 本身不足。",
+    "role_evidence": "研究缺口"
+  },
+  {
+    "id": "I.4.2",
+    "source": "paper/sections/introduction.tex",
+    "block": 4,
+    "sentence": 2,
+    "english": "An improvement may depend on the reference, arise from a particular processing stage, or require expensive search that benefits only some inputs.",
+    "chinese": "列出待解释因素：reference、processing stage、不同 input 的 search 收益。",
+    "role_evidence": "拆分问题"
+  },
+  {
+    "id": "I.4.3",
+    "source": "paper/sections/introduction.tex",
+    "block": 4,
+    "sentence": 3,
+    "english": "Complete-system evaluation therefore needs to be connected to component interventions and measured cost.",
+    "chinese": "因此需要把 whole-system evaluation 与 component intervention、measured cost 连接起来。",
+    "role_evidence": "研究设计"
+  },
+  {
+    "id": "I.4.4",
+    "source": "paper/sections/introduction.tex",
+    "block": 4,
+    "sentence": 4,
+    "english": "This connection is also necessary for designing an efficient extension: search should be reduced where its marginal value is small, while preserving it where the initial prediction is inadequate.",
+    "chinese": "进一步导出效率目标：减少低 marginal value 的 search，保留初始预测不足时的 search。",
+    "role_evidence": "proposal 的一般原则"
+  },
+  {
+    "id": "I.5.1",
+    "source": "paper/sections/introduction.tex",
+    "block": 5,
+    "sentence": 1,
+    "english": "We study these questions on COCO-$20^i$ and LVIS-$92^i$ using common reference/query inputs and original-resolution evaluation.",
+    "chinese": "限定本研究的数据与协议：COCO/LVIS，common inputs，original-resolution evaluation。",
+    "role_evidence": "实验范围"
+  },
+  {
+    "id": "I.5.2",
+    "source": "paper/sections/introduction.tex",
+    "block": 5,
+    "sentence": 2,
+    "english": "CG-ICS is more accurate overall, while INSID3 is substantially faster.",
+    "chinese": "先给总体发现：CG-ICS 更准，INSID3 更快。",
+    "role_evidence": "第一批主结论"
+  },
+  {
+    "id": "I.5.3",
+    "source": "paper/sections/introduction.tex",
+    "block": 5,
+    "sentence": 3,
+    "english": "The component results sharpen this comparison: a single concept combined with visual prompts captures most of CG-ICS's gain on COCO, whereas LVIS benefits more from further search.",
+    "chinese": "再给机制发现：COCO 的 single concept + visual prompts 已获得多数收益，LVIS 更受益于 extra search。",
+    "role_evidence": "第一批 component 结论"
+  },
+  {
+    "id": "I.5.4",
+    "source": "paper/sections/introduction.tex",
+    "block": 5,
+    "sentence": 4,
+    "english": "Moreover, visual prompting reduces the marginal search gain on both datasets.",
+    "chinese": "指出 visual prompting 在两个数据集都降低 search 的 observed marginal gain。",
+    "role_evidence": "第一批 interaction"
+  },
+  {
+    "id": "I.5.5",
+    "source": "paper/sections/introduction.tex",
+    "block": 5,
+    "sentence": 5,
+    "english": "This measured interaction motivates an input-dependent search rule based on agreement between text-only and visual-only predictions.",
+    "chinese": "从此提出可观察 signal：text-only / visual-only predictions 的 agreement，用于 input-dependent search。",
+    "role_evidence": "有动机的假说；不是已验证 gate 性能"
+  },
+  {
+    "id": "I.5.6",
+    "source": "paper/sections/introduction.tex",
+    "block": 5,
+    "sentence": 6,
+    "english": "Our contributions are threefold:",
+    "chinese": "将Our contributions are threefold接在前段末尾，随后列出三项贡献。",
+    "role_evidence": "结构连接"
+  },
+  {
+    "id": "I.6.1",
+    "source": "paper/sections/introduction.tex",
+    "block": 6,
+    "sentence": 1,
+    "english": "\\textbf{Paired system evaluation.} We compare accuracy, reference sensitivity, and computational cost on common inputs.",
+    "chinese": "Contribution 1：common inputs 上比较 accuracy、reference sensitivity、computational cost。",
+    "role_evidence": "已完成经验贡献"
+  },
+  {
+    "id": "I.7.1",
+    "source": "paper/sections/introduction.tex",
+    "block": 7,
+    "sentence": 1,
+    "english": "\\textbf{Component analysis.} We separate feature processing, semantic search, visual prompting, and backbone choice through controlled interventions.",
+    "chinese": "Contribution 2：通过 controlled interventions 区分 feature processing、semantic search、visual prompting、backbone choice。",
+    "role_evidence": "已完成经验贡献"
+  },
+  {
+    "id": "I.8.1",
+    "source": "paper/sections/introduction.tex",
+    "block": 8,
+    "sentence": 1,
+    "english": "\\textbf{Agreement-Gated Search.} We propose input-dependent search with an explicit cost--accuracy formulation and predefined controls.",
+    "chinese": "Contribution 3：提出 AGS，给出 explicit cost–accuracy formulation 和 predefined controls。",
+    "role_evidence": "proposal＋分析贡献"
+  },
+  {
+    "id": "I.8.2",
+    "source": "paper/sections/introduction.tex",
+    "block": 8,
+    "sentence": 2,
+    "english": "The empirical conclusions use the completed first batch; the extension is being evaluated separately on fresh queries and transfer datasets.",
+    "chinese": "声明empirical conclusions来自completed first batch，extension正在fresh queries与transfer datasets上独立评价。",
+    "role_evidence": "已改为being evaluated，避免暗示完成"
+  },
+  {
+    "id": "R.1.1",
+    "source": "paper/sections/related_work.tex",
+    "block": 1,
+    "sentence": 1,
+    "english": "Visual understanding requires both semantic recognition and spatial localization.",
+    "chinese": "从 visual understanding 的两项需求开场：semantic recognition 和 spatial localization。",
+    "role_evidence": "建立上位概念"
+  },
+  {
+    "id": "R.1.2",
+    "source": "paper/sections/related_work.tex",
+    "block": 1,
+    "sentence": 2,
+    "english": "Vision Transformers represent images as patch tokens~\\cite{vit}, while self-supervised learning in DINO produces features that capture object structure without task-specific labels~\\cite{dino}.",
+    "chinese": "ViT 的 patch tokens 与 DINO 的 self-supervised object structure 提供 feature 路线背景。",
+    "role_evidence": "文献：ViT / DINO"
+  },
+  {
+    "id": "R.1.3",
+    "source": "paper/sections/related_work.tex",
+    "block": 1,
+    "sentence": 3,
+    "english": "DINOv2 and DINOv3 extend this representation approach at scale~\\cite{dinov2,dinov3}.",
+    "chinese": "DINOv2 / DINOv3 将这一 representation 路线扩展到更大规模。",
+    "role_evidence": "文献：DINOv2 / DINOv3"
+  },
+  {
+    "id": "R.1.4",
+    "source": "paper/sections/related_work.tex",
+    "block": 1,
+    "sentence": 4,
+    "english": "Their dense features support correspondence across images, providing a basis for transferring an annotated target from a reference to a query.",
+    "chinese": "说明这些 dense features 如何服务跨图 correspondence，从而服务 reference→query transfer。",
+    "role_evidence": "与本文任务连接"
+  },
+  {
+    "id": "R.2.1",
+    "source": "paper/sections/related_work.tex",
+    "block": 2,
+    "sentence": 1,
+    "english": "Promptable foundation models expose spatial and semantic information through a segmentation interface.",
+    "chinese": "转向 promptable foundation models，把 semantic/spatial information 变成 segmentation interface。",
+    "role_evidence": "第二条技术路线"
+  },
+  {
+    "id": "R.2.2",
+    "source": "paper/sections/related_work.tex",
+    "block": 2,
+    "sentence": 2,
+    "english": "SAM predicts masks from spatial prompts~\\cite{sam}; SAM~2 extends this interface to video~\\cite{sam2}; and SAM~3 supports concept-level prompts~\\cite{sam3}.",
+    "chinese": "按 SAM→SAM 2→SAM 3 串起 spatial prompts、video、concept prompts。",
+    "role_evidence": "文献定位"
+  },
+  {
+    "id": "R.2.3",
+    "source": "paper/sections/related_work.tex",
+    "block": 2,
+    "sentence": 3,
+    "english": "CLIP connects visual representations with language through image--text alignment~\\cite{clip}, while models such as Qwen3-VL support multimodal reasoning~\\cite{qwen3vl}.",
+    "chinese": "CLIP 的 image–text alignment 与 Qwen3-VL 的 multimodal reasoning 补足 language 一侧。",
+    "role_evidence": "文献定位"
+  },
+  {
+    "id": "R.2.4",
+    "source": "paper/sections/related_work.tex",
+    "block": 2,
+    "sentence": 4,
+    "english": "Together, these capabilities enable the two routes studied here: identifying a target through dense visual correspondence, or describing it semantically and grounding that description with a promptable segmenter.",
+    "chinese": "把文献能力重新收束为本文的 visual correspondence vs semantic grounding 两条路线。",
+    "role_evidence": "回到研究轴"
+  },
+  {
+    "id": "R.3.1",
+    "source": "paper/sections/related_work.tex",
+    "block": 3,
+    "sentence": 1,
+    "english": "Reference-conditioned segmentation builds on one-shot prediction~\\cite{oslsm}, support prototypes~\\cite{panet}, and dense support--query correspondence~\\cite{hsnet}.",
+    "chinese": "从 one-shot、prototypes、dense correspondence 追溯 reference-conditioned segmentation。",
+    "role_evidence": "历史背景"
+  },
+  {
+    "id": "R.3.2",
+    "source": "paper/sections/related_work.tex",
+    "block": 3,
+    "sentence": 2,
+    "english": "Visual in-context learning broadens this idea by expressing tasks through image examples: visual prompting casts prediction as image completion~\\cite{visualprompt}, Painter learns across dense prediction tasks~\\cite{painter}, and SegGPT provides a general context-conditioned segmentation interface~\\cite{seggpt}.",
+    "chinese": "用 visual prompting、Painter、SegGPT 说明 example 本身可以表达 task。",
+    "role_evidence": "In-context learning 脉络"
+  },
+  {
+    "id": "R.3.3",
+    "source": "paper/sections/related_work.tex",
+    "block": 3,
+    "sentence": 3,
+    "english": "These approaches establish the annotated example as a flexible specification of the desired output.",
+    "chinese": "归纳 annotated example 是 desired output 的 flexible specification。",
+    "role_evidence": "本节共同概念"
+  },
+  {
+    "id": "R.4.1",
+    "source": "paper/sections/related_work.tex",
+    "block": 4,
+    "sentence": 1,
+    "english": "Recent methods differ in how they turn that example into a query mask.",
+    "chinese": "指出近期方法的区别在于 example 如何变成 query mask。",
+    "role_evidence": "分类原则"
+  },
+  {
+    "id": "R.4.2",
+    "source": "paper/sections/related_work.tex",
+    "block": 4,
+    "sentence": 2,
+    "english": "SegIC turns foundation-model correspondences into geometric, visual, and meta instructions~\\cite{segic}; SINE introduces in-context interaction~\\cite{sine}; and VRP-SAM learns a reference-prompt encoder~\\cite{vrpsam}.",
+    "chinese": "SegIC把foundation-model correspondences转化为geometric、visual、meta instructions；SINE与VRP-SAM分别展示interaction与reference prompt encoding。",
+    "role_evidence": "文献定位"
+  },
+  {
+    "id": "R.4.3",
+    "source": "paper/sections/related_work.tex",
+    "block": 4,
+    "sentence": 3,
+    "english": "Frozen-model pipelines instead reuse pretrained representations and segmentation priors: PerSAM derives target-specific information from one example~\\cite{persam}, and Matcher links general feature matching to promptable segmentation~\\cite{matcher}.",
+    "chinese": "PerSAM 和 Matcher 展示 frozen representations 与 segmentation priors 的组合。",
+    "role_evidence": "冻结模型方法位置"
+  },
+  {
+    "id": "R.4.4",
+    "source": "paper/sections/related_work.tex",
+    "block": 4,
+    "sentence": 4,
+    "english": "INSID3 operates directly on DINOv3 features~\\cite{insid3}, whereas CG-ICS combines generated concepts, search, and visual exemplars~\\cite{cgics}.",
+    "chinese": "将 INSID3 的直接 feature processing 与 CG-ICS 的 concepts/search/visual exemplars 对照。",
+    "role_evidence": "定位本研究两主方法"
+  },
+  {
+    "id": "R.4.5",
+    "source": "paper/sections/related_work.tex",
+    "block": 4,
+    "sentence": 5,
+    "english": "We compare these last two complete inference systems and then examine their individual processing stages.",
+    "chinese": "明确本文选取这两个 full inference systems，并继续拆解其 stages。",
+    "role_evidence": "收束 Related Work"
+  },
+  {
+    "id": "R.5.1",
+    "source": "paper/sections/related_work.tex",
+    "block": 5,
+    "sentence": 1,
+    "english": "The chosen reference is itself a source of variation.",
+    "chinese": "提醒 reference 本身会引入 variability。",
+    "role_evidence": "引入 robustness 文献"
+  },
+  {
+    "id": "R.5.2",
+    "source": "paper/sections/related_work.tex",
+    "block": 5,
+    "sentence": 2,
+    "english": "Good Examples studies example selection~\\cite{goodexamples}, UNICL-SAM addresses uncertainty in imperfect examples~\\cite{unicl}, and CG-ICS explicitly targets reference robustness~\\cite{cgics}.",
+    "chinese": "Good Examples、UNICL-SAM、CG-ICS 各自讨论 example selection、uncertainty、reference robustness。",
+    "role_evidence": "文献与研究缺口"
+  },
+  {
+    "id": "R.5.3",
+    "source": "paper/sections/related_work.tex",
+    "block": 5,
+    "sentence": 3,
+    "english": "Our reference study measures performance when the query is fixed and the supplied demonstration changes.",
+    "chinese": "本文固定 query、改变 demonstration，量化 reference sensitivity。",
+    "role_evidence": "对应 E2"
+  },
+  {
+    "id": "R.5.4",
+    "source": "paper/sections/related_work.tex",
+    "block": 5,
+    "sentence": 4,
+    "english": "Cross-domain work provides a complementary perspective: RePRI uses transductive optimization~\\cite{repri}, while ABCDFSS adapts feature-processing layers at test time~\\cite{abcdfss}.",
+    "chinese": "RePRI 的 transductive optimization 与 ABCDFSS 的 test-time adaptation 提供 cross-domain 参照。",
+    "role_evidence": "transfer 背景"
+  },
+  {
+    "id": "R.5.5",
+    "source": "paper/sections/related_work.tex",
+    "block": 5,
+    "sentence": 5,
+    "english": "Their adaptation mechanisms differ from the frozen inference evaluated here, motivating a separate domain-transfer analysis.",
+    "chinese": "将这些 adaptation mechanisms 与当前 frozen inference 区分，解释为何 domain transfer 需要单独评价。",
+    "role_evidence": "范围连接"
+  },
+  {
+    "id": "M.1.1",
+    "source": "paper/sections/methods.tex",
+    "block": 1,
+    "sentence": 1,
+    "english": "Given a reference image $I_r$, its foreground mask $M_r$, and a query image $I_q$, an ICS system predicts",
+    "chinese": "给出形式化接口：输入 reference image、reference mask、query image，输出 query mask。",
+    "role_evidence": "公式 M1"
+  },
+  {
+    "id": "M.2.1",
+    "source": "paper/sections/methods.tex",
+    "block": 2,
+    "sentence": 1,
+    "english": "The task is binary segmentation of the demonstrated semantic target.",
+    "chinese": "限定输出为所示 semantic target 的 binary segmentation。",
+    "role_evidence": "任务范围"
+  },
+  {
+    "id": "M.2.2",
+    "source": "paper/sections/methods.tex",
+    "block": 2,
+    "sentence": 2,
+    "english": "Query ground truth is used only for evaluation; the dataset class label is not supplied to inference.",
+    "chinese": "query GT 仅用于 evaluation；inference 不接收 dataset class label。",
+    "role_evidence": "防止 label leakage 的核心约束"
+  },
+  {
+    "id": "M.2.3",
+    "source": "paper/sections/methods.tex",
+    "block": 2,
+    "sentence": 3,
+    "english": "Both systems use pretrained models without task-specific parameter updates.",
+    "chinese": "两系统均使用 pretrained models，不做 task-specific parameter updates。",
+    "role_evidence": "training-free 范围"
+  },
+  {
+    "id": "M.2.4",
+    "source": "paper/sections/methods.tex",
+    "block": 2,
+    "sentence": 4,
+    "english": "We first compare their complete pipelines, then vary components within each pipeline and cross feature trunks with a common processing interface.",
+    "chinese": "说明比较顺序：full pipelines→within-system components→common interface 下的 trunks。",
+    "role_evidence": "实验设计预告"
+  },
+  {
+    "id": "M.3.1",
+    "source": "paper/sections/methods.tex",
+    "block": 3,
+    "sentence": 1,
+    "english": "INSID3 uses the semantic correspondence and spatial grouping structure of frozen DINOv3 features~\\cite{insid3,dinov3}.",
+    "chinese": "INSID3 的信息来源是 frozen DINOv3 的 semantic correspondence 与 spatial grouping。",
+    "role_evidence": "主方法解释"
+  },
+  {
+    "id": "M.3.2",
+    "source": "paper/sections/methods.tex",
+    "block": 3,
+    "sentence": 2,
+    "english": "Figure~\\ref{fig:insid3} separates two feature paths.",
+    "chinese": "Figure 1 将 original / debiased 两条 feature paths 分开。",
+    "role_evidence": "图文索引"
+  },
+  {
+    "id": "M.3.3",
+    "source": "paper/sections/methods.tex",
+    "block": 3,
+    "sentence": 3,
+    "english": "Original query features provide coherent clusters and within-query similarity.",
+    "chinese": "original query features 用于 coherent clustering 和 within-query similarity。",
+    "role_evidence": "分支职责"
+  },
+  {
+    "id": "M.3.4",
+    "source": "paper/sections/methods.tex",
+    "block": 3,
+    "sentence": 4,
+    "english": "Debiased reference and query features provide cross-image matching, reducing the influence of absolute image position.",
+    "chinese": "debiased reference/query features 用于 cross-image matching，弱化 absolute position。",
+    "role_evidence": "分支职责"
+  },
+  {
+    "id": "M.4.1",
+    "source": "paper/sections/methods.tex",
+    "block": 4,
+    "sentence": 1,
+    "english": "Let $F$ be a matrix of dense features and $B$ an orthonormal basis for the estimated positional subspace.",
+    "chinese": "定义 dense-feature matrix F 与 positional-subspace orthonormal basis B。",
+    "role_evidence": "公式变量"
+  },
+  {
+    "id": "M.4.2",
+    "source": "paper/sections/methods.tex",
+    "block": 4,
+    "sentence": 2,
+    "english": "Debiasing projects onto its orthogonal complement and normalizes each feature,",
+    "chinese": "通过投影到 positional subspace 的 orthogonal complement 再 normalize 实现 debiasing。",
+    "role_evidence": "公式 M2"
+  },
+  {
+    "id": "M.5.1",
+    "source": "paper/sections/methods.tex",
+    "block": 5,
+    "sentence": 1,
+    "english": "A foreground prototype averages debiased reference features inside $M_r$.",
+    "chinese": "在 reference foreground 内平均 debiased features，构造 foreground prototype。",
+    "role_evidence": "算法步骤"
+  },
+  {
+    "id": "M.5.2",
+    "source": "paper/sections/methods.tex",
+    "block": 5,
+    "sentence": 2,
+    "english": "Forward similarity and backward correspondence identify query candidates, and the prototype selects a seed cluster.",
+    "chinese": "forward similarity / backward correspondence 找 candidates，prototype 选择 seed cluster。",
+    "role_evidence": "算法步骤"
+  },
+  {
+    "id": "M.5.3",
+    "source": "paper/sections/methods.tex",
+    "block": 5,
+    "sentence": 3,
+    "english": "In the evaluated implementation, final aggregation combines each cluster's cross-image alignment, original-space similarity to the seed, and candidate coverage.",
+    "chinese": "在本次evaluated implementation中，aggregation组合cross-image alignment、original-space seed similarity、candidate coverage。",
+    "role_evidence": "实际实现步骤；不混同论文全部细节"
+  },
+  {
+    "id": "M.5.4",
+    "source": "paper/sections/methods.tex",
+    "block": 5,
+    "sentence": 4,
+    "english": "Clusters above the merge threshold form the prediction.",
+    "chinese": "超过 merge threshold 的 clusters 组成最终 mask。",
+    "role_evidence": "算法输出"
+  },
+  {
+    "id": "M.6.1",
+    "source": "paper/sections/methods.tex",
+    "block": 6,
+    "sentence": 1,
+    "english": "Our component study crosses debiasing on/off with self-plus-cross, cross-only, and seed-only aggregation; seed-only output retains clustering.",
+    "chinese": "INSID3 ablation：debiasing on/off × 三种 aggregation；seed-only 仍含 clustering。",
+    "role_evidence": "控制变量"
+  },
+  {
+    "id": "M.6.2",
+    "source": "paper/sections/methods.tex",
+    "block": 6,
+    "sentence": 2,
+    "english": "The simple-similarity control retains debiasing but omits clustered region processing.",
+    "chinese": "simple-similarity control 保留 debiasing，但不做 clustered region processing。",
+    "role_evidence": "控制组定义"
+  },
+  {
+    "id": "M.6.3",
+    "source": "paper/sections/methods.tex",
+    "block": 6,
+    "sentence": 3,
+    "english": "The main configuration uses input size 1024, positional rank 500, clustering threshold 0.6, merge threshold 0.2, and bilinear output restoration.",
+    "chinese": "列出主设置：1024 input、rank 500、clustering 0.6、merge 0.2、bilinear restoration。",
+    "role_evidence": "可复现设置"
+  },
+  {
+    "id": "M.6.4",
+    "source": "paper/sections/methods.tex",
+    "block": 6,
+    "sentence": 4,
+    "english": "Implementation-specific details are recorded in Appendix~\\ref{app:protocol}.",
+    "chinese": "implementation-specific details 放入 Appendix。",
+    "role_evidence": "正文与附录分工"
+  },
+  {
+    "id": "M.7.1",
+    "source": "paper/sections/methods.tex",
+    "block": 7,
+    "sentence": 1,
+    "english": "CG-ICS combines concept search with a parallel visual transfer route~\\cite{cgics}.",
+    "chinese": "CG-ICS 包含 concept search 与 parallel visual transfer。",
+    "role_evidence": "结构定义"
+  },
+  {
+    "id": "M.7.2",
+    "source": "paper/sections/methods.tex",
+    "block": 7,
+    "sentence": 2,
+    "english": "A multimodal language model generates candidate concepts from the reference and a highlighted view of the annotated target.",
+    "chinese": "MLLM 从 reference 与 highlighted target 生成 candidate concepts。",
+    "role_evidence": "concept generation"
+  },
+  {
+    "id": "M.7.3",
+    "source": "paper/sections/methods.tex",
+    "block": 7,
+    "sentence": 3,
+    "english": "Each concept $c$ is scored by reference fidelity and query presence:",
+    "chinese": "按 reference fidelity 和 query presence 给 candidate concept 打分。",
+    "role_evidence": "公式 M3"
+  },
+  {
+    "id": "M.8.1",
+    "source": "paper/sections/methods.tex",
+    "block": 8,
+    "sentence": 1,
+    "english": "The query term $s_q$ is SAM~3's presence score.",
+    "chinese": "query score s_q 为 SAM 3 presence score。",
+    "role_evidence": "变量解释"
+  },
+  {
+    "id": "M.8.2",
+    "source": "paper/sections/methods.tex",
+    "block": 8,
+    "sentence": 2,
+    "english": "Candidate expansion, pruning, restarts, and reranking seek a concept that fits the annotated reference and occurs in the query.",
+    "chinese": "expansion、pruning、restarts、reranking 寻找同时匹配 reference 且存在于 query 的 concept。",
+    "role_evidence": "search 机制"
+  },
+  {
+    "id": "M.8.3",
+    "source": "paper/sections/methods.tex",
+    "block": 8,
+    "sentence": 3,
+    "english": "The default uses $\\alpha=\\beta=1$.",
+    "chinese": "默认 score exponents α=β=1。",
+    "role_evidence": "可复现设置"
+  },
+  {
+    "id": "M.9.1",
+    "source": "paper/sections/methods.tex",
+    "block": 9,
+    "sentence": 1,
+    "english": "The visual branch concatenates the reference and query.",
+    "chinese": "visual branch 将 reference 和 query 拼接。",
+    "role_evidence": "算法步骤"
+  },
+  {
+    "id": "M.9.2",
+    "source": "paper/sections/methods.tex",
+    "block": 9,
+    "sentence": 2,
+    "english": "Reference-mask components provide spatial prompts on this combined image; the resulting query-side masks yield box prompts.",
+    "chinese": "reference-mask components 产生 spatial prompts，query-side outputs 转为 box prompts。",
+    "role_evidence": "算法步骤"
+  },
+  {
+    "id": "M.9.3",
+    "source": "paper/sections/methods.tex",
+    "block": 9,
+    "sentence": 3,
+    "english": "SAM~3 then combines these boxes with the selected concept to segment the query (Figure~\\ref{fig:cgics}).",
+    "chinese": "SAM 3 结合这些 boxes 与 selected concept 输出 query segmentation。",
+    "role_evidence": "融合位置；Figure 2"
+  },
+  {
+    "id": "M.9.4",
+    "source": "paper/sections/methods.tex",
+    "block": 9,
+    "sentence": 4,
+    "english": "We compare a single concept, scored candidates, and full search, each with and without visual boxes.",
+    "chinese": "比较 single concept、scored candidates、full search，各配 with/without visual boxes。",
+    "role_evidence": "factorial design"
+  },
+  {
+    "id": "M.9.5",
+    "source": "paper/sections/methods.tex",
+    "block": 9,
+    "sentence": 5,
+    "english": "Visual-only and direct-concatenation outputs provide additional controls.",
+    "chinese": "visual-only 与 direct concatenation 是额外 controls。",
+    "role_evidence": "排除替代解释"
+  },
+  {
+    "id": "M.10.1",
+    "source": "paper/sections/methods.tex",
+    "block": 10,
+    "sentence": 1,
+    "english": "The implemented system uses Qwen3-VL-4B-Instruct for concept generation~\\cite{qwen3vl}, working image size 512, five initial candidates, and three search loops.",
+    "chinese": "实现使用 Qwen3-VL-4B-Instruct、working size 512、5 initial candidates、3 search loops。",
+    "role_evidence": "具体运行配置"
+  },
+  {
+    "id": "M.10.2",
+    "source": "paper/sections/methods.tex",
+    "block": 10,
+    "sentence": 2,
+    "english": "SAM~3 applies its own size-1008 preprocessing.",
+    "chinese": "SAM 3 内部另做 size-1008 preprocessing。",
+    "role_evidence": "解释尺度接口"
+  },
+  {
+    "id": "M.10.3",
+    "source": "paper/sections/methods.tex",
+    "block": 10,
+    "sentence": 3,
+    "english": "The language model and segmenter occupy separate GPUs; this additional language-model allocation is included when interpreting system cost.",
+    "chinese": "MLLM 与 segmenter 分占 GPUs；system cost 需要计入额外 MLLM allocation。",
+    "role_evidence": "成本口径"
+  },
+  {
+    "id": "E.1.1",
+    "source": "paper/sections/experiments.tex",
+    "block": 1,
+    "sentence": 1,
+    "english": "We evaluate COCO-$20^i$ and LVIS-$92^i$, derived from COCO~\\cite{coco} and LVIS~\\cite{lvis}.",
+    "chinese": "说明COCO-20i与LVIS-92i分别派生于COCO与LVIS，并分别引用dataset来源。",
+    "role_evidence": "dataset来源"
+  },
+  {
+    "id": "E.1.2",
+    "source": "paper/sections/experiments.tex",
+    "block": 1,
+    "sentence": 2,
+    "english": "We use the author-prepared class memberships, with four folds of 20 classes and ten folds of 92 classes, respectively~\\cite{matcher}.",
+    "chinese": "说明使用author-prepared class memberships：COCO4folds×20classes，LVIS10folds×92classes；foldprotocol单独引用Matcher。",
+    "role_evidence": "split来源"
+  },
+  {
+    "id": "E.1.3",
+    "source": "paper/sections/experiments.tex",
+    "block": 1,
+    "sentence": 3,
+    "english": "The standard comparison contains 4,000 COCO and 23,000 LVIS episodes per system.",
+    "chinese": "standard comparison 每系统 4,000 COCO、23,000 LVIS episodes。",
+    "role_evidence": "样本量"
+  },
+  {
+    "id": "E.1.4",
+    "source": "paper/sections/experiments.tex",
+    "block": 1,
+    "sentence": 4,
+    "english": "A reference cohort varies the demonstration for fixed query targets.",
+    "chinese": "reference cohort 固定 query target，改变 demonstration。",
+    "role_evidence": "E2 设计"
+  },
+  {
+    "id": "E.1.5",
+    "source": "paper/sections/experiments.tex",
+    "block": 1,
+    "sentence": 5,
+    "english": "A separate component cohort contains 400 COCO and 1,000 LVIS query targets, with up to three references each (1,200 and 2,757 episodes per configuration).",
+    "chinese": "component cohort 为 400 COCO、1,000 LVIS query targets，各最多3 references，对应1,200/2,757 episodes。",
+    "role_evidence": "component 样本量"
+  },
+  {
+    "id": "E.1.6",
+    "source": "paper/sections/experiments.tex",
+    "block": 1,
+    "sentence": 6,
+    "english": "All methods within a comparison receive matched inputs.",
+    "chinese": "同一 comparison 内各方法使用 matched inputs。",
+    "role_evidence": "配对设计"
+  },
+  {
+    "id": "E.2.1",
+    "source": "paper/sections/experiments.tex",
+    "block": 2,
+    "sentence": 1,
+    "english": "For each episode, foreground IoU is evaluated at the original query resolution:",
+    "chinese": "每 episode 在 original query resolution 计算 foreground IoU。",
+    "role_evidence": "公式 E1"
+  },
+  {
+    "id": "E.3.1",
+    "source": "paper/sections/experiments.tex",
+    "block": 3,
+    "sentence": 1,
+    "english": "The headline metric pools counts within each class, averages classes within each fold, and then averages folds:",
+    "chinese": "headline metric：class 内 pool TP/FP/FN，fold 内平均 classes，再平均 folds。",
+    "role_evidence": "公式 E2"
+  },
+  {
+    "id": "E.4.1",
+    "source": "paper/sections/experiments.tex",
+    "block": 4,
+    "sentence": 1,
+    "english": "For paired comparisons, we first average planned episodes within each query target $u$ (query image, target mask, and concept), then average the method difference:",
+    "chinese": "paired metric：先对同一 query target 的 planned episodes 平均，再对 method difference 等权平均。",
+    "role_evidence": "公式 E3"
+  },
+  {
+    "id": "E.5.1",
+    "source": "paper/sections/experiments.tex",
+    "block": 5,
+    "sentence": 1,
+    "english": "Confidence intervals resample whole query-image clusters, keeping their concepts and references together~\\cite{bootstrap,clusterbootstrap}.",
+    "chinese": "bootstrap 按完整 query-image clusters 重采样，concepts 和 references 一起保留。",
+    "role_evidence": "统计独立单位"
+  },
+  {
+    "id": "E.5.2",
+    "source": "paper/sections/experiments.tex",
+    "block": 5,
+    "sentence": 2,
+    "english": "We report exploratory 95\\% intervals using 2,000 bootstrap replicates for main/component contrasts and 1,000 for parameter/area analyses.",
+    "chinese": "主/component contrasts 用2,000次，parameter/area用1,000次，给 exploratory 95% CIs。",
+    "role_evidence": "不确定性设置"
+  },
+  {
+    "id": "E.5.3",
+    "source": "paper/sections/experiments.tex",
+    "block": 5,
+    "sentence": 3,
+    "english": "Reference sensitivity is the standard deviation across distinct references after averaging repeated executions of identical inputs.",
+    "chinese": "reference SD 先合并 identical inputs 的 repeated executions，再在不同 references 间计算。",
+    "role_evidence": "robustness 指标"
+  },
+  {
+    "id": "E.5.4",
+    "source": "paper/sections/experiments.tex",
+    "block": 5,
+    "sentence": 4,
+    "english": "Failed predictions retain missing accuracy; paired contrasts use common successful inputs.",
+    "chinese": "failed predictions 保留 missing accuracy，paired contrasts 使用 common successful inputs。",
+    "role_evidence": "失败处理口径"
+  },
+  {
+    "id": "E.6.1",
+    "source": "paper/sections/experiments.tex",
+    "block": 6,
+    "sentence": 1,
+    "english": "The completed first batch covers 36 configurations and 615,976 episode records, including four preprocessing failures.",
+    "chinese": "第一批有36 configurations、615,976 records，其中4 preprocessing failures。",
+    "role_evidence": "覆盖范围"
+  },
+  {
+    "id": "E.6.2",
+    "source": "paper/sections/experiments.tex",
+    "block": 6,
+    "sentence": 2,
+    "english": "All expected episode identities and shard assignments have been verified.",
+    "chinese": "已核对 expected episode identities 和 shard assignments。",
+    "role_evidence": "审计证据"
+  },
+  {
+    "id": "E.6.3",
+    "source": "paper/sections/experiments.tex",
+    "block": 6,
+    "sentence": 3,
+    "english": "We report each dataset separately and use the executed common protocol for comparative analysis.",
+    "chinese": "各 dataset 分开报告，在实际执行的 common protocol 上比较。",
+    "role_evidence": "解释范围"
+  },
+  {
+    "id": "E.6.4",
+    "source": "paper/sections/experiments.tex",
+    "block": 6,
+    "sentence": 4,
+    "english": "Protocol details and the full research matrix are in Appendix~\\ref{app:protocol}.",
+    "chinese": "完整 matrix 与 protocol 放 Appendix。",
+    "role_evidence": "正文导航"
+  },
+  {
+    "id": "E.7.1",
+    "source": "paper/sections/experiments.tex",
+    "block": 7,
+    "sentence": 1,
+    "english": "CG-ICS obtains higher accuracy on both datasets (Table~\\ref{tab:main}).",
+    "chinese": "CG-ICS 在两个 dataset 的 headline accuracy 更高。",
+    "role_evidence": "Table 1"
+  },
+  {
+    "id": "E.7.2",
+    "source": "paper/sections/experiments.tex",
+    "block": 7,
+    "sentence": 2,
+    "english": "Its paired equal-query advantage is 14.01 points on COCO and 16.22 on LVIS.",
+    "chinese": "paired equal-query 优势为 COCO14.01 pp、LVIS16.22 pp。",
+    "role_evidence": "第一批配对效应"
+  },
+  {
+    "id": "E.7.3",
+    "source": "paper/sections/experiments.tex",
+    "block": 7,
+    "sentence": 3,
+    "english": "The headline class-pooled and paired metrics answer different questions: pooling weights an episode by its predicted/true union within a class, whereas equal-query averaging gives each query target equal weight.",
+    "chinese": "区分指标：class pooling 对 episode 按 union size 加权，equal-query 对 query target 等权。",
+    "role_evidence": "避免把两列当同一均值"
+  },
+  {
+    "id": "E.7.4",
+    "source": "paper/sections/experiments.tex",
+    "block": 7,
+    "sentence": 4,
+    "english": "On LVIS, CG-ICS's episode-mean IoU is 55.19\\%, compared with 47.44\\% under mean-fold class pooling.",
+    "chinese": "LVIS CG-ICS episode mean55.19%，mean-fold class pooling47.44%。",
+    "role_evidence": "指标差异实例"
+  },
+  {
+    "id": "E.7.5",
+    "source": "paper/sections/experiments.tex",
+    "block": 7,
+    "sentence": 5,
+    "english": "Appendix~\\ref{app:math} gives the exact weighting identity behind this distinction.",
+    "chinese": "Appendix 用 exact weighting identity 解释差异。",
+    "role_evidence": "连接数学分析"
+  },
+  {
+    "id": "E.8.1",
+    "source": "paper/sections/experiments.tex",
+    "block": 8,
+    "sentence": 1,
+    "english": "This accuracy advantage has a substantial computational cost.",
+    "chinese": "accuracy advantage 带来 substantial cost。",
+    "role_evidence": "引出 trade-off"
+  },
+  {
+    "id": "E.8.2",
+    "source": "paper/sections/experiments.tex",
+    "block": 8,
+    "sentence": 2,
+    "english": "On exact inputs matched by recorded runner GPU, CG-ICS takes 7.37--10.63 times the mean inference time of INSID3 (Table~\\ref{tab:cost}).",
+    "chinese": "same-input/same-runner-GPU 比较中，CG latency 为 INSID3 的7.37–10.63倍。",
+    "role_evidence": "Table 2"
+  },
+  {
+    "id": "E.8.3",
+    "source": "paper/sections/experiments.tex",
+    "block": 8,
+    "sentence": 3,
+    "english": "These times cover inference and exclude model/server startup, evaluation, and output writing.",
+    "chinese": "这些 times 仅含 inference，不含 startup、evaluation、writing。",
+    "role_evidence": "成本定义"
+  },
+  {
+    "id": "E.8.4",
+    "source": "paper/sections/experiments.tex",
+    "block": 8,
+    "sentence": 4,
+    "english": "The extra language-model GPU makes the resource difference larger than the runner-latency ratio alone suggests.",
+    "chinese": "CG 额外 MLLM GPU 意味着资源差异不止 latency ratio。",
+    "role_evidence": "system-level cost"
+  },
+  {
+    "id": "E.9.1",
+    "source": "paper/sections/experiments.tex",
+    "block": 9,
+    "sentence": 1,
+    "english": "The operation counts explain much of this cost: CG-ICS averages 3.43--3.50 language-model requests and 29.89--32.76 SAM calls per standard episode across the recorded hardware strata.",
+    "chinese": "CG 每 standard episode 约3.43–3.50 MLLM requests、29.89–32.76 SAM calls，解释主要开销。",
+    "role_evidence": "operation counts"
+  },
+  {
+    "id": "E.9.2",
+    "source": "paper/sections/experiments.tex",
+    "block": 9,
+    "sentence": 2,
+    "english": "Language-model startup adds a median 58--71 seconds, which matters for small batches.",
+    "chinese": "MLLM startup median58–71s，小 batch 时明显。",
+    "role_evidence": "启动成本"
+  },
+  {
+    "id": "E.9.3",
+    "source": "paper/sections/experiments.tex",
+    "block": 9,
+    "sentence": 3,
+    "english": "Startup and owned-process memory are reported separately in Appendix~\\ref{app:cost}.",
+    "chinese": "startup 与 owned-process memory 另放 Appendix。",
+    "role_evidence": "附录导航"
+  },
+  {
+    "id": "E.10.1",
+    "source": "paper/sections/experiments.tex",
+    "block": 10,
+    "sentence": 1,
+    "english": "The complete-system accuracy ranking does not determine the variability ranking.",
+    "chinese": "accuracy ranking 不自动决定 variability ranking。",
+    "role_evidence": "新的研究问题"
+  },
+  {
+    "id": "E.10.2",
+    "source": "paper/sections/experiments.tex",
+    "block": 10,
+    "sentence": 2,
+    "english": "CG-ICS reduces reference SD on COCO but increases it on LVIS (Table~\\ref{tab:reference}).",
+    "chinese": "CG 在 COCO 降低 reference SD，在 LVIS 增加。",
+    "role_evidence": "Table 3"
+  },
+  {
+    "id": "E.10.3",
+    "source": "paper/sections/experiments.tex",
+    "block": 10,
+    "sentence": 3,
+    "english": "Nevertheless, its mean worst-reference IoU is higher on both datasets.",
+    "chinese": "但 CG 在两个数据集的 mean worst-reference IoU 均更高。",
+    "role_evidence": "Table 3"
+  },
+  {
+    "id": "E.10.4",
+    "source": "paper/sections/experiments.tex",
+    "block": 10,
+    "sentence": 4,
+    "english": "A system can therefore improve the lower end of observed performance while remaining more sensitive to which reference is chosen.",
+    "chinese": "因此更高 worst-case-level accuracy 可以与更大 reference sensitivity 同时出现。",
+    "role_evidence": "解释现象"
+  },
+  {
+    "id": "E.11.1",
+    "source": "paper/sections/experiments.tex",
+    "block": 11,
+    "sentence": 1,
+    "english": "The same direction appears in H200-only subsets: the CG-ICS minus INSID3 reference-SD interval is $[-3.71,-2.69]$ points on COCO and $[5.03,5.98]$ on LVIS.",
+    "chinese": "H200-only subsets 中 reference SD difference 的区间仍一负一正。",
+    "role_evidence": "硬件分层稳健性检查"
+  },
+  {
+    "id": "E.11.2",
+    "source": "paper/sections/experiments.tex",
+    "block": 11,
+    "sentence": 2,
+    "english": "Reference robustness is therefore dataset-dependent, and reduced variability should be interpreted alongside the achieved accuracy.",
+    "chinese": "reference robustness 是 dataset-dependent，variability 必须结合 accuracy 一起看。",
+    "role_evidence": "本节结论"
+  },
+  {
+    "id": "E.12.1",
+    "source": "paper/sections/experiments.tex",
+    "block": 12,
+    "sentence": 1,
+    "english": "A three-seed study fixes the component inputs and yields mean per-input CG-ICS SDs of 2.23 points on COCO and 3.65 on LVIS.",
+    "chinese": "three-seed 固定 component inputs，CG mean per-input SD为2.23/3.65 pp。",
+    "role_evidence": "run sensitivity"
+  },
+  {
+    "id": "E.12.2",
+    "source": "paper/sections/experiments.tex",
+    "block": 12,
+    "sentence": 2,
+    "english": "Prediction hashes are identical across all three seeds for 263/1,200 and 694/2,757 inputs.",
+    "chinese": "263/1,200与694/2,757 inputs 的 prediction hashes 跨3 seeds完全一致。",
+    "role_evidence": "离散输出稳定性"
+  },
+  {
+    "id": "E.12.3",
+    "source": "paper/sections/experiments.tex",
+    "block": 12,
+    "sentence": 3,
+    "english": "Because some runs use different GPU models, we interpret these as run-sensitivity measurements rather than an isolated seed effect.",
+    "chinese": "部分运行混合 GPU model，因此这是 run sensitivity，不是 isolated seed effect。",
+    "role_evidence": "归因边界"
+  },
+  {
+    "id": "E.13.1",
+    "source": "paper/sections/experiments.tex",
+    "block": 13,
+    "sentence": 1,
+    "english": "INSID3's gains are not explained by the feature trunk alone.",
+    "chinese": "INSID3 的收益不只来自 feature trunk。",
+    "role_evidence": "component 问题"
+  },
+  {
+    "id": "E.13.2",
+    "source": "paper/sections/experiments.tex",
+    "block": 13,
+    "sentence": 2,
+    "english": "Removing debiasing from the full processing route reduces equal-query IoU by 2.38 points on COCO and 2.26 on LVIS.",
+    "chinese": "移除 debiasing 使 COCO/LVIS equal-query IoU下降2.38/2.26 pp。",
+    "role_evidence": "paired ablation"
+  },
+  {
+    "id": "E.13.3",
+    "source": "paper/sections/experiments.tex",
+    "block": 13,
+    "sentence": 3,
+    "english": "Replacing self-plus-cross aggregation with seed-only output reduces it by 9.24 and 4.06 points, respectively.",
+    "chinese": "self-plus-cross 改为seed-only下降9.24/4.06 pp。",
+    "role_evidence": "paired ablation"
+  },
+  {
+    "id": "E.13.4",
+    "source": "paper/sections/experiments.tex",
+    "block": 13,
+    "sentence": 4,
+    "english": "The full processing route improves over debiased simple similarity by 19.23 and 11.94 points.",
+    "chinese": "full processing 相比debiased similarity提高19.23/11.94 pp。",
+    "role_evidence": "paired ablation"
+  },
+  {
+    "id": "E.13.5",
+    "source": "paper/sections/experiments.tex",
+    "block": 13,
+    "sentence": 5,
+    "english": "These contrasts indicate that both the representation adjustment and the use of clustered spatial structure matter.",
+    "chinese": "representation adjustment 与 clustered spatial structure 均有贡献。",
+    "role_evidence": "机制归纳"
+  },
+  {
+    "id": "E.14.1",
+    "source": "paper/sections/experiments.tex",
+    "block": 14,
+    "sentence": 1,
+    "english": "For CG-ICS, language and visual prompts provide complementary information.",
+    "chinese": "CG 的 language 与 visual prompts 提供互补信息。",
+    "role_evidence": "component 问题"
+  },
+  {
+    "id": "E.14.2",
+    "source": "paper/sections/experiments.tex",
+    "block": 14,
+    "sentence": 2,
+    "english": "Adding visual boxes to a single concept yields 5.39 points on COCO and 4.78 on LVIS; adding a concept to the visual-only system yields 13.38 and 16.54 points.",
+    "chinese": "single concept 加boxes提高5.39/4.78 pp；visual-only加concept提高13.38/16.54 pp。",
+    "role_evidence": "paired interventions"
+  },
+  {
+    "id": "E.14.3",
+    "source": "paper/sections/experiments.tex",
+    "block": 14,
+    "sentence": 3,
+    "english": "By contrast, the incremental return from more search depends on the dataset and on the already available visual route.",
+    "chinese": "extra search 的收益随 dataset 和已有visual route而变。",
+    "role_evidence": "从互补转向边际收益"
+  },
+  {
+    "id": "E.15.1",
+    "source": "paper/sections/experiments.tex",
+    "block": 15,
+    "sentence": 1,
+    "english": "With visual boxes, full search adds 0.22 points beyond a single concept on COCO, with a confidence interval spanning zero; the corresponding LVIS gain is 2.30 points.",
+    "chinese": "带boxes时full search比single concept在COCO只提高0.22 pp且CI跨0，LVIS提高2.30 pp。",
+    "role_evidence": "Table 4"
+  },
+  {
+    "id": "E.15.2",
+    "source": "paper/sections/experiments.tex",
+    "block": 15,
+    "sentence": 2,
+    "english": "Without boxes, the gains rise to 3.07 and 5.30 points.",
+    "chinese": "不带boxes时search收益为3.07/5.30 pp。",
+    "role_evidence": "factorial comparison"
+  },
+  {
+    "id": "E.15.3",
+    "source": "paper/sections/experiments.tex",
+    "block": 15,
+    "sentence": 3,
+    "english": "Thus, the observed contribution of search depends on both the dataset and the visual route.",
+    "chinese": "search贡献依赖dataset与visual route。",
+    "role_evidence": "引出interaction公式"
+  },
+  {
+    "id": "E.16.1",
+    "source": "paper/sections/experiments.tex",
+    "block": 16,
+    "sentence": 1,
+    "english": "The single-concept route is also much cheaper.",
+    "chinese": "single-concept route成本显著更低。",
+    "role_evidence": "引出conditional search"
+  },
+  {
+    "id": "E.16.2",
+    "source": "paper/sections/experiments.tex",
+    "block": 16,
+    "sentence": 2,
+    "english": "Full search takes 4.17 times as long on 300 matched COCO/H200 inputs and 4.37--4.56 times as long on matched LVIS subsets.",
+    "chinese": "matched subsets中full search耗时为single的4.17倍或4.37–4.56倍。",
+    "role_evidence": "相同inputs / GPU成本"
+  },
+  {
+    "id": "E.16.3",
+    "source": "paper/sections/experiments.tex",
+    "block": 16,
+    "sentence": 3,
+    "english": "The accuracy changes on those same timing subsets are $-0.54$ points for COCO, $+1.53$ for LVIS/L40S, and $+3.67$ for LVIS/H200.",
+    "chinese": "同一timing subsets的accuracy changes为COCO−0.54、LVIS/L40S+1.53、LVIS/H200+3.67 pp。",
+    "role_evidence": "同口径trade-off"
+  },
+  {
+    "id": "E.16.4",
+    "source": "paper/sections/experiments.tex",
+    "block": 16,
+    "sentence": 4,
+    "english": "These paired observations motivate testing conditional search on fresh inputs (Section~\\ref{sec:extension}).",
+    "chinese": "因此值得在fresh inputs测试conditional search。",
+    "role_evidence": "动机，不是gate性能证明"
+  },
+  {
+    "id": "E.17.1",
+    "source": "paper/sections/experiments.tex",
+    "block": 17,
+    "sentence": 1,
+    "english": "The current candidate-stage comparison changes both candidate generation and selection; the full-search comparison also includes restarts.",
+    "chinese": "现有candidate-stage变化同时改变generation/selection，full search还包含restarts。",
+    "role_evidence": "说明当前干预并非纯score ablation"
+  },
+  {
+    "id": "E.17.2",
+    "source": "paper/sections/experiments.tex",
+    "block": 17,
+    "sentence": 2,
+    "english": "The next batch therefore adds a fixed-pool experiment to isolate the scoring terms in Eq.~\\ref{eq:cg-score}.",
+    "chinese": "第二批fixed-pool实验将固定candidate evidence，单独测试score terms。",
+    "role_evidence": "明确剩余问题"
+  },
+  {
+    "id": "E.18.1",
+    "source": "paper/sections/experiments.tex",
+    "block": 18,
+    "sentence": 1,
+    "english": "INSID3 processing improves all three feature trunks (Table~\\ref{tab:matrix}).",
+    "chinese": "INSID3 processing提高三种trunks的表现。",
+    "role_evidence": "Table 5"
+  },
+  {
+    "id": "E.18.2",
+    "source": "paper/sections/experiments.tex",
+    "block": 18,
+    "sentence": 2,
+    "english": "DINOv3 remains strongest under both processing routes, while equal-query processing gains span 15.49--19.39 points on COCO and 11.17--11.95 on LVIS.",
+    "chinese": "两种processing下DINOv3均最好；equal-query processing gain在COCO15.49–19.39、LVIS11.17–11.95 pp。",
+    "role_evidence": "representation/processing matrix"
+  },
+  {
+    "id": "E.18.3",
+    "source": "paper/sections/experiments.tex",
+    "block": 18,
+    "sentence": 3,
+    "english": "Representation quality and mask-construction strategy therefore make distinct contributions.",
+    "chinese": "representation与mask construction各有贡献。",
+    "role_evidence": "分离解释"
+  },
+  {
+    "id": "E.18.4",
+    "source": "paper/sections/experiments.tex",
+    "block": 18,
+    "sentence": 4,
+    "english": "The SAM~3 entry is a trunk adapted to the feature interface, separate from its full promptable decoder; the comparison uses a common recipe rather than separately optimized settings for each backbone.",
+    "chinese": "SAM 3这里只是common feature interface中的trunk；不是full promptable decoder比较，也未逐backbone优化。",
+    "role_evidence": "关键比较边界"
+  },
+  {
+    "id": "E.19.1",
+    "source": "paper/sections/experiments.tex",
+    "block": 19,
+    "sentence": 1,
+    "english": "Single-factor sweeps show that increasing computation does not consistently improve accuracy.",
+    "chinese": "single-factor sweeps显示更多compute不保证更高accuracy。",
+    "role_evidence": "参数研究结论"
+  },
+  {
+    "id": "E.19.2",
+    "source": "paper/sections/experiments.tex",
+    "block": 19,
+    "sentence": 2,
+    "english": "Raising the INSID3 clustering threshold from 0.6 to 0.7 decreases COCO equal-query IoU by 1.53 points but increases LVIS by 1.85.",
+    "chinese": "clustering threshold0.6→0.7对COCO−1.53、LVIS+1.85 pp。",
+    "role_evidence": "dataset-dependent sensitivity"
+  },
+  {
+    "id": "E.19.3",
+    "source": "paper/sections/experiments.tex",
+    "block": 19,
+    "sentence": 3,
+    "english": "Reducing input size to 768 changes accuracy by $-0.88$ and $-2.25$ points while reducing matched latency to approximately 0.39--0.41 of the default.",
+    "chinese": "input1024→768对accuracy−0.88/−2.25 pp，latency缩为默认0.39–0.41。",
+    "role_evidence": "效率操作点"
+  },
+  {
+    "id": "E.20.1",
+    "source": "paper/sections/experiments.tex",
+    "block": 20,
+    "sentence": 1,
+    "english": "For CG-ICS, using one initial candidate changes equal-query IoU by $-0.16$ points on COCO and $-0.82$ on LVIS; same-GPU matched latency is approximately 0.63--0.66 of the default.",
+    "chinese": "CG initial candidates5→1对accuracy−0.16/−0.82 pp，matched latency缩为0.63–0.66。",
+    "role_evidence": "效率操作点"
+  },
+  {
+    "id": "E.20.2",
+    "source": "paper/sections/experiments.tex",
+    "block": 20,
+    "sentence": 2,
+    "english": "One search loop has little observed COCO penalty but reduces LVIS accuracy by 0.75 points.",
+    "chinese": "search loops3→1对COCO观察到很小影响，LVIS−0.75 pp。",
+    "role_evidence": "参数收益"
+  },
+  {
+    "id": "E.20.3",
+    "source": "paper/sections/experiments.tex",
+    "block": 20,
+    "sentence": 3,
+    "english": "Accuracy effects use the full component cohort, while timing ratios use subsets with the same runner GPU model.",
+    "chinese": "accuracy来自full component cohort，timing来自same-GPU subsets。",
+    "role_evidence": "配对口径"
+  },
+  {
+    "id": "E.20.4",
+    "source": "paper/sections/experiments.tex",
+    "block": 20,
+    "sentence": 4,
+    "english": "Full intervals are in Appendix~\\ref{app:cost}.",
+    "chinese": "完整CIs见Appendix。",
+    "role_evidence": "正文压缩"
+  },
+  {
+    "id": "E.21.1",
+    "source": "paper/sections/experiments.tex",
+    "block": 21,
+    "sentence": 1,
+    "english": "CG-ICS's accuracy advantage is largest on small query targets.",
+    "chinese": "CG在small query targets上的优势最大。",
+    "role_evidence": "尺度规律"
+  },
+  {
+    "id": "E.21.2",
+    "source": "paper/sections/experiments.tex",
+    "block": 21,
+    "sentence": 2,
+    "english": "For foreground area below 1\\% of the image, its paired equal-query gain is 21.88 points on COCO and 24.03 on LVIS.",
+    "chinese": "foreground<1%时paired gain为21.88/24.03 pp。",
+    "role_evidence": "area-bin结果"
+  },
+  {
+    "id": "E.21.3",
+    "source": "paper/sections/experiments.tex",
+    "block": 21,
+    "sentence": 3,
+    "english": "The gain remains positive but smaller in the 1--10\\% and at-least-10\\% bins.",
+    "chinese": "更大两档仍为正，但幅度更小。",
+    "role_evidence": "趋势完整性"
+  },
+  {
+    "id": "E.21.4",
+    "source": "paper/sections/experiments.tex",
+    "block": 21,
+    "sentence": 4,
+    "english": "Here size means semantic foreground proportion, measured on the query.",
+    "chinese": "size指query semantic foreground proportion。",
+    "role_evidence": "变量定义"
+  },
+  {
+    "id": "E.22.1",
+    "source": "paper/sections/experiments.tex",
+    "block": 22,
+    "sentence": 1,
+    "english": "The examples in Figure~\\ref{fig:qualitative} reveal complementary failure modes.",
+    "chinese": "Figure4展示不同方法互补的成功与失败。",
+    "role_evidence": "定性分析"
+  },
+  {
+    "id": "E.22.2",
+    "source": "paper/sections/experiments.tex",
+    "block": 22,
+    "sentence": 2,
+    "english": "CG-ICS recovers a book and monitor missed by INSID3.",
+    "chinese": "CG找到INS漏掉的book和monitor。",
+    "role_evidence": "具体案例"
+  },
+  {
+    "id": "E.22.3",
+    "source": "paper/sections/experiments.tex",
+    "block": 22,
+    "sentence": 3,
+    "english": "INSID3 succeeds on a food target for which CG-ICS selects a distractor under the concept \\emph{salmon medallion}.",
+    "chinese": "INS找到food，而CG在salmon medallion概念下选到distractor。",
+    "role_evidence": "反方向案例"
+  },
+  {
+    "id": "E.22.4",
+    "source": "paper/sections/experiments.tex",
+    "block": 22,
+    "sentence": 4,
+    "english": "Both methods accurately trace a stop sign, and both fail on another food target.",
+    "chinese": "两者都能分stop sign，也都在另一个food target失败。",
+    "role_evidence": "共同成功/失败"
+  },
+  {
+    "id": "E.22.5",
+    "source": "paper/sections/experiments.tex",
+    "block": 22,
+    "sentence": 5,
+    "english": "A bowl example illustrates excessive background coverage.",
+    "chinese": "bowl案例显示过度覆盖background。",
+    "role_evidence": "FP失败类型"
+  },
+  {
+    "id": "E.23.1",
+    "source": "paper/sections/experiments.tex",
+    "block": 23,
+    "sentence": 1,
+    "english": "Other inspected cases connect semantic specificity to the predicted region: \\emph{floor unit} selects the floor rather than a vacuum cleaner, \\emph{buttered bread} covers bread rather than the small butter target, and \\emph{vehicle} includes a bus outside the prompted car regions.",
+    "chinese": "floor unit、buttered bread、vehicle三个概念分别造成目标范围错误。",
+    "role_evidence": "semantic specificity案例"
+  },
+  {
+    "id": "E.23.2",
+    "source": "paper/sections/experiments.tex",
+    "block": 23,
+    "sentence": 2,
+    "english": "These cases motivate testing concept quality as well as mask quality.",
+    "chinese": "因此除了mask quality，也应检验concept quality。",
+    "role_evidence": "引出score/generation研究"
+  },
+  {
+    "id": "E.24.1",
+    "source": "paper/sections/experiments.tex",
+    "block": 24,
+    "sentence": 1,
+    "english": "The four execution errors arise earlier, during preprocessing.",
+    "chinese": "四次execution errors发生在preprocessing。",
+    "role_evidence": "区分模型错误与执行失败"
+  },
+  {
+    "id": "E.24.2",
+    "source": "paper/sections/experiments.tex",
+    "block": 24,
+    "sentence": 2,
+    "english": "Three distinct reference masks contain only one or five foreground pixels, which disappear when resized to $512\\times512$ by legacy nearest-neighbor sampling.",
+    "chinese": "3个不同reference masks仅1或5 pixels，legacy nearest resize到512²后foreground消失。",
+    "role_evidence": "直接失败证据"
+  },
+  {
+    "id": "E.24.3",
+    "source": "paper/sections/experiments.tex",
+    "block": 24,
+    "sentence": 3,
+    "english": "CG-ICS then stops before model inference.",
+    "chinese": "所以CG在inference前停止。",
+    "role_evidence": "因果链"
+  },
+  {
+    "id": "E.24.4",
+    "source": "paper/sections/experiments.tex",
+    "block": 24,
+    "sentence": 4,
+    "english": "A foreground-preserving resize is a concrete future improvement, to be tested on both these failures and independent small-reference examples.",
+    "chinese": "建议foreground-preserving resize，并在原失败与independent small-reference examples上测试。",
+    "role_evidence": "具体future work"
+  },
+  {
+    "id": "E.24.5",
+    "source": "paper/sections/experiments.tex",
+    "block": 24,
+    "sentence": 5,
+    "english": "The 20-case inspection recomputed all 36 available prediction masks and reproduced their saved pixel counts and IoUs; six cases are shown here.",
+    "chinese": "20case中的36个available masks已重算并复现savedcounts/IoU，正文展示6例。",
+    "role_evidence": "定性证据审计"
+  },
+  {
+    "id": "X.1.1",
+    "source": "paper/sections/interaction_analysis.tex",
+    "block": 1,
+    "sentence": 1,
+    "english": "Let $J_u(s,v)$ denote reference-averaged IoU for query target $u$, with $s\\in\\{0,1\\}$ selecting a single concept or full search and $v\\in\\{0,1\\}$ indicating visual boxes.",
+    "chinese": "定义J_u(s,v)：query-level reference-averaged IoU；s=single/full search，v=without/with boxes。",
+    "role_evidence": "2×2变量"
+  },
+  {
+    "id": "X.1.2",
+    "source": "paper/sections/interaction_analysis.tex",
+    "block": 1,
+    "sentence": 2,
+    "english": "The interaction contrast is",
+    "chinese": "定义difference-in-differences Γ。",
+    "role_evidence": "公式 E4"
+  },
+  {
+    "id": "X.2.1",
+    "source": "paper/sections/interaction_analysis.tex",
+    "block": 2,
+    "sentence": 1,
+    "english": "This measures how much search changes the marginal benefit of visual prompting.",
+    "chinese": "Γ衡量search如何改变visual prompting的marginal benefit；等价地也衡量visual prompting如何改变search收益。",
+    "role_evidence": "interaction含义"
+  },
+  {
+    "id": "X.2.2",
+    "source": "paper/sections/interaction_analysis.tex",
+    "block": 2,
+    "sentence": 2,
+    "english": "The observed interaction is $-2.85$ percentage points on COCO (95\\% CI $[-4.29,-1.48]$) and $-3.00$ on LVIS ($[-4.09,-1.95]$).",
+    "chinese": "Γ为COCO−2.85 pp、LVIS−3.00 pp，95%CIs均不跨0。",
+    "role_evidence": "第一批配对统计"
+  },
+  {
+    "id": "X.2.3",
+    "source": "paper/sections/interaction_analysis.tex",
+    "block": 2,
+    "sentence": 3,
+    "english": "Thus, on the full matched input cohort, the two additions have diminishing joint gains: visual boxes help at both search levels, but help more when only the initial concept is used.",
+    "chinese": "在full matched cohort，两种addition呈diminishing joint gains；boxes两种search level都有效，但single concept时更有效。",
+    "role_evidence": "可支持的结论"
+  },
+  {
+    "id": "P.1.1",
+    "source": "paper/sections/extension.tex",
+    "block": 1,
+    "sentence": 1,
+    "english": "The component results motivate allocating search according to the input.",
+    "chinese": "component结果提示按input分配search。",
+    "role_evidence": "proposal动机"
+  },
+  {
+    "id": "P.1.2",
+    "source": "paper/sections/extension.tex",
+    "block": 1,
+    "sentence": 2,
+    "english": "Visual prompting reduces the observed marginal benefit of concept search, while the remaining search benefit varies across datasets and queries.",
+    "chinese": "visual prompting降低observed marginal search benefit，但剩余收益随dataset/query变化。",
+    "role_evidence": "证据桥梁"
+  },
+  {
+    "id": "P.1.3",
+    "source": "paper/sections/extension.tex",
+    "block": 1,
+    "sentence": 3,
+    "english": "We propose Agreement-Gated Search (AGS), which uses consistency between the initial text-only and visual-only predictions to decide whether to search further.",
+    "chinese": "AGS用初始text-only与visual-only predictions的一致程度决定继续search。",
+    "role_evidence": "方法概念"
+  },
+  {
+    "id": "P.1.4",
+    "source": "paper/sections/extension.tex",
+    "block": 1,
+    "sentence": 4,
+    "english": "AGS applies input-dependent computation allocation~\\cite{branchynet,adaptiveinference} to the concept-search stage of CG-ICS.",
+    "chinese": "将input-dependent computation allocation思想用到CG concept-search stage。",
+    "role_evidence": "与adaptive inference文献连接"
+  },
+  {
+    "id": "P.2.1",
+    "source": "paper/sections/extension.tex",
+    "block": 2,
+    "sentence": 1,
+    "english": "For the first reference-derived concept $c_0$, let $M_t(c_0)$ denote its text-only query mask and $M_v$ the visual-only mask.",
+    "chinese": "定义initial concept c0、text-only mask Mt和visual-only mask Mv。",
+    "role_evidence": "decision变量"
+  },
+  {
+    "id": "P.2.2",
+    "source": "paper/sections/extension.tex",
+    "block": 2,
+    "sentence": 2,
+    "english": "If either probe is empty, set $A=0$; otherwise define",
+    "chinese": "任一probe为空则不接受；否则计算两mask IoU，超过τ则A=1。",
+    "role_evidence": "公式 P1"
+  },
+  {
+    "id": "P.3.1",
+    "source": "paper/sections/extension.tex",
+    "block": 3,
+    "sentence": 1,
+    "english": "If $A=1$, the system retains $c_0$ and produces the joint text-plus-visual mask.",
+    "chinese": "A=1保留c0并产生joint text-plus-visual output。",
+    "role_evidence": "early branch"
+  },
+  {
+    "id": "P.3.2",
+    "source": "paper/sections/extension.tex",
+    "block": 3,
+    "sentence": 2,
+    "english": "Otherwise, it performs concept search before the final joint prediction:",
+    "chinese": "A=0先concept search，再输出final joint prediction。",
+    "role_evidence": "search branch；公式 P2"
+  },
+  {
+    "id": "P.4.1",
+    "source": "paper/sections/extension.tex",
+    "block": 4,
+    "sentence": 1,
+    "english": "The primary threshold is fixed at $\\tau=0.7$, with 0.5 and 0.9 used for sensitivity analysis.",
+    "chinese": "primaryτ=0.7，0.5/0.9用于sensitivity。",
+    "role_evidence": "预设超参"
+  },
+  {
+    "id": "P.4.2",
+    "source": "paper/sections/extension.tex",
+    "block": 4,
+    "sentence": 2,
+    "english": "No query annotation enters this decision.",
+    "chinese": "decision不使用query annotation。",
+    "role_evidence": "可部署性"
+  },
+  {
+    "id": "P.4.3",
+    "source": "paper/sections/extension.tex",
+    "block": 4,
+    "sentence": 3,
+    "english": "Agreement measures consistency between the probe masks; its relationship to their target accuracy is formalized in Appendix~\\ref{app:math}.",
+    "chinese": "agreement衡量probe consistency；与target accuracy的关系在Appendix形式化。",
+    "role_evidence": "信号边界"
+  },
+  {
+    "id": "P.5.1",
+    "source": "paper/sections/extension.tex",
+    "block": 5,
+    "sentence": 1,
+    "english": "The second batch evaluates four connected parts.",
+    "chinese": "第二批包含四个相连部分。",
+    "role_evidence": "evaluation roadmap"
+  },
+  {
+    "id": "P.5.2",
+    "source": "paper/sections/extension.tex",
+    "block": 5,
+    "sentence": 2,
+    "english": "A fixed-candidate-pool ablation compares ranking by $s_rs_q$, $s_r$, and $s_q$ using the same candidate evidence and final visual prompts.",
+    "chinese": "fixed-pool ablation固定candidate evidence和visual prompts，比较s_rs_q、s_r、s_q。",
+    "role_evidence": "isolating scoring"
+  },
+  {
+    "id": "P.5.3",
+    "source": "paper/sections/extension.tex",
+    "block": 5,
+    "sentence": 3,
+    "english": "A fresh-query comparison tests the original full system, the single-concept route, and the one-initial-candidate setting.",
+    "chinese": "fresh-query比较full、single-concept、one-initial-candidate。",
+    "role_evidence": "独立泛化复查"
+  },
+  {
+    "id": "P.5.4",
+    "source": "paper/sections/extension.tex",
+    "block": 5,
+    "sentence": 4,
+    "english": "Domain transfer uses SUIM underwater images~\\cite{suim} and public ISIC~2018 Task~1 lesion images and masks~\\cite{isic,ham10000}.",
+    "chinese": "SUIM和ISIC2018 Task1测试domain transfer。",
+    "role_evidence": "新domain"
+  },
+  {
+    "id": "P.5.5",
+    "source": "paper/sections/extension.tex",
+    "block": 5,
+    "sentence": 5,
+    "english": "Finally, the agreement gate is compared with original full search, staged always-search, an initial-score gate, and random routing.",
+    "chinese": "AGS对照original full、staged always-search、initial-score gate、random routing。",
+    "role_evidence": "排除只要少search就会快的解释"
+  },
+  {
+    "id": "P.6.1",
+    "source": "paper/sections/extension.tex",
+    "block": 6,
+    "sentence": 1,
+    "english": "The core study requests 400 fresh COCO and 1,000 fresh LVIS query images, each with up to three references.",
+    "chinese": "core请求400fresh COCO、1,000fresh LVIS queries，每个最多3references。",
+    "role_evidence": "预设样本量"
+  },
+  {
+    "id": "P.6.2",
+    "source": "paper/sections/extension.tex",
+    "block": 6,
+    "sentence": 2,
+    "english": "SUIM and ISIC each request 1,000 queries under the source-pool definitions in Appendix~\\ref{app:protocol}.",
+    "chinese": "SUIM/ISIC各请求1,000queries，pool定义在Appendix。",
+    "role_evidence": "预设transfer规模"
+  },
+  {
+    "id": "P.6.3",
+    "source": "paper/sections/extension.tex",
+    "block": 6,
+    "sentence": 3,
+    "english": "The initial-score threshold is 0.8; random policies search with probabilities 0.25, 0.5, and 0.75.",
+    "chinese": "initial-score threshold0.8，random search概率0.25/0.5/0.75。",
+    "role_evidence": "controls设置"
+  },
+  {
+    "id": "P.6.4",
+    "source": "paper/sections/extension.tex",
+    "block": 6,
+    "sentence": 4,
+    "english": "These controls test whether agreement identifies useful opportunities to stop, beyond the benefit of simply performing less search.",
+    "chinese": "这些controls检验agreement是否识别适合停止的inputs，超越单纯减少search数量。",
+    "role_evidence": "核心可证伪问题"
+  },
+  {
+    "id": "P.7.1",
+    "source": "paper/sections/extension.tex",
+    "block": 7,
+    "sentence": 1,
+    "english": "Evaluation will compare paired accuracy, latency distributions, reference sensitivity, search/request counts, startup, and owned-process memory.",
+    "chinese": "评价paired accuracy、latency distribution、reference sensitivity、requests、startup、memory。",
+    "role_evidence": "完整metric设计"
+  },
+  {
+    "id": "P.7.2",
+    "source": "paper/sections/extension.tex",
+    "block": 7,
+    "sentence": 2,
+    "english": "The second batch is underway; its performance results will be added after collection and verification.",
+    "chinese": "第二批仍在运行；collect并verify后才能加入performance results。",
+    "role_evidence": "明确结果状态"
+  },
+  {
+    "id": "G.1.1",
+    "source": "paper/sections/gate_analysis.tex",
+    "block": 1,
+    "sentence": 1,
+    "english": "Let $A=1$ mean that the gate accepts the initial concept.",
+    "chinese": "令A=1表示接受initial concept。",
+    "role_evidence": "变量"
+  },
+  {
+    "id": "G.1.2",
+    "source": "paper/sections/gate_analysis.tex",
+    "block": 1,
+    "sentence": 2,
+    "english": "After a shared prefix of cost $C_p$, let $C_e$ and $C_s$ be the remaining costs of the early and search branches, including their final segmentation calls.",
+    "chinese": "shared prefix cost为Cp；其后early/search branches余下cost分别Ce/Cs，均含final segmentation。",
+    "role_evidence": "cost边界"
+  },
+  {
+    "id": "G.1.3",
+    "source": "paper/sections/gate_analysis.tex",
+    "block": 1,
+    "sentence": 3,
+    "english": "The gated and staged always-search costs satisfy",
+    "chinese": "定义gated与staged always-search的cost。",
+    "role_evidence": "公式 P3"
+  },
+  {
+    "id": "G.2.1",
+    "source": "paper/sections/gate_analysis.tex",
+    "block": 2,
+    "sentence": 1,
+    "english": "Writing $D=C_s-C_e$ and denoting the corresponding final-mask IoUs by $J_e$ and $J_s$ gives",
+    "chinese": "令D=Cs−Ce，Je/Js为相应final-mask IoUs，可得expected cost和accuracy差。",
+    "role_evidence": "公式 P4"
+  },
+  {
+    "id": "G.3.1",
+    "source": "paper/sections/gate_analysis.tex",
+    "block": 3,
+    "sentence": 1,
+    "english": "The first identity measures computation avoided on accepted inputs; the second measures the accuracy change on those same inputs.",
+    "chinese": "两个identity分别量化accepted inputs节省的compute，以及同一accepted subset的accuracy变化。",
+    "role_evidence": "identity解释"
+  },
+  {
+    "id": "G.3.2",
+    "source": "paper/sections/gate_analysis.tex",
+    "block": 3,
+    "sentence": 2,
+    "english": "If $H=C_{\\mathrm{st}}-C_{\\mathrm{full}}$ is the staging overhead relative to original CG-ICS, the gate is faster in expectation precisely when $\\mathbb{E}[A D]>\\mathbb{E}[H]$.",
+    "chinese": "若H为staging相对original full的extra cost，则真正比original更快当且仅当E[AD]>E[H]。",
+    "role_evidence": "速度成立条件"
+  },
+  {
+    "id": "G.3.3",
+    "source": "paper/sections/gate_analysis.tex",
+    "block": 3,
+    "sentence": 3,
+    "english": "Consequently, an acceptance rate alone does not establish a speedup: the saved branch costs must exceed the probe overhead.",
+    "chinese": "因此acceptance rate本身不能证明speedup，branch savings必须覆盖probe overhead。",
+    "role_evidence": "排除常见误推"
+  },
+  {
+    "id": "G.3.4",
+    "source": "paper/sections/gate_analysis.tex",
+    "block": 3,
+    "sentence": 4,
+    "english": "The staged always-search and random-routing controls separate this overhead from the value of the agreement signal.",
+    "chinese": "staged always-search与random routing分别识别overhead和agreement signal的价值。",
+    "role_evidence": "由分析导出control必要性"
+  },
+  {
+    "id": "D.1.1",
+    "source": "paper/sections/discussion.tex",
+    "block": 1,
+    "sentence": 1,
+    "english": "The two systems offer different operating points.",
+    "chinese": "两系统提供不同operating points。",
+    "role_evidence": "整体收束"
+  },
+  {
+    "id": "D.1.2",
+    "source": "paper/sections/discussion.tex",
+    "block": 1,
+    "sentence": 2,
+    "english": "CG-ICS provides higher average accuracy and stronger small-target performance on the evaluated datasets, while INSID3 provides a much cheaper inference path.",
+    "chinese": "CG平均更准且small-target更强，INS更便宜。",
+    "role_evidence": "主结果综合"
+  },
+  {
+    "id": "D.1.3",
+    "source": "paper/sections/discussion.tex",
+    "block": 1,
+    "sentence": 3,
+    "english": "Reference sensitivity adds another dimension: CG-ICS improves worst-reference accuracy on both datasets but has greater reference variation on LVIS.",
+    "chinese": "reference维度补充：CG两dataset worst-reference更高，但LVIS variation更大。",
+    "role_evidence": "robustness综合"
+  },
+  {
+    "id": "D.1.4",
+    "source": "paper/sections/discussion.tex",
+    "block": 1,
+    "sentence": 4,
+    "english": "Choosing a system therefore depends on the importance of accuracy, latency, resource availability, and consistency across demonstrations.",
+    "chinese": "系统选择需同时权衡accuracy、latency、resources和reference consistency。",
+    "role_evidence": "实际含义"
+  },
+  {
+    "id": "D.2.1",
+    "source": "paper/sections/discussion.tex",
+    "block": 2,
+    "sentence": 1,
+    "english": "The encoder matrix and within-system ablations explain why the complete-system ranking cannot be reduced to a backbone ranking.",
+    "chinese": "encoder matrix与within-system ablation说明full-system ranking不能简化为backbone ranking。",
+    "role_evidence": "归因结论"
+  },
+  {
+    "id": "D.2.2",
+    "source": "paper/sections/discussion.tex",
+    "block": 2,
+    "sentence": 2,
+    "english": "DINOv3 leads the tested feature-processing matrix, yet CG-ICS achieves higher complete-system accuracy through a different combination of language, prompting, and decoding.",
+    "chinese": "DINOv3在feature matrix领先，但CG通过language/prompting/decoding组合取得更高system accuracy。",
+    "role_evidence": "解释表面矛盾"
+  },
+  {
+    "id": "D.2.3",
+    "source": "paper/sections/discussion.tex",
+    "block": 2,
+    "sentence": 3,
+    "english": "INSID3 processing also improves every tested trunk.",
+    "chinese": "INS processing对每个trunk都有帮助。",
+    "role_evidence": "补充证据"
+  },
+  {
+    "id": "D.2.4",
+    "source": "paper/sections/discussion.tex",
+    "block": 2,
+    "sentence": 4,
+    "english": "The representation and the procedure that converts it into a mask should therefore be evaluated together.",
+    "chinese": "所以representation与mask construction procedure应共同评价。",
+    "role_evidence": "原则"
+  },
+  {
+    "id": "D.3.1",
+    "source": "paper/sections/discussion.tex",
+    "block": 3,
+    "sentence": 1,
+    "english": "The strongest motivation for selective search is the difference between an average gain and an input-specific gain.",
+    "chinese": "selective search动机来自average gain与input-specific gain的区别。",
+    "role_evidence": "新方法逻辑核心"
+  },
+  {
+    "id": "D.3.2",
+    "source": "paper/sections/discussion.tex",
+    "block": 3,
+    "sentence": 2,
+    "english": "With visual boxes, full search improves reference-averaged IoU for 194 of 400 COCO queries and 535 of 1,000 LVIS queries; it decreases IoU for 196 and 403, respectively.",
+    "chinese": "full search在194/400COCO与535/1,000LVIS queries改善，在196/403个下降。",
+    "role_evidence": "query-level异质性"
+  },
+  {
+    "id": "D.3.3",
+    "source": "paper/sections/discussion.tex",
+    "block": 3,
+    "sentence": 3,
+    "english": "A positive dataset mean therefore does not imply that every query benefits.",
+    "chinese": "positive dataset mean不意味着每query受益。",
+    "role_evidence": "由计数得出的结论"
+  },
+  {
+    "id": "D.3.4",
+    "source": "paper/sections/discussion.tex",
+    "block": 3,
+    "sentence": 4,
+    "english": "The observed search--prompt interaction further shows that the value of one component changes when another is already present.",
+    "chinese": "search–prompt interaction进一步表明component价值取决于其他component是否已存在。",
+    "role_evidence": "连接factorial证据"
+  },
+  {
+    "id": "D.4.1",
+    "source": "paper/sections/discussion.tex",
+    "block": 4,
+    "sentence": 1,
+    "english": "These interactions describe the executed paired-input cohort.",
+    "chinese": "前述interactions描述执行过的full paired cohort。",
+    "role_evidence": "适用样本"
+  },
+  {
+    "id": "D.4.2",
+    "source": "paper/sections/discussion.tex",
+    "block": 4,
+    "sentence": 2,
+    "english": "Requiring all four configurations to share a recorded GPU model leaves H200 subsets of 100 queries per dataset.",
+    "chinese": "要求四config同GPU后，仅剩每dataset100H200queries。",
+    "role_evidence": "稳健性subset"
+  },
+  {
+    "id": "D.4.3",
+    "source": "paper/sections/discussion.tex",
+    "block": 4,
+    "sentence": 3,
+    "english": "The interaction is $+0.66$ points on COCO (95\\% CI $[-1.67,3.01]$) and $-3.47$ on LVIS ($[-6.57,-0.60]$).",
+    "chinese": "该subset interaction为COCO+0.66CI跨0，LVIS−3.47CI负。",
+    "role_evidence": "分层结果"
+  },
+  {
+    "id": "D.4.4",
+    "source": "paper/sections/discussion.tex",
+    "block": 4,
+    "sentence": 4,
+    "english": "The LVIS direction persists, while the COCO estimate is inconclusive.",
+    "chinese": "LVIS方向保留，COCO证据不确定。",
+    "role_evidence": "谨慎但必要的结论"
+  },
+  {
+    "id": "D.4.5",
+    "source": "paper/sections/discussion.tex",
+    "block": 4,
+    "sentence": 5,
+    "english": "These subsets also change the fold and input composition, so the comparison does not isolate a hardware effect.",
+    "chinese": "subset同时改变fold/input composition，不能据此归因hardware effect。",
+    "role_evidence": "避免伪因果"
+  },
+  {
+    "id": "D.5.1",
+    "source": "paper/sections/discussion.tex",
+    "block": 5,
+    "sentence": 1,
+    "english": "The appropriate next test is whether an observable signal can allocate search effectively on fresh inputs.",
+    "chinese": "下一步检验observable signal能否在fresh inputs有效分配search。",
+    "role_evidence": "从描述到预测"
+  },
+  {
+    "id": "D.5.2",
+    "source": "paper/sections/discussion.tex",
+    "block": 5,
+    "sentence": 2,
+    "english": "The proposed gate makes this question explicit: saved branch computation must exceed the extra probing cost, and accepted inputs determine the accuracy change.",
+    "chinese": "gate将要求写明：saved branch compute覆盖probe cost，accepted inputs决定accuracy变化。",
+    "role_evidence": "数学分析回扣"
+  },
+  {
+    "id": "D.6.1",
+    "source": "paper/sections/discussion.tex",
+    "block": 6,
+    "sentence": 1,
+    "english": "The study combines system comparison, paired component analysis, and inspected pixel-level failures under a common protocol.",
+    "chinese": "本研究结合system、paired component与pixel-level failure分析。",
+    "role_evidence": "scope概括"
+  },
+  {
+    "id": "D.6.2",
+    "source": "paper/sections/discussion.tex",
+    "block": 6,
+    "sentence": 2,
+    "english": "Reference dependence is handled through query-level aggregation and image-cluster uncertainty.",
+    "chinese": "query-level aggregation与image-cluster uncertainty处理reference dependence。",
+    "role_evidence": "统计原则"
+  },
+  {
+    "id": "D.6.3",
+    "source": "paper/sections/discussion.tex",
+    "block": 6,
+    "sentence": 3,
+    "english": "Broader generalization will be assessed through the separate transfer scopes, while the tiny-reference failures motivate foreground-preserving preprocessing.",
+    "chinese": "transfer泛化与foreground-preserving preprocessing是两条具体扩展。",
+    "role_evidence": "未来工作"
+  },
+  {
+    "id": "D.6.4",
+    "source": "paper/sections/discussion.tex",
+    "block": 6,
+    "sentence": 4,
+    "english": "The main remaining question is whether agreement can predict low-value search reliably across domains; the second batch is designed to answer it.",
+    "chinese": "当前关键未决问题是agreement能否跨domain可靠预测low-value search，第二批专门检验。",
+    "role_evidence": "明确knowledge gap"
+  },
+  {
+    "id": "D.7.1",
+    "source": "paper/sections/discussion.tex",
+    "block": 7,
+    "sentence": 1,
+    "english": "Visual correspondence and concept guidance yield distinct accuracy--cost trade-offs in training-free in-context segmentation.",
+    "chinese": "两条路线形成不同accuracy–cost trade-offs。",
+    "role_evidence": "Conclusion总句"
+  },
+  {
+    "id": "D.7.2",
+    "source": "paper/sections/discussion.tex",
+    "block": 7,
+    "sentence": 2,
+    "english": "CG-ICS is more accurate on the two initial benchmarks, while INSID3 is substantially faster.",
+    "chinese": "CG在初始benchmark更准，INS更快。",
+    "role_evidence": "结论1"
+  },
+  {
+    "id": "D.7.3",
+    "source": "paper/sections/discussion.tex",
+    "block": 7,
+    "sentence": 3,
+    "english": "Component analysis attributes useful gains to feature processing, semantic concepts, and visual prompts, and reveals a dataset-dependent marginal return from additional search.",
+    "chinese": "components显示feature processing、concept、visual prompts贡献，并揭示dataset-dependent search收益。",
+    "role_evidence": "结论2"
+  },
+  {
+    "id": "D.7.4",
+    "source": "paper/sections/discussion.tex",
+    "block": 7,
+    "sentence": 4,
+    "english": "Reference sensitivity and small-target failures provide further distinctions beyond mean accuracy.",
+    "chinese": "reference sensitivity与small-target failures补充mean accuracy之外的区别。",
+    "role_evidence": "结论3"
+  },
+  {
+    "id": "D.7.5",
+    "source": "paper/sections/discussion.tex",
+    "block": 7,
+    "sentence": 5,
+    "english": "These findings motivate AGS, whose formulation makes the required computation savings and accuracy trade-off explicit.",
+    "chinese": "这些证据motivate AGS；formulation写清必要compute savings与accuracy trade-off。",
+    "role_evidence": "proposal贡献"
+  },
+  {
+    "id": "D.7.6",
+    "source": "paper/sections/discussion.tex",
+    "block": 7,
+    "sentence": 6,
+    "english": "Its ongoing controlled evaluation will determine whether the observed opportunities translate into a useful adaptive system.",
+    "chinese": "ongoing controlled evaluation将决定它是否成为实际有用的adaptive system。",
+    "role_evidence": "不提前宣称成功"
+  },
+  {
+    "id": "A.1.1",
+    "source": "paper/sections/appendix.tex",
+    "block": 1,
+    "sentence": 1,
+    "english": "Table~\\ref{tab:matrix-scope} records the first-batch scope.",
+    "chinese": "Table6记录第一批研究范围。",
+    "role_evidence": "matrix导航"
+  },
+  {
+    "id": "A.1.2",
+    "source": "paper/sections/appendix.tex",
+    "block": 1,
+    "sentence": 2,
+    "english": "Task counts resolve the shared controls used by seed experiments and parameter sweeps.",
+    "chinese": "task count解释seed/sweep复用controls，避免重复计数。",
+    "role_evidence": "覆盖口径"
+  },
+  {
+    "id": "A.2.1",
+    "source": "paper/sections/appendix.tex",
+    "block": 2,
+    "sentence": 1,
+    "english": "The first batch has 1,480 successful formal tasks and four failed reference tasks.",
+    "chinese": "第一批1,480successful formal tasks＋4failed reference tasks。",
+    "role_evidence": "执行覆盖"
+  },
+  {
+    "id": "A.2.2",
+    "source": "paper/sections/appendix.tex",
+    "block": 2,
+    "sentence": 2,
+    "english": "All 615,976 expected records, including four errors, are accounted for and verified against 532 output bindings.",
+    "chinese": "615,976expected records含4errors均已匹配，并核对532outputbindings。",
+    "role_evidence": "审计完整性"
+  },
+  {
+    "id": "A.2.3",
+    "source": "paper/sections/appendix.tex",
+    "block": 2,
+    "sentence": 3,
+    "english": "The standard cohorts contain 3,975 COCO and 13,750 LVIS distinct query targets, on 3,820 and 9,051 distinct image hashes.",
+    "chinese": "standard cohorts含3,975/13,750 distinct targets，来自3,820/9,051 distinct image hashes。",
+    "role_evidence": "区分episode/query/image"
+  },
+  {
+    "id": "A.2.4",
+    "source": "paper/sections/appendix.tex",
+    "block": 2,
+    "sentence": 4,
+    "english": "COCO and LVIS share 462 standard-cohort image hashes, so their results are reported separately.",
+    "chinese": "COCO/LVIS共享462standard image hashes，所以dataset分别报告。",
+    "role_evidence": "避免误当独立复现"
+  },
+  {
+    "id": "A.3.1",
+    "source": "paper/sections/appendix.tex",
+    "block": 3,
+    "sentence": 1,
+    "english": "Common manifests and original-resolution ground truth preserve source class memberships, while sampling and aggregation can differ from the author protocols.",
+    "chinese": "common manifests＋original GT保留class memberships，但sampling/aggregation可能不同于author protocol。",
+    "role_evidence": "复现范围"
+  },
+  {
+    "id": "A.3.2",
+    "source": "paper/sections/appendix.tex",
+    "block": 3,
+    "sentence": 2,
+    "english": "Empty LVIS source masks are excluded before sampling; all classes and folds remain.",
+    "chinese": "sampling前排除empty LVIS masks，仍保留all classes/folds。",
+    "role_evidence": "数据有效性"
+  },
+  {
+    "id": "A.3.3",
+    "source": "paper/sections/appendix.tex",
+    "block": 3,
+    "sentence": 3,
+    "english": "Pretraining-data overlap is not controlled, and intervals are not adjusted for multiple comparisons.",
+    "chinese": "未控制pretraining overlap，也未做multiple-comparison adjustment。",
+    "role_evidence": "剩余局限"
+  },
+  {
+    "id": "A.4.1",
+    "source": "paper/sections/appendix.tex",
+    "block": 4,
+    "sentence": 1,
+    "english": "The executed INSID3 implementation estimates its positional basis from an ImageNet-normalized all-zero image; the paper describes Gaussian noise.",
+    "chinese": "执行版INS positional basis用ImageNet-normalized all-zero image；论文描述Gaussian noise。",
+    "role_evidence": "实际实现差异"
+  },
+  {
+    "id": "A.4.2",
+    "source": "paper/sections/appendix.tex",
+    "block": 4,
+    "sentence": 2,
+    "english": "It retains original features for clustering and self-similarity and debiased features for cross-image matching.",
+    "chinese": "original features用于clustering/self-similarity，debiased用于cross-image matching。",
+    "role_evidence": "分支实现"
+  },
+  {
+    "id": "A.4.3",
+    "source": "paper/sections/appendix.tex",
+    "block": 4,
+    "sentence": 3,
+    "english": "The main route uses bilinear restoration without CRF refinement.",
+    "chinese": "mainroute为bilinear restoration，无CRF refinement。",
+    "role_evidence": "后处理"
+  },
+  {
+    "id": "A.4.4",
+    "source": "paper/sections/appendix.tex",
+    "block": 4,
+    "sentence": 4,
+    "english": "In CG-ICS, working images are size 512 before SAM~3's internal preprocessing, and nearest-neighbor restoration maps predictions to the original resolution.",
+    "chinese": "CG working size512，之后SAM internal preprocessing，nearest restoration回原尺寸。",
+    "role_evidence": "预处理/恢复"
+  },
+  {
+    "id": "A.4.5",
+    "source": "paper/sections/appendix.tex",
+    "block": 4,
+    "sentence": 5,
+    "english": "The direct-concatenation control uses the implemented query-side instance union.",
+    "chinese": "direct concatenation control采用实现中的query-side instance union。",
+    "role_evidence": "control定义"
+  },
+  {
+    "id": "A.5.1",
+    "source": "paper/sections/appendix.tex",
+    "block": 5,
+    "sentence": 1,
+    "english": "Fresh core queries exclude previous formal-query image hashes and canonical COCO image identifiers across both initial datasets.",
+    "chinese": "fresh core queries排除以往formal query image hashes以及跨初始dataset的canonical COCO IDs。",
+    "role_evidence": "freshness规则"
+  },
+  {
+    "id": "A.5.2",
+    "source": "paper/sections/appendix.tex",
+    "block": 5,
+    "sentence": 2,
+    "english": "The transfer scopes use the author-prepared merged SUIM pool and reorganized ISIC~2018 Task~1 training images.",
+    "chinese": "transfer使用author-prepared merged SUIM pool和reorganized ISIC2018 Task1 training images。",
+    "role_evidence": "数据来源"
+  },
+  {
+    "id": "A.5.3",
+    "source": "paper/sections/appendix.tex",
+    "block": 5,
+    "sentence": 3,
+    "english": "SUIM's full source pool is checked before sampling, and image--mask pairs with mismatched dimensions are excluded without changing the source rasters.",
+    "chinese": "SUIM sampling前检查full source pool，剔除image/mask尺寸不一致pairs而不改原raster。",
+    "role_evidence": "已修复data validation"
+  },
+  {
+    "id": "A.5.4",
+    "source": "paper/sections/appendix.tex",
+    "block": 5,
+    "sentence": 4,
+    "english": "All seven foreground classes and 1,000 unique queries are required; eligibility counts will accompany the results.",
+    "chinese": "要求7foreground classes和1,000unique queries；eligible counts随结果报告。",
+    "role_evidence": "计划覆盖"
+  },
+  {
+    "id": "A.5.5",
+    "source": "paper/sections/appendix.tex",
+    "block": 5,
+    "sentence": 5,
+    "english": "ISIC reference selection uses the supplied diagnostic strata; it is not a patient-disjoint clinical test or the official challenge-test evaluation.",
+    "chinese": "ISIC references用supplied diagnostic strata；不是patient-disjoint clinical test或official challenge-test。",
+    "role_evidence": "transfer解释边界"
+  },
+  {
+    "id": "A.6.1",
+    "source": "paper/sections/appendix.tex",
+    "block": 6,
+    "sentence": 1,
+    "english": "The fixed-pool scoring study generates candidates once per input, then evaluates alternative ranking rules on the same evidence.",
+    "chinese": "fixed-pool每input只生成一次candidates，各rankingrule用同一evidence。",
+    "role_evidence": "公平scoring比较"
+  },
+  {
+    "id": "A.6.2",
+    "source": "paper/sections/appendix.tex",
+    "block": 6,
+    "sentence": 2,
+    "english": "If the maximum combined score in the pool is below $10^{-6}$, all rules use the same visual fallback.",
+    "chinese": "pool最大combined score<1e−6时，各rule共享visual fallback。",
+    "role_evidence": "特殊情况一致性"
+  },
+  {
+    "id": "A.6.3",
+    "source": "paper/sections/appendix.tex",
+    "block": 6,
+    "sentence": 3,
+    "english": "Random search policies use fixed probabilities rather than probabilities selected from the gate's realized search rate.",
+    "chinese": "random routing使用预设probabilities，不依据gate已观测search rate选概率。",
+    "role_evidence": "避免事后选control"
+  },
+  {
+    "id": "A.6.4",
+    "source": "paper/sections/appendix.tex",
+    "block": 6,
+    "sentence": 4,
+    "english": "Staged always-search measures the extra initial probing cost.",
+    "chinese": "staged always-search量化initial probing的extra cost。",
+    "role_evidence": "必要control"
+  },
+  {
+    "id": "A.7.1",
+    "source": "paper/sections/appendix.tex",
+    "block": 7,
+    "sentence": 1,
+    "english": "Owned memory sums simultaneous samples from the runner and its language-model processes.",
+    "chinese": "owned memory在同一采样时刻汇总runner与其MLLM processes。",
+    "role_evidence": "memory定义"
+  },
+  {
+    "id": "A.7.2",
+    "source": "paper/sections/appendix.tex",
+    "block": 7,
+    "sentence": 2,
+    "english": "The language server's 0.85 utilization setting includes reserved/cache memory; these values therefore differ from minimum model-memory requirements and runner-only CUDA peaks.",
+    "chinese": "MLLM0.85utilization含reservation/cache，故数值不是minimum model memory，也不是runner-only CUDA peak。",
+    "role_evidence": "防止误读memory"
+  },
+  {
+    "id": "C.1.1",
+    "source": "paper/sections/mathematical_appendix.tex",
+    "block": 1,
+    "sentence": 1,
+    "english": "For nonempty binary masks viewed as finite pixel sets, let $J$ be IoU and $d(X,Y)=1-J(X,Y)$ be Jaccard distance~\\cite{kosub2019}.",
+    "chinese": "把非空binary masks看作pixel sets，定义J为IoU，d=1−J为Jaccard distance。",
+    "role_evidence": "数学对象"
+  },
+  {
+    "id": "C.1.2",
+    "source": "paper/sections/mathematical_appendix.tex",
+    "block": 1,
+    "sentence": 2,
+    "english": "The reverse triangle inequality gives",
+    "chinese": "用reverse triangle inequality约束两probe对GT的IoU差。",
+    "role_evidence": "公式 A1"
+  },
+  {
+    "id": "C.2.1",
+    "source": "paper/sections/mathematical_appendix.tex",
+    "block": 2,
+    "sentence": 1,
+    "english": "Indeed, applying the triangle inequality in both directions bounds $|d(M_t,M_q)-d(M_v,M_q)|$ by $d(M_t,M_v)$.",
+    "chinese": "证明思路：双向用triangle inequality得到distance difference上界。",
+    "role_evidence": "推导"
+  },
+  {
+    "id": "C.2.2",
+    "source": "paper/sections/mathematical_appendix.tex",
+    "block": 2,
+    "sentence": 2,
+    "english": "High agreement therefore bounds the difference between the two probe accuracies, rather than their absolute accuracy.",
+    "chinese": "high agreement只限制两probe accuracies之间的差，不保证它们的absolute accuracy。",
+    "role_evidence": "准确解释"
+  },
+  {
+    "id": "C.2.3",
+    "source": "paper/sections/mathematical_appendix.tex",
+    "block": 2,
+    "sentence": 3,
+    "english": "For example, if both probes predict the same region disjoint from the target, their mutual IoU is one while both target IoUs are zero.",
+    "chinese": "反例：两probe完全一样却都选在GT外，则mutual IoU=1、target IoUs=0。",
+    "role_evidence": "反驳错误充分条件"
+  },
+  {
+    "id": "C.2.4",
+    "source": "paper/sections/mathematical_appendix.tex",
+    "block": 2,
+    "sentence": 4,
+    "english": "The bound concerns the two probe masks, not the subsequent joint-prompt prediction.",
+    "chinese": "该bound仅约束probe masks，不直接约束后续joint-prompt output。",
+    "role_evidence": "定理适用范围"
+  },
+  {
+    "id": "C.3.1",
+    "source": "paper/sections/mathematical_appendix.tex",
+    "block": 3,
+    "sentence": 1,
+    "english": "Within one class, let $U_e=\\mathrm{TP}_e+\\mathrm{FP}_e+\\mathrm{FN}_e$ be episode union size and $J_e=\\mathrm{TP}_e/U_e$.",
+    "chinese": "在每个class内定义union size Ue及episode IoU Je。",
+    "role_evidence": "加权变量"
+  },
+  {
+    "id": "C.3.2",
+    "source": "paper/sections/mathematical_appendix.tex",
+    "block": 3,
+    "sentence": 2,
+    "english": "With population covariance over episodes,",
+    "chinese": "使用episode population covariance展开pooled IoU与episode mean的差。",
+    "role_evidence": "公式 A2"
+  },
+  {
+    "id": "C.4.1",
+    "source": "paper/sections/mathematical_appendix.tex",
+    "block": 4,
+    "sentence": 1,
+    "english": "where $G_e=\\mathrm{TP}_e+\\mathrm{FN}_e$ is target area.",
+    "chinese": "G表示GT target area，因此U=G+FP。",
+    "role_evidence": "第二层分解变量"
+  },
+  {
+    "id": "C.4.2",
+    "source": "paper/sections/mathematical_appendix.tex",
+    "block": 4,
+    "sentence": 2,
+    "english": "The identity follows from $\\mathrm{TP}_e=U_eJ_e$ and $\\overline{UJ}=\\overline{U}\\,\\overline{J}+\\operatorname{Cov}(U,J)$.",
+    "chinese": "由TP=UJ及mean product=covariance+product of means推出identity。",
+    "role_evidence": "推导"
+  },
+  {
+    "id": "C.4.3",
+    "source": "paper/sections/mathematical_appendix.tex",
+    "block": 4,
+    "sentence": 3,
+    "english": "It explains why a large erroneous foreground region can lower pooled IoU much more than the mean episode IoU: the error also increases its weight through $U_e$.",
+    "chinese": "large false-positive region既降低IoU又增大union weight，所以pooled score可能受更大影响。",
+    "role_evidence": "数学解释与经验现象连接"
+  },
+  {
+    "id": "C.5.1",
+    "source": "paper/sections/mathematical_appendix.tex",
+    "block": 5,
+    "sentence": 1,
+    "english": "For CG-ICS on LVIS, the mean episode IoU is $55.19\\%$ and the class-pooled IoU is $47.44\\%$.",
+    "chinese": "LVIS CG episode mean55.19%，class-pooled47.44%。",
+    "role_evidence": "待解释观测"
+  },
+  {
+    "id": "C.5.2",
+    "source": "paper/sections/mathematical_appendix.tex",
+    "block": 5,
+    "sentence": 2,
+    "english": "Averaging Eq.~\\ref{eq:pooling-covariance} using the same class/fold weights yields a $-7.75$-point gap: the target-area covariance term is $+3.82$ points and the false-positive covariance term is $-11.57$ points.",
+    "chinese": "按相同class/fold weights平均identity得到−7.75pp，分为target-area+3.82与FP−11.57pp。",
+    "role_evidence": "经验数值代入identity；已核对920类各25episodes，因此这里global episode mean与class/fold-weighted mean一致"
+  },
+  {
+    "id": "C.5.3",
+    "source": "paper/sections/mathematical_appendix.tex",
+    "block": 5,
+    "sentence": 3,
+    "english": "These are exact weighting components, not estimates of causal effects.",
+    "chinese": "这两个是exact weighting components，不是causal effect estimates。",
+    "role_evidence": "数学结论边界"
+  }
+]

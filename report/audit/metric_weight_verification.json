@@ -1,0 +1,12 @@
+{
+  "dataset": "lvis",
+  "config": "cgics_full",
+  "cohort": "standard",
+  "per_class_count_distribution": [
+    [
+      25,
+      920
+    ]
+  ],
+  "interpretation": "920 classes each have exactly25episodes; equal class/fold mean of episode IoU equals global episode mean here. The covariance identity uses matched class/fold weights."
+}

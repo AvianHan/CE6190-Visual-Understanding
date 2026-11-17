@@ -1,0 +1,272 @@
+{
+  "status": "PASS",
+  "source_db": "/workspace/scratch/792be578b3e4/audit_20261116/full_analysis/episodes.sqlite",
+  "source_read_only": true,
+  "component_interactions": [
+    {
+      "question": "Debias benefit with self/cross minus benefit with seed-only",
+      "dataset": "coco",
+      "configs": [
+        "insid3_component_full",
+        "insid3_no_debias",
+        "insid3_no_aggregation",
+        "insid3_no_debias_seed_only"
+      ],
+      "weights": [
+        1,
+        -1,
+        -1,
+        1
+      ],
+      "episodes": 1200,
+      "query_targets": 400,
+      "query_images": 398,
+      "equal_query_mean_pp": 1.1726428056867844,
+      "image_cluster_ci95_pp": [
+        0.18402390182157077,
+        2.236019558435104
+      ],
+      "bootstrap_replicates": 2000,
+      "all_four_same_recorded_gpu_sensitivity": [],
+      "sensitivity_note": "Same-device subsets can have different folds and composition; absence of an interval effect on a small subset is not evidence that hardware caused the full-cohort effect."
+    },
+    {
+      "question": "Visual-box benefit with search minus benefit with single concept",
+      "dataset": "coco",
+      "configs": [
+        "cgics_component_full",
+        "cgics_text_only",
+        "cgics_single_concept_full",
+        "cgics_single_concept_text"
+      ],
+      "weights": [
+        1,
+        -1,
+        -1,
+        1
+      ],
+      "episodes": 1200,
+      "query_targets": 400,
+      "query_images": 398,
+      "equal_query_mean_pp": -2.849522571881097,
+      "image_cluster_ci95_pp": [
+        -4.291943470752972,
+        -1.4751285299504746
+      ],
+      "bootstrap_replicates": 2000,
+      "all_four_same_recorded_gpu_sensitivity": [
+        {
+          "gpu": "NVIDIA H200",
+          "episodes": 300,
+          "query_targets": 100,
+          "query_images": 100,
+          "equal_query_mean_pp": 0.6644555087572147,
+          "image_cluster_ci95_pp": [
+            -1.6669068215575047,
+            3.0123091040475347
+          ],
+          "bootstrap_replicates": 2000
+        }
+      ],
+      "sensitivity_note": "Same-device subsets can have different folds and composition; absence of an interval effect on a small subset is not evidence that hardware caused the full-cohort effect."
+    },
+    {
+      "question": "Debias benefit with self/cross minus benefit with seed-only",
+      "dataset": "lvis",
+      "configs": [
+        "insid3_component_full",
+        "insid3_no_debias",
+        "insid3_no_aggregation",
+        "insid3_no_debias_seed_only"
+      ],
+      "weights": [
+        1,
+        -1,
+        -1,
+        1
+      ],
+      "episodes": 2757,
+      "query_targets": 1000,
+      "query_images": 956,
+      "equal_query_mean_pp": 0.3462274618779625,
+      "image_cluster_ci95_pp": [
+        -0.23282736579256974,
+        0.928164438974774
+      ],
+      "bootstrap_replicates": 2000,
+      "all_four_same_recorded_gpu_sensitivity": [],
+      "sensitivity_note": "Same-device subsets can have different folds and composition; absence of an interval effect on a small subset is not evidence that hardware caused the full-cohort effect."
+    },
+    {
+      "question": "Visual-box benefit with search minus benefit with single concept",
+      "dataset": "lvis",
+      "configs": [
+        "cgics_component_full",
+        "cgics_text_only",
+        "cgics_single_concept_full",
+        "cgics_single_concept_text"
+      ],
+      "weights": [
+        1,
+        -1,
+        -1,
+        1
+      ],
+      "episodes": 2757,
+      "query_targets": 1000,
+      "query_images": 956,
+      "equal_query_mean_pp": -3.0047883374681055,
+      "image_cluster_ci95_pp": [
+        -4.088406074920787,
+        -1.9474078218850375
+      ],
+      "bootstrap_replicates": 2000,
+      "all_four_same_recorded_gpu_sensitivity": [
+        {
+          "gpu": "NVIDIA H200",
+          "episodes": 281,
+          "query_targets": 100,
+          "query_images": 99,
+          "equal_query_mean_pp": -3.4696934219334445,
+          "image_cluster_ci95_pp": [
+            -6.5701684414502415,
+            -0.5995272238342073
+          ],
+          "bootstrap_replicates": 2000
+        }
+      ],
+      "sensitivity_note": "Same-device subsets can have different folds and composition; absence of an interval effect on a small subset is not evidence that hardware caused the full-cohort effect."
+    }
+  ],
+  "search_heterogeneity": [
+    {
+      "dataset": "coco",
+      "query_targets": 400,
+      "early_equal_query_iou_percent": 70.933324533273,
+      "search_equal_query_iou_percent": 71.15656806697206,
+      "mean_search_gain_pp": 0.22324353369904953,
+      "search_better_queries": 194,
+      "equal_queries": 10,
+      "early_better_queries": 196,
+      "search_gain_over_5pp_queries": 46,
+      "search_loss_over_5pp_queries": 41,
+      "hindsight_max_of_query_means_iou_percent": 73.33050648870608,
+      "hindsight_gain_over_always_search_pp": 2.173938421734028,
+      "observed_device_pairs": [
+        {
+          "early": "NVIDIA H200",
+          "search": "NVIDIA H200",
+          "episodes": 300
+        },
+        {
+          "early": "NVIDIA L40S",
+          "search": "NVIDIA H200",
+          "episodes": 900
+        }
+      ],
+      "interpretation": "Hindsight selection uses ground truth after averaging references; descriptive upper envelope, not an inference policy or expected gate accuracy."
+    },
+    {
+      "dataset": "lvis",
+      "query_targets": 1000,
+      "early_equal_query_iou_percent": 53.52136063495061,
+      "search_equal_query_iou_percent": 55.820877874958285,
+      "mean_search_gain_pp": 2.2995172400076656,
+      "search_better_queries": 535,
+      "equal_queries": 62,
+      "early_better_queries": 403,
+      "search_gain_over_5pp_queries": 209,
+      "search_loss_over_5pp_queries": 131,
+      "hindsight_max_of_query_means_iou_percent": 58.57174349527773,
+      "hindsight_gain_over_always_search_pp": 2.7508656203194515,
+      "observed_device_pairs": [
+        {
+          "early": "NVIDIA H200",
+          "search": "NVIDIA H200",
+          "episodes": 561
+        },
+        {
+          "early": "NVIDIA H200",
+          "search": "NVIDIA L40S",
+          "episodes": 555
+        },
+        {
+          "early": "NVIDIA L40S",
+          "search": "NVIDIA H200",
+          "episodes": 1088
+        },
+        {
+          "early": "NVIDIA L40S",
+          "search": "NVIDIA L40S",
+          "episodes": 553
+        }
+      ],
+      "interpretation": "Hindsight selection uses ground truth after averaging references; descriptive upper envelope, not an inference policy or expected gate accuracy."
+    }
+  ],
+  "metric_decomposition": [
+    {
+      "config": "insid3_full",
+      "dataset": "coco",
+      "classes": 80,
+      "episodes": 4000,
+      "mean_fold_class_episode_iou_percent": 58.55984815193618,
+      "mean_fold_class_pooled_iou_percent": 57.646242954792115,
+      "pooled_minus_class_episode_mean_pp": -0.9136051971440629,
+      "gt_covariance_contribution_pp": 3.5958520316878024,
+      "fp_covariance_contribution_pp": -4.509457228831865,
+      "max_identity_error": 1.6653345369377348e-16,
+      "interpretation": "An exact weighting identity; covariance components are not causal contributions."
+    },
+    {
+      "config": "insid3_full",
+      "dataset": "lvis",
+      "classes": 920,
+      "episodes": 23000,
+      "mean_fold_class_episode_iou_percent": 41.474956263399,
+      "mean_fold_class_pooled_iou_percent": 40.766436101350564,
+      "pooled_minus_class_episode_mean_pp": -0.7085201620484316,
+      "gt_covariance_contribution_pp": 4.772801776211084,
+      "fp_covariance_contribution_pp": -5.481321938259518,
+      "max_identity_error": 2.3592239273284576e-16,
+      "interpretation": "An exact weighting identity; covariance components are not causal contributions."
+    },
+    {
+      "config": "cgics_full",
+      "dataset": "coco",
+      "classes": 80,
+      "episodes": 4000,
+      "mean_fold_class_episode_iou_percent": 72.54886575837973,
+      "mean_fold_class_pooled_iou_percent": 72.16976633102516,
+      "pooled_minus_class_episode_mean_pp": -0.3790994273545678,
+      "gt_covariance_contribution_pp": 4.464498998049757,
+      "fp_covariance_contribution_pp": -4.843598425404311,
+      "max_identity_error": 2.1510571102112408e-16,
+      "interpretation": "An exact weighting identity; covariance components are not causal contributions."
+    },
+    {
+      "config": "cgics_full",
+      "dataset": "lvis",
+      "classes": 920,
+      "episodes": 23000,
+      "mean_fold_class_episode_iou_percent": 55.18778071525725,
+      "mean_fold_class_pooled_iou_percent": 47.43731418013416,
+      "pooled_minus_class_episode_mean_pp": -7.75046653512309,
+      "gt_covariance_contribution_pp": 3.8216488658358623,
+      "fp_covariance_contribution_pp": -11.572115400958943,
+      "max_identity_error": 2.498001805406602e-16,
+      "interpretation": "An exact weighting identity; covariance components are not causal contributions."
+    }
+  ],
+  "second_batch_results_used": false,
+  "new_model_runs": 0,
+  "verification": {
+    "prior_component_effects_and_cis_reproduced": true,
+    "metric_identity_error_below": 1e-12,
+    "source_summaries_sha256": {
+      "components_analysis.json": "5e2588600338e2f302df5a0ab7f73d7787703d8f6062d2fd5f4a8bf990954891",
+      "parameter_cost_size.json": "330ec42b2f7cbae43417819776c9adab464705f1fa80047c0f6c466157bcb552"
+    },
+    "script_sha256": "dc8c93d134f63a6cee169eb8a504ea6b8dd3da67fff05a56826eadf42a664b3f"
+  }
+}

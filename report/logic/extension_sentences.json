@@ -1,0 +1,38 @@
+[
+  [
+    "The component results motivate allocating search according to the input.",
+    "Visual prompting reduces the observed marginal benefit of concept search, while the remaining search benefit varies across datasets and queries.",
+    "We propose Agreement-Gated Search (AGS), which uses consistency between the initial text-only and visual-only predictions to decide whether to search further.",
+    "AGS applies input-dependent computation allocation~\\cite{branchynet,adaptiveinference} to the concept-search stage of CG-ICS."
+  ],
+  [
+    "For the first reference-derived concept $c_0$, let $M_t(c_0)$ denote its text-only query mask and $M_v$ the visual-only mask.",
+    "If either probe is empty, set $A=0$; otherwise define"
+  ],
+  [
+    "If $A=1$, the system retains $c_0$ and produces the joint text-plus-visual mask.",
+    "Otherwise, it performs concept search before the final joint prediction:"
+  ],
+  [
+    "The primary threshold is fixed at $\\tau=0.7$, with 0.5 and 0.9 used for sensitivity analysis.",
+    "No query annotation enters this decision.",
+    "Agreement measures consistency between the probe masks; its relationship to their target accuracy is formalized in Appendix~\\ref{app:math}."
+  ],
+  [
+    "The second batch evaluates four connected parts.",
+    "A fixed-candidate-pool ablation compares ranking by $s_rs_q$, $s_r$, and $s_q$ using the same candidate evidence and final visual prompts.",
+    "A fresh-query comparison tests the original full system, the single-concept route, and the one-initial-candidate setting.",
+    "Domain transfer uses SUIM underwater images~\\cite{suim} and public ISIC~2018 Task~1 lesion images and masks~\\cite{isic,ham10000}.",
+    "Finally, the agreement gate is compared with original full search, staged always-search, an initial-score gate, and random routing."
+  ],
+  [
+    "The core study requests 400 fresh COCO and 1,000 fresh LVIS query images, each with up to three references.",
+    "SUIM and ISIC each request 1,000 queries under the source-pool definitions in Appendix~\\ref{app:protocol}.",
+    "The initial-score threshold is 0.8; random policies search with probabilities 0.25, 0.5, and 0.75.",
+    "These controls test whether agreement identifies useful opportunities to stop, beyond the benefit of simply performing less search."
+  ],
+  [
+    "Evaluation will compare paired accuracy, latency distributions, reference sensitivity, search/request counts, startup, and owned-process memory.",
+    "The second batch is underway; its performance results will be added after collection and verification."
+  ]
+]

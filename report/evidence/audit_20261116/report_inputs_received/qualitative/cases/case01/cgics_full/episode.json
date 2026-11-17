@@ -1,0 +1,329 @@
+{
+  "result_schema_version": 2,
+  "run_id": "cgics_full-16db1603d9768e86",
+  "experiment_id": "cgics_full",
+  "method": "cgics",
+  "variant": "full",
+  "protocol_id": "ce6190-unified-v2-nonempty-lvis_fold4_standard",
+  "evaluation_protocol": "unified_original_resolution",
+  "config_sha256": "7ee9ccfb109c94fd1119addd844e98c937666841f32ec45314d3159b710ddaf7",
+  "manifest_sha256": "c7882aa13a9f6b77b53169c2743fb8512fd4c675d156cb24afbebccb5f47bd05",
+  "episode_id": "lvis-f4-q002026-5a03373e4b6acc3a-r000",
+  "dataset": "lvis",
+  "dataset_version": "LVIS-author-lvis_val.pkl",
+  "split": "val",
+  "fold": 4,
+  "track": "semantic",
+  "concept_id": "160",
+  "reference_seed": 0,
+  "nshot": 1,
+  "query_image_sha256": "0a0f67465b4ea5234ef8ea8388dc17836176b4782b285b6cc43e2915bde85950",
+  "query_mask_sha256": "4545304b3b634b1dabd2c0aa3cf0934cab983e55af1b941aaca0307ba867fa7f",
+  "reference_image_sha256": [
+    "2cb021ae8446c5718e1b9a06de884eb5b7bfeccd049abda59f16a90eaa352331"
+  ],
+  "mask_semantics": "binary foreground union of prompted class; reference void=background",
+  "base_seed": 0,
+  "episode_seed": 1973676778,
+  "started_at": "2026-11-13T15:20:43.879751+00:00",
+  "shard_index": 2,
+  "num_shards": 4,
+  "status": "ok",
+  "counts": {
+    "tp": 585,
+    "fp": 155960,
+    "fn": 139,
+    "tn": 195956,
+    "ignored": 0
+  },
+  "iou": 0.003733629470781956,
+  "target_area_fraction": 0.0020530852994555355,
+  "prediction_path": "predictions/3db03c890e041a075dcf72002bcadfbd6451f4a79e64d5ed0ff9f8cdefade218.png",
+  "prediction_sha256": "6e7d46eb60f60e84b221f746e98efa93d225f96cf2776f19e52b08b977b9e9b7",
+  "inference_seconds": 4.357528856024146,
+  "cuda_memory": {
+    "0": {
+      "peak_allocated_bytes": 4671593472,
+      "peak_reserved_bytes": 5135925248,
+      "device_name": "NVIDIA L40S"
+    }
+  },
+  "memory_scope": "current Python process; excludes external MLLM server/other processes",
+  "telemetry": {
+    "sam_calls": 28,
+    "sam_image_encoder_calls": 3,
+    "sam_prompt_head_calls": 29,
+    "mllm_requests": 3,
+    "mllm_prompt_tokens": 2842,
+    "mllm_completion_tokens": 85,
+    "mllm_usage_missing_requests": 0,
+    "candidate_score_evaluations": 13,
+    "mllm_request_wall_s": 1.4535515020834282,
+    "cache_policy": "within_episode_only",
+    "mllm_server_gpu_memory_bytes": null,
+    "search_nodes": 12,
+    "search_restarts": 0,
+    "search_max_depth_reached": 1,
+    "search_reported_evaluations_excluding_rerank": 12,
+    "stages": {
+      "input_preprocessing_s": 0.03554903098847717,
+      "image_encoding_s": 0.3217710020253435,
+      "concept_reasoning_s": 3.769269449985586,
+      "visual_route_s": 0.18227898108307272,
+      "final_sam_and_restore_s": 0.04733751609455794
+    },
+    "adapter_wall_s": 4.356347025022842
+  },
+  "artifacts": {
+    "generation_events": [
+      {
+        "mode": "initial",
+        "parent": null,
+        "candidates": [
+          "metal bowl",
+          "milk container",
+          "dairy bucket",
+          "collection cup",
+          "milking bowl"
+        ]
+      },
+      {
+        "mode": "child",
+        "parent": "dairy bucket",
+        "candidates": [
+          "milk pail",
+          "dairy pail",
+          "milk jug",
+          "milking pail",
+          "creamer bucket"
+        ]
+      },
+      {
+        "mode": "child",
+        "parent": "milking bowl",
+        "candidates": [
+          "milk pail",
+          "dairy bucket",
+          "creamer pail",
+          "milk jug",
+          "metal pail"
+        ]
+      }
+    ],
+    "mllm_responses": [
+      {
+        "text": "1. metal bowl\n2. milk container\n3. dairy bucket\n4. collection cup\n5. milking bowl",
+        "request_seed": 0
+      },
+      {
+        "text": "1. milk pail\n2. dairy pail\n3. milk jug\n4. milking pail\n5. creamer bucket",
+        "request_seed": 1
+      },
+      {
+        "text": "1. milk pail\n2. dairy bucket\n3. creamer pail\n4. milk jug\n5. metal pail",
+        "request_seed": 2
+      }
+    ],
+    "score_events": [
+      {
+        "prompt": "metal bowl",
+        "ref_iou": 0.898510217666626,
+        "query_score": 0.011042897589504719,
+        "combined_score": 0.009922156316816144
+      },
+      {
+        "prompt": "milk container",
+        "ref_iou": 0.9109653234481812,
+        "query_score": 0.009965803474187851,
+        "combined_score": 0.009078501385284543
+      },
+      {
+        "prompt": "dairy bucket",
+        "ref_iou": 0.9031365513801575,
+        "query_score": 0.6434350609779358,
+        "combined_score": 0.5811097220086943
+      },
+      {
+        "prompt": "collection cup",
+        "ref_iou": 0.910780668258667,
+        "query_score": 0.0035296420101076365,
+        "combined_score": 0.0032147297086796978
+      },
+      {
+        "prompt": "milking bowl",
+        "ref_iou": 0.8940639495849609,
+        "query_score": 0.7316462397575378,
+        "combined_score": 0.6541385268166096
+      },
+      {
+        "prompt": "milk pail",
+        "ref_iou": 0.9096834063529968,
+        "query_score": 0.011266116052865982,
+        "combined_score": 0.010248598827339306
+      },
+      {
+        "prompt": "dairy pail",
+        "ref_iou": 0.9066543579101562,
+        "query_score": 0.03602606803178787,
+        "combined_score": 0.03266319157938824
+      },
+      {
+        "prompt": "milk jug",
+        "ref_iou": 0.9132462739944458,
+        "query_score": 0.022380849346518517,
+        "combined_score": 0.020439227274539062
+      },
+      {
+        "prompt": "milking pail",
+        "ref_iou": 0.9095941185951233,
+        "query_score": 0.16843701899051666,
+        "combined_score": 0.15320932182746905
+      },
+      {
+        "prompt": "creamer bucket",
+        "ref_iou": 0.9081632494926453,
+        "query_score": 0.46377405524253845,
+        "combined_score": 0.4211825530394453
+      },
+      {
+        "prompt": "creamer pail",
+        "ref_iou": 0.9059040546417236,
+        "query_score": 0.054453037679195404,
+        "combined_score": 0.04932922762114167
+      },
+      {
+        "prompt": "metal pail",
+        "ref_iou": 0.9025304317474365,
+        "query_score": 0.11493523418903351,
+        "combined_score": 0.10373254653562114
+      },
+      {
+        "prompt": "milking bowl",
+        "ref_iou": 0.8940639495849609,
+        "query_score": 0.7316462397575378,
+        "combined_score": 0.6541385268166096
+      }
+    ],
+    "search_best_score": 0.6541385268166096,
+    "search_nodes": [
+      {
+        "prompt": "metal bowl",
+        "score": 0.009922156316816144,
+        "ref_iou": 0.898510217666626,
+        "query_presence": 0.011042897589504719,
+        "depth": 0,
+        "mode": "initial",
+        "parent": null
+      },
+      {
+        "prompt": "milk container",
+        "score": 0.009078501385284543,
+        "ref_iou": 0.9109653234481812,
+        "query_presence": 0.009965803474187851,
+        "depth": 0,
+        "mode": "initial",
+        "parent": null
+      },
+      {
+        "prompt": "dairy bucket",
+        "score": 0.5811097220086943,
+        "ref_iou": 0.9031365513801575,
+        "query_presence": 0.6434350609779358,
+        "depth": 0,
+        "mode": "initial",
+        "parent": null
+      },
+      {
+        "prompt": "collection cup",
+        "score": 0.0032147297086796978,
+        "ref_iou": 0.910780668258667,
+        "query_presence": 0.0035296420101076365,
+        "depth": 0,
+        "mode": "initial",
+        "parent": null
+      },
+      {
+        "prompt": "milking bowl",
+        "score": 0.6541385268166096,
+        "ref_iou": 0.8940639495849609,
+        "query_presence": 0.7316462397575378,
+        "depth": 0,
+        "mode": "initial",
+        "parent": null
+      },
+      {
+        "prompt": "milk pail",
+        "score": 0.010248598827339306,
+        "ref_iou": 0.9096834063529968,
+        "query_presence": 0.011266116052865982,
+        "depth": 1,
+        "mode": "child",
+        "parent": "dairy bucket"
+      },
+      {
+        "prompt": "dairy pail",
+        "score": 0.03266319157938824,
+        "ref_iou": 0.9066543579101562,
+        "query_presence": 0.03602606803178787,
+        "depth": 1,
+        "mode": "child",
+        "parent": "dairy bucket"
+      },
+      {
+        "prompt": "milk jug",
+        "score": 0.020439227274539062,
+        "ref_iou": 0.9132462739944458,
+        "query_presence": 0.022380849346518517,
+        "depth": 1,
+        "mode": "child",
+        "parent": "dairy bucket"
+      },
+      {
+        "prompt": "milking pail",
+        "score": 0.15320932182746905,
+        "ref_iou": 0.9095941185951233,
+        "query_presence": 0.16843701899051666,
+        "depth": 1,
+        "mode": "child",
+        "parent": "dairy bucket"
+      },
+      {
+        "prompt": "creamer bucket",
+        "score": 0.4211825530394453,
+        "ref_iou": 0.9081632494926453,
+        "query_presence": 0.46377405524253845,
+        "depth": 1,
+        "mode": "child",
+        "parent": "dairy bucket"
+      },
+      {
+        "prompt": "creamer pail",
+        "score": 0.04932922762114167,
+        "ref_iou": 0.9059040546417236,
+        "query_presence": 0.054453037679195404,
+        "depth": 1,
+        "mode": "child",
+        "parent": "milking bowl"
+      },
+      {
+        "prompt": "metal pail",
+        "score": 0.10373254653562114,
+        "ref_iou": 0.9025304317474365,
+        "query_presence": 0.11493523418903351,
+        "depth": 1,
+        "mode": "child",
+        "parent": "milking bowl"
+      }
+    ],
+    "visual_query_instance_count_including_empty": 2,
+    "visual_nonempty_query_instance_count": 0,
+    "selected_concept": "milking bowl",
+    "components": {
+      "concept": "search",
+      "visual": "boxes"
+    }
+  },
+  "episode_wall_seconds": 4.381742327008396,
+  "attempt_number": 1,
+  "finished_at": "2026-11-13T15:20:48.261512+00:00"
+}

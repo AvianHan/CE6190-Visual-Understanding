@@ -1,0 +1,334 @@
+{
+  "date_sgt": "2026-11-17",
+  "scope": "14 assigned bibliography entries and every active citation occurrence; old_*.tex excluded",
+  "entry_count": 14,
+  "citation_occurrences": 18,
+  "methods": "Reopened primary paper/proceedings pages; search of official CVF/OpenReview source content used where direct retrieval blocked. NeurIPS official BibTeX retrieved independently through urllib after search tool rejected x-bibtex MIME. No reliance on old audit labels.",
+  "blocking_limitations": [],
+  "retrieval_limitations": [
+    "Several direct CVF HTML requests returned 403; indexed official CVF content and PDF were successfully read.",
+    "OpenReview forum/PDF direct requests returned a verification page for ViT and DINOv2; official indexed PDF supplied publication metadata, with DINOv2 arXiv full text supplying method evidence."
+  ],
+  "entries": [
+    {
+      "key": "visualprompt",
+      "title": "Visual Prompting via Image Inpainting",
+      "verified_metadata": "2022; NeurIPS 35; 25005–25017",
+      "source_url": "https://papers.nips.cc/paper_files/paper/2022/hash/9f09f316a3eaf59d9ced5ffaefe97e0f-Abstract-Conference.html",
+      "web_refs": [
+        "turn96view0",
+        "turn123search0"
+      ],
+      "evidence_and_usage": "Abstract explicitly formulates prediction as completing a missing image region in an example-conditioned concatenated prompt. Title, author order, venue, year, pages and DOI match the official BibTeX endpoint.",
+      "status": "SUPPORTED",
+      "recommended_action": "No change.",
+      "uses": [
+        {
+          "file": "paper/sections/related_work.tex",
+          "line": 8,
+          "paragraph": "Reference-conditioned segmentation builds on one-shot prediction~\\cite{oslsm}, support prototypes~\\cite{panet}, and dense support--query correspondence~\\cite{hsnet}. Visual in-context learning broadens this idea by expressing tasks through image examples: visual prompting casts prediction as image completion~\\cite{visualprompt}, Painter learns across dense prediction tasks~\\cite{painter}, and SegGPT provides a general context-conditioned segmentation interface~\\cite{seggpt}. These approaches establish the annotated example as a flexible specification of the desired output.",
+          "citation_group": "visualprompt"
+        }
+      ]
+    },
+    {
+      "key": "goodexamples",
+      "title": "What Makes Good Examples for Visual In-Context Learning?",
+      "verified_metadata": "2023; NeurIPS 36; 17773–17794",
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2023/hash/398ae57ed4fda79d0781c65c926d667b-Abstract-Conference.html",
+      "web_refs": [
+        "turn96view1",
+        "turn123search1"
+      ],
+      "evidence_and_usage": "Abstract studies sensitivity to demonstration selection and introduces prompt retrieval. Current reference-variation motivation is supported; it does not imply the current project implemented that retrieval method. Official BibTeX verifies pages and DOI.",
+      "status": "SUPPORTED",
+      "recommended_action": "No factual change. Optional editorial replacement: “Prior work studies example selection” in place of the shortened paper name “Good Examples”.",
+      "uses": [
+        {
+          "file": "paper/sections/related_work.tex",
+          "line": 12,
+          "paragraph": "The chosen reference is itself a source of variation. Good Examples studies example selection~\\cite{goodexamples}, UNICL-SAM addresses uncertainty in imperfect examples~\\cite{unicl}, and CG-ICS explicitly targets reference robustness~\\cite{cgics}. Our reference study measures performance when the query is fixed and the supplied demonstration changes. Cross-domain work provides a complementary perspective: RePRI uses transductive optimization~\\cite{repri}, while ABCDFSS adapts feature-processing layers at test time~\\cite{abcdfss}. Their adaptation mechanisms differ from the frozen inference evaluated here, motivating a separate domain-transfer analysis.",
+          "citation_group": "goodexamples"
+        }
+      ]
+    },
+    {
+      "key": "vrpsam",
+      "title": "VRP-SAM: SAM with Visual Reference Prompt",
+      "verified_metadata": "2024; CVPR; 23565–23574",
+      "source_url": "https://openaccess.thecvf.com/content/CVPR2024/html/Sun_VRP-SAM_SAM_with_Visual_Reference_Prompt_CVPR_2024_paper.html",
+      "web_refs": [
+        "turn104search0",
+        "turn104search6"
+      ],
+      "evidence_and_usage": "Official abstract introduces the Visual Reference Prompt encoder, trained with meta-learning. The report’s learned reference-prompt encoder description is accurate. Listed author prefix agrees with all nine authors in the proceedings.",
+      "status": "SUPPORTED",
+      "recommended_action": "No change.",
+      "uses": [
+        {
+          "file": "paper/sections/related_work.tex",
+          "line": 10,
+          "paragraph": "Recent methods differ in how they turn that example into a query mask. SegIC learns to use foundation-model correspondences as geometric and semantic guidance~\\cite{segic}; SINE introduces in-context interaction~\\cite{sine}; and VRP-SAM learns a reference-prompt encoder~\\cite{vrpsam}. Frozen-model pipelines instead reuse pretrained representations and segmentation priors: PerSAM derives target-specific information from one example~\\cite{persam}, and Matcher links general feature matching to promptable segmentation~\\cite{matcher}. INSID3 operates directly on DINOv3 features~\\cite{insid3}, whereas CG-ICS combines generated concepts, search, and visual exemplars~\\cite{cgics}. We compare these last two complete inference systems and then examine their individual processing stages.",
+          "citation_group": "vrpsam"
+        }
+      ]
+    },
+    {
+      "key": "unicl",
+      "title": "UNICL-SAM: Uncertainty-Driven In-Context Segmentation with Part Prototype Discovery",
+      "verified_metadata": "2025; CVPR; 20201–20211",
+      "source_url": "https://openaccess.thecvf.com/content/CVPR2025/html/Sheng_UNICL-SAM_Uncertainty-Driven_In-Context_Segmentation_with_Part_Prototype_Discovery_CVPR_2025_paper.html",
+      "web_refs": [
+        "turn104search1",
+        "turn104search2"
+      ],
+      "evidence_and_usage": "Official abstract models unreliable examples caused by variable quality and inaccurate labeling, using uncertainty, feature refinement and part prototypes. Current phrase about uncertainty in imperfect examples is supported. Author prefix and page range match proceedings.",
+      "status": "SUPPORTED",
+      "recommended_action": "No change.",
+      "uses": [
+        {
+          "file": "paper/sections/related_work.tex",
+          "line": 12,
+          "paragraph": "The chosen reference is itself a source of variation. Good Examples studies example selection~\\cite{goodexamples}, UNICL-SAM addresses uncertainty in imperfect examples~\\cite{unicl}, and CG-ICS explicitly targets reference robustness~\\cite{cgics}. Our reference study measures performance when the query is fixed and the supplied demonstration changes. Cross-domain work provides a complementary perspective: RePRI uses transductive optimization~\\cite{repri}, while ABCDFSS adapts feature-processing layers at test time~\\cite{abcdfss}. Their adaptation mechanisms differ from the frozen inference evaluated here, motivating a separate domain-transfer analysis.",
+          "citation_group": "unicl"
+        }
+      ]
+    },
+    {
+      "key": "sine",
+      "title": "A Simple Image Segmentation Framework via In-Context Examples",
+      "verified_metadata": "2024; NeurIPS 37; 25095–25119",
+      "source_url": "https://papers.nips.cc/paper_files/paper/2024/hash/2cc0b08447bf9668db268e6c86364a6e-Abstract-Conference.html",
+      "web_refs": [
+        "turn98view0",
+        "turn123search2"
+      ],
+      "evidence_and_usage": "Abstract explicitly names the In-context Interaction module for reference/target correlations, followed by a Matching Transformer. Current concise description is supported. Complete authors, pages, venue, year and DOI match official BibTeX.",
+      "status": "SUPPORTED",
+      "recommended_action": "No change.",
+      "uses": [
+        {
+          "file": "paper/sections/related_work.tex",
+          "line": 10,
+          "paragraph": "Recent methods differ in how they turn that example into a query mask. SegIC learns to use foundation-model correspondences as geometric and semantic guidance~\\cite{segic}; SINE introduces in-context interaction~\\cite{sine}; and VRP-SAM learns a reference-prompt encoder~\\cite{vrpsam}. Frozen-model pipelines instead reuse pretrained representations and segmentation priors: PerSAM derives target-specific information from one example~\\cite{persam}, and Matcher links general feature matching to promptable segmentation~\\cite{matcher}. INSID3 operates directly on DINOv3 features~\\cite{insid3}, whereas CG-ICS combines generated concepts, search, and visual exemplars~\\cite{cgics}. We compare these last two complete inference systems and then examine their individual processing stages.",
+          "citation_group": "sine"
+        }
+      ]
+    },
+    {
+      "key": "dinov3",
+      "title": "DINOv3",
+      "verified_metadata": "2025; arXiv:2508.10104",
+      "source_url": "https://arxiv.org/abs/2508.10104",
+      "web_refs": [
+        "turn98view1",
+        "turn112view0",
+        "turn115view2"
+      ],
+      "evidence_and_usage": "Abstract supports self-supervised scaling and dense representations; §6.1.3 tests geometric and semantic correspondence with frozen features. The co-citations beside INSID3 identify its backbone; INSID3 itself must support debiasing/clustering/aggregation, not DINOv3 alone. First six authors and arXiv identifier/year/DOI match.",
+      "status": "SUPPORTED_WITH_CO_CITATION_SCOPE",
+      "recommended_action": "No change.",
+      "uses": [
+        {
+          "file": "paper/sections/introduction.tex",
+          "line": 8,
+          "paragraph": "Recent foundation models support two distinct solutions. INSID3 constructs a mask from frozen DINOv3 features through debiasing, clustering, and similarity aggregation~\\cite{insid3,dinov3}. CG-ICS generates language concepts from the reference, evaluates and searches these concepts, and combines them with visual prompts in SAM~3~\\cite{cgics,sam3}. Their central difference is how the reference becomes actionable evidence: direct visual correspondence in one system, and concept-guided segmentation supported by visual transfer in the other.",
+          "citation_group": "insid3,dinov3"
+        },
+        {
+          "file": "paper/sections/methods.tex",
+          "line": 10,
+          "paragraph": "INSID3 uses the semantic correspondence and spatial grouping structure of frozen DINOv3 features~\\cite{insid3,dinov3}. Figure~\\ref{fig:insid3} separates two feature paths. Original query features provide coherent clusters and within-query similarity. Debiased reference and query features provide cross-image matching, reducing the influence of absolute image position.",
+          "citation_group": "insid3,dinov3"
+        },
+        {
+          "file": "paper/sections/related_work.tex",
+          "line": 3,
+          "paragraph": "Visual understanding requires both semantic recognition and spatial localization. Vision Transformers represent images as patch tokens~\\cite{vit}, while self-supervised learning in DINO produces features that capture object structure without task-specific labels~\\cite{dino}. DINOv2 and DINOv3 extend this representation approach at scale~\\cite{dinov2,dinov3}. Their dense features support correspondence across images, providing a basis for transferring an annotated target from a reference to a query.",
+          "citation_group": "dinov2,dinov3"
+        }
+      ]
+    },
+    {
+      "key": "dinov2",
+      "title": "DINOv2: Learning Robust Visual Features without Supervision",
+      "verified_metadata": "Current entry: 2023 arXiv; published version: TMLR January 2024",
+      "source_url": "https://arxiv.org/abs/2304.07193",
+      "web_refs": [
+        "turn98view2",
+        "turn108search9",
+        "turn112view1",
+        "turn115view1"
+      ],
+      "evidence_and_usage": "Abstract establishes scale and generic features. §7.5 Patch matching demonstrates cross-image semantic correspondences. Existing 2023 arXiv entry is valid, but official TMLR paper is published January 2024 and gives author Huy V. Vo.",
+      "status": "SUPPORTED_PUBLICATION_UPGRADE_RECOMMENDED",
+      "recommended_action": "Prefer @article, journal={Transactions on Machine Learning Research}, year={2024}, url={https://openreview.net/forum?id=a68SUt6zFt}; use Vo, Huy V. Keep arXiv identifier as an optional access field.",
+      "uses": [
+        {
+          "file": "paper/sections/related_work.tex",
+          "line": 3,
+          "paragraph": "Visual understanding requires both semantic recognition and spatial localization. Vision Transformers represent images as patch tokens~\\cite{vit}, while self-supervised learning in DINO produces features that capture object structure without task-specific labels~\\cite{dino}. DINOv2 and DINOv3 extend this representation approach at scale~\\cite{dinov2,dinov3}. Their dense features support correspondence across images, providing a basis for transferring an annotated target from a reference to a query.",
+          "citation_group": "dinov2,dinov3"
+        }
+      ]
+    },
+    {
+      "key": "sam3",
+      "title": "SAM 3: Segment Anything with Concepts",
+      "verified_metadata": "2025; arXiv:2511.16719 (v2 revised March 2026)",
+      "source_url": "https://arxiv.org/abs/2511.16719",
+      "web_refs": [
+        "turn98view3"
+      ],
+      "evidence_and_usage": "Abstract defines concept prompts as noun phrases, exemplars or their combination and returns matching instance masks. This supports concept-level prompt capability. The CG-ICS co-citation must support its own concept-generation/search procedure. Listed author prefix and original arXiv year match.",
+      "status": "SUPPORTED_WITH_CO_CITATION_SCOPE",
+      "recommended_action": "No change. Do not interpret the 2026 revision date as the initial publication year.",
+      "uses": [
+        {
+          "file": "paper/sections/introduction.tex",
+          "line": 8,
+          "paragraph": "Recent foundation models support two distinct solutions. INSID3 constructs a mask from frozen DINOv3 features through debiasing, clustering, and similarity aggregation~\\cite{insid3,dinov3}. CG-ICS generates language concepts from the reference, evaluates and searches these concepts, and combines them with visual prompts in SAM~3~\\cite{cgics,sam3}. Their central difference is how the reference becomes actionable evidence: direct visual correspondence in one system, and concept-guided segmentation supported by visual transfer in the other.",
+          "citation_group": "cgics,sam3"
+        },
+        {
+          "file": "paper/sections/related_work.tex",
+          "line": 5,
+          "paragraph": "Promptable foundation models expose spatial and semantic information through a segmentation interface. SAM predicts masks from spatial prompts~\\cite{sam}; SAM~2 extends this interface to video~\\cite{sam2}; and SAM~3 supports concept-level prompts~\\cite{sam3}. CLIP connects visual representations with language through image--text alignment~\\cite{clip}, while models such as Qwen3-VL support multimodal reasoning~\\cite{qwen3vl}. Together, these capabilities enable the two routes studied here: identifying a target through dense visual correspondence, or describing it semantically and grounding that description with a promptable segmenter.",
+          "citation_group": "sam3"
+        }
+      ]
+    },
+    {
+      "key": "sam",
+      "title": "Segment Anything",
+      "verified_metadata": "2023; ICCV; 4015–4026",
+      "source_url": "https://openaccess.thecvf.com/content/ICCV2023/html/Kirillov_Segment_Anything_ICCV_2023_paper.html",
+      "web_refs": [
+        "turn108search0",
+        "turn112view2",
+        "turn118view0"
+      ],
+      "evidence_and_usage": "Official metadata verifies author prefix, pages, venue and year. Paper §3 specifies point/box/mask prompts and a mask decoder, supporting the spatial-prompt statement. The report does not claim SAM is exclusively spatial: paper also explores text prompts.",
+      "status": "SUPPORTED",
+      "recommended_action": "No change.",
+      "uses": [
+        {
+          "file": "paper/sections/related_work.tex",
+          "line": 5,
+          "paragraph": "Promptable foundation models expose spatial and semantic information through a segmentation interface. SAM predicts masks from spatial prompts~\\cite{sam}; SAM~2 extends this interface to video~\\cite{sam2}; and SAM~3 supports concept-level prompts~\\cite{sam3}. CLIP connects visual representations with language through image--text alignment~\\cite{clip}, while models such as Qwen3-VL support multimodal reasoning~\\cite{qwen3vl}. Together, these capabilities enable the two routes studied here: identifying a target through dense visual correspondence, or describing it semantically and grounding that description with a promptable segmenter.",
+          "citation_group": "sam"
+        }
+      ]
+    },
+    {
+      "key": "qwen3vl",
+      "title": "Qwen3-VL Technical Report",
+      "verified_metadata": "2025; arXiv:2511.21631",
+      "source_url": "https://arxiv.org/abs/2511.21631",
+      "web_refs": [
+        "turn101view1",
+        "turn125view0"
+      ],
+      "evidence_and_usage": "Abstract supports multimodal reasoning and includes dense 4B variants. Official Qwen model card confirms Qwen3-VL-4B-Instruct. Local configs/source_pins.json and cluster.orion.recovery.json identify this checkpoint, independently of the paper citation. Original first six authors/year/title/identifier/DOI match.",
+      "status": "SUPPORTED_WITH_IMPLEMENTATION_EVIDENCE",
+      "recommended_action": "Keep citation attached to model identity. Working resolution, candidate count, loops and GPU allocation are implementation facts, not claims established by the Qwen paper.",
+      "uses": [
+        {
+          "file": "paper/sections/methods.tex",
+          "line": 42,
+          "paragraph": "The implemented system uses Qwen3-VL-4B-Instruct for concept generation~\\cite{qwen3vl}, working image size 512, five initial candidates, and three search loops. SAM~3 applies its own size-1008 preprocessing. The language model and segmenter occupy separate GPUs; this additional language-model allocation is included when interpreting system cost.",
+          "citation_group": "qwen3vl"
+        },
+        {
+          "file": "paper/sections/related_work.tex",
+          "line": 5,
+          "paragraph": "Promptable foundation models expose spatial and semantic information through a segmentation interface. SAM predicts masks from spatial prompts~\\cite{sam}; SAM~2 extends this interface to video~\\cite{sam2}; and SAM~3 supports concept-level prompts~\\cite{sam3}. CLIP connects visual representations with language through image--text alignment~\\cite{clip}, while models such as Qwen3-VL support multimodal reasoning~\\cite{qwen3vl}. Together, these capabilities enable the two routes studied here: identifying a target through dense visual correspondence, or describing it semantically and grounding that description with a promptable segmenter.",
+          "citation_group": "qwen3vl"
+        }
+      ]
+    },
+    {
+      "key": "dino",
+      "title": "Emerging Properties in Self-Supervised Vision Transformers",
+      "verified_metadata": "2021; ICCV; 9650–9660",
+      "source_url": "https://openaccess.thecvf.com/content/ICCV2021/html/Caron_Emerging_Properties_in_Self-Supervised_Vision_Transformers_ICCV_2021_paper.html",
+      "web_refs": [
+        "turn104search3",
+        "turn104search4"
+      ],
+      "evidence_and_usage": "Abstract and Figure 1 describe object/segmentation structure emerging in self-supervised ViT features, without labels. All seven authors and publication fields match official proceedings. The report claims capability, not guaranteed correspondence on every image.",
+      "status": "SUPPORTED",
+      "recommended_action": "No change.",
+      "uses": [
+        {
+          "file": "paper/sections/related_work.tex",
+          "line": 3,
+          "paragraph": "Visual understanding requires both semantic recognition and spatial localization. Vision Transformers represent images as patch tokens~\\cite{vit}, while self-supervised learning in DINO produces features that capture object structure without task-specific labels~\\cite{dino}. DINOv2 and DINOv3 extend this representation approach at scale~\\cite{dinov2,dinov3}. Their dense features support correspondence across images, providing a basis for transferring an annotated target from a reference to a query.",
+          "citation_group": "dino"
+        }
+      ]
+    },
+    {
+      "key": "vit",
+      "title": "An Image Is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+      "verified_metadata": "2021; ICLR",
+      "source_url": "https://openreview.net/forum?id=YicbFdNTTy",
+      "web_refs": [
+        "turn104search5"
+      ],
+      "evidence_and_usage": "Official ICLR PDF explicitly applies Transformers to sequences of image patches, supporting patch-token description. First six authors, title and conference year match. Direct forum open was challenge-blocked; official PDF search supplied the accepted paper.",
+      "status": "SUPPORTED",
+      "recommended_action": "No change.",
+      "uses": [
+        {
+          "file": "paper/sections/related_work.tex",
+          "line": 3,
+          "paragraph": "Visual understanding requires both semantic recognition and spatial localization. Vision Transformers represent images as patch tokens~\\cite{vit}, while self-supervised learning in DINO produces features that capture object structure without task-specific labels~\\cite{dino}. DINOv2 and DINOv3 extend this representation approach at scale~\\cite{dinov2,dinov3}. Their dense features support correspondence across images, providing a basis for transferring an annotated target from a reference to a query.",
+          "citation_group": "vit"
+        }
+      ]
+    },
+    {
+      "key": "sam2",
+      "title": "SAM 2: Segment Anything in Images and Videos",
+      "verified_metadata": "Current entry: 2024 arXiv; published version: ICLR 2025",
+      "source_url": "https://proceedings.iclr.cc/paper_files/paper/2025/hash/45c1f6a8cbf2da59ebf2c802b4f742cd-Abstract-Conference.html",
+      "web_refs": [
+        "turn101view4",
+        "turn108search1",
+        "turn112view4"
+      ],
+      "evidence_and_usage": "Official ICLR proceedings confirms title, authors, 2025 conference publication and promptable segmentation across images/videos. Current 2024 arXiv reference is valid but the published conference entry is preferable.",
+      "status": "SUPPORTED_PUBLICATION_UPGRADE_RECOMMENDED",
+      "recommended_action": "Prefer @inproceedings, booktitle={International Conference on Learning Representations}, year={2025}, official proceedings URL. Keep arXiv identifier as an optional access field.",
+      "uses": [
+        {
+          "file": "paper/sections/related_work.tex",
+          "line": 5,
+          "paragraph": "Promptable foundation models expose spatial and semantic information through a segmentation interface. SAM predicts masks from spatial prompts~\\cite{sam}; SAM~2 extends this interface to video~\\cite{sam2}; and SAM~3 supports concept-level prompts~\\cite{sam3}. CLIP connects visual representations with language through image--text alignment~\\cite{clip}, while models such as Qwen3-VL support multimodal reasoning~\\cite{qwen3vl}. Together, these capabilities enable the two routes studied here: identifying a target through dense visual correspondence, or describing it semantically and grounding that description with a promptable segmenter.",
+          "citation_group": "sam2"
+        }
+      ]
+    },
+    {
+      "key": "clip",
+      "title": "Learning Transferable Visual Models From Natural Language Supervision",
+      "verified_metadata": "2021; ICML; PMLR 139:8748–8763",
+      "source_url": "https://proceedings.mlr.press/v139/radford21a.html",
+      "web_refs": [
+        "turn101view5"
+      ],
+      "evidence_and_usage": "Official abstract and BibTeX verify image–text matching pretraining, author prefix, title, proceedings, year, volume and pages. This directly supports image–text alignment, without claiming a segmentation architecture.",
+      "status": "SUPPORTED",
+      "recommended_action": "No change.",
+      "uses": [
+        {
+          "file": "paper/sections/related_work.tex",
+          "line": 5,
+          "paragraph": "Promptable foundation models expose spatial and semantic information through a segmentation interface. SAM predicts masks from spatial prompts~\\cite{sam}; SAM~2 extends this interface to video~\\cite{sam2}; and SAM~3 supports concept-level prompts~\\cite{sam3}. CLIP connects visual representations with language through image--text alignment~\\cite{clip}, while models such as Qwen3-VL support multimodal reasoning~\\cite{qwen3vl}. Together, these capabilities enable the two routes studied here: identifying a target through dense visual correspondence, or describing it semantically and grounding that description with a promptable segmenter.",
+          "citation_group": "clip"
+        }
+      ]
+    }
+  ]
+}

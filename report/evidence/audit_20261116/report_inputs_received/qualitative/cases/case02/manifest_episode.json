@@ -1,0 +1,31 @@
+{
+  "manifest_path": "/scratch/prj0000000262_1/hansy/ce6190-ics-runtime/manifests/lvis-nonempty-v2/lvis_fold8_standard.json",
+  "manifest_sha256": "d008c25d14400d92f0778dd282da0d5a35330977cf99463b8ef74bdc0b3095cd",
+  "manifest_index": 863,
+  "episode": {
+    "episode_id": "lvis-f8-q000863-0e7dc993a2d79d23-r000",
+    "dataset": "lvis",
+    "dataset_version": "LVIS-author-lvis_val.pkl",
+    "split": "val",
+    "fold": 8,
+    "track": "semantic",
+    "concept_id": "127",
+    "reference_seed": 0,
+    "query": {
+      "image": "LVIS/coco/train2017/000000022879.jpg",
+      "image_sha256": "f000c2d32d5de672ef2a9fd7a90762e21a0bd6580639ccee502f72eec7c45202",
+      "mask": "ics_generated_masks/lvis/query/28679842423f6312c7b36e639df7851a3f0cf4f1338d32b772e06ca17f389a51.png",
+      "mask_sha256": "3269054053dd8ccc73c6f24df6b399fe258d3097782bf544f47cc6a507fd2cc6"
+    },
+    "references": [
+      {
+        "image": "LVIS/coco/train2017/000000359535.jpg",
+        "image_sha256": "bd8a08484cdadfcbacc0706ff7780781377b6f6aa5173991b3bec9a54b6257fb",
+        "mask": "ics_generated_masks/lvis/reference/5945717eacaf59d475f389a937b3023b8efb27d6e724ee7e98521ca8f67c9cea.png",
+        "mask_sha256": "3dcbd339cd4558c3ee772a62be9cbb740a0ac577d800d1841cc70bfdad92fa85"
+      }
+    ],
+    "mask_semantics": "binary foreground union of prompted class; reference void=background",
+    "ignore_label": null
+  }
+}

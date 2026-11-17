@@ -1,0 +1,71 @@
+{
+  "status": "PASS",
+  "interactions": 4,
+  "metric_decompositions": 4,
+  "search_heterogeneity": [
+    {
+      "dataset": "coco",
+      "query_targets": 400,
+      "early_equal_query_iou_percent": 70.933324533273,
+      "search_equal_query_iou_percent": 71.15656806697206,
+      "mean_search_gain_pp": 0.22324353369904953,
+      "search_better_queries": 194,
+      "equal_queries": 10,
+      "early_better_queries": 196,
+      "search_gain_over_5pp_queries": 46,
+      "search_loss_over_5pp_queries": 41,
+      "hindsight_max_of_query_means_iou_percent": 73.33050648870608,
+      "hindsight_gain_over_always_search_pp": 2.173938421734028,
+      "observed_device_pairs": [
+        {
+          "early": "NVIDIA H200",
+          "search": "NVIDIA H200",
+          "episodes": 300
+        },
+        {
+          "early": "NVIDIA L40S",
+          "search": "NVIDIA H200",
+          "episodes": 900
+        }
+      ],
+      "interpretation": "Hindsight selection uses ground truth after averaging references; descriptive upper envelope, not an inference policy or expected gate accuracy."
+    },
+    {
+      "dataset": "lvis",
+      "query_targets": 1000,
+      "early_equal_query_iou_percent": 53.52136063495061,
+      "search_equal_query_iou_percent": 55.820877874958285,
+      "mean_search_gain_pp": 2.2995172400076656,
+      "search_better_queries": 535,
+      "equal_queries": 62,
+      "early_better_queries": 403,
+      "search_gain_over_5pp_queries": 209,
+      "search_loss_over_5pp_queries": 131,
+      "hindsight_max_of_query_means_iou_percent": 58.57174349527773,
+      "hindsight_gain_over_always_search_pp": 2.7508656203194515,
+      "observed_device_pairs": [
+        {
+          "early": "NVIDIA H200",
+          "search": "NVIDIA H200",
+          "episodes": 561
+        },
+        {
+          "early": "NVIDIA H200",
+          "search": "NVIDIA L40S",
+          "episodes": 555
+        },
+        {
+          "early": "NVIDIA L40S",
+          "search": "NVIDIA H200",
+          "episodes": 1088
+        },
+        {
+          "early": "NVIDIA L40S",
+          "search": "NVIDIA L40S",
+          "episodes": 553
+        }
+      ],
+      "interpretation": "Hindsight selection uses ground truth after averaging references; descriptive upper envelope, not an inference policy or expected gate accuracy."
+    }
+  ]
+}

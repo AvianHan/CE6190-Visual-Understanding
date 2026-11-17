@@ -1,0 +1,51 @@
+[
+  [
+    "In-context segmentation transfers a target from an annotated reference image to a query image.",
+    "We compare two training-free systems, INSID3 and CG-ICS, to examine how visual correspondence and concept-guided search affect accuracy, reference sensitivity, and inference cost.",
+    "On COCO-$20^i$ and LVIS-$92^i$, CG-ICS achieves mean-fold class-pooled IoU of 72.17\\% and 47.44\\%, versus 57.65\\% and 40.77\\% for INSID3.",
+    "This improvement comes with 7.37--10.63 times greater mean inference latency on input pairs with the same runner GPU model and an additional language-model GPU.",
+    "Component experiments identify distinct sources of performance: INSID3 benefits from feature debiasing and region aggregation, whereas CG-ICS benefits strongly from combining a semantic concept with visual prompts.",
+    "Additional concept search yields only a 0.22-point equal-query IoU gain on COCO but a 2.30-point gain on LVIS.",
+    "In the paired-input cohort, visual prompting reduces the marginal gain from search.",
+    "Reference variation and small-target failures further distinguish the systems.",
+    "These findings motivate Agreement-Gated Search (AGS), for which we derive a cost--accuracy decomposition and specify a controlled evaluation.",
+    "The report combines completed comparative evidence with this extension, whose experimental results are pending.",
+    "Code is available at \\url{https://github.com/AvianHan/CE6190-Visual-Understanding}."
+  ],
+  [
+    "In-context segmentation (ICS) identifies a target in a query image from a reference image and its binary mask.",
+    "This interface allows a user to specify the target visually, without annotating each query or fitting a new task-specific model.",
+    "Reliable transfer remains difficult: the same category can change appearance, the reference may emphasize only part of an object, and the query can contain visually or semantically similar distractors.",
+    "A practical system must resolve these ambiguities at an acceptable inference cost."
+  ],
+  [
+    "Recent foundation models support two distinct solutions.",
+    "INSID3 constructs a mask from frozen DINOv3 features through debiasing, clustering, and similarity aggregation~\\cite{insid3,dinov3}.",
+    "CG-ICS generates language concepts from the reference, evaluates and searches these concepts, and combines them with visual prompts in SAM~3~\\cite{cgics,sam3}.",
+    "Their central difference is how the reference becomes actionable evidence: direct visual correspondence in one system, and concept-guided segmentation supported by visual transfer in the other."
+  ],
+  [
+    "A headline accuracy comparison leaves important behavior unresolved.",
+    "An improvement may depend on the reference, arise from a particular processing stage, or require expensive search that benefits only some inputs.",
+    "Complete-system evaluation therefore needs to be connected to component interventions and measured cost.",
+    "This connection is also necessary for designing an efficient extension: search should be reduced where its marginal value is small, while preserving it where the initial prediction is inadequate."
+  ],
+  [
+    "We study these questions on COCO-$20^i$ and LVIS-$92^i$ using common reference/query inputs and original-resolution evaluation.",
+    "CG-ICS is more accurate overall, while INSID3 is substantially faster.",
+    "The component results sharpen this comparison: a single concept combined with visual prompts captures most of CG-ICS's gain on COCO, whereas LVIS benefits more from further search.",
+    "Moreover, visual prompting reduces the marginal search gain on both datasets.",
+    "This measured interaction motivates an input-dependent search rule based on agreement between text-only and visual-only predictions.",
+    "Our contributions are threefold:"
+  ],
+  [
+    "\\textbf{Paired system evaluation.} We compare accuracy, reference sensitivity, and computational cost on common inputs."
+  ],
+  [
+    "\\textbf{Component analysis.} We separate feature processing, semantic search, visual prompting, and backbone choice through controlled interventions."
+  ],
+  [
+    "\\textbf{Agreement-Gated Search.} We propose input-dependent search with an explicit cost--accuracy formulation and predefined controls.",
+    "The empirical conclusions use the completed first batch; the extension is being evaluated separately on fresh queries and transfer datasets."
+  ]
+]

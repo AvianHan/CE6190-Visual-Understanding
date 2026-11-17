@@ -1,0 +1,26 @@
+[
+  [
+    "For nonempty binary masks viewed as finite pixel sets, let $J$ be IoU and $d(X,Y)=1-J(X,Y)$ be Jaccard distance~\\cite{kosub2019}.",
+    "The reverse triangle inequality gives"
+  ],
+  [
+    "Indeed, applying the triangle inequality in both directions bounds $|d(M_t,M_q)-d(M_v,M_q)|$ by $d(M_t,M_v)$.",
+    "High agreement therefore bounds the difference between the two probe accuracies, rather than their absolute accuracy.",
+    "For example, if both probes predict the same region disjoint from the target, their mutual IoU is one while both target IoUs are zero.",
+    "The bound concerns the two probe masks, not the subsequent joint-prompt prediction."
+  ],
+  [
+    "Within one class, let $U_e=\\mathrm{TP}_e+\\mathrm{FP}_e+\\mathrm{FN}_e$ be episode union size and $J_e=\\mathrm{TP}_e/U_e$.",
+    "With population covariance over episodes,"
+  ],
+  [
+    "where $G_e=\\mathrm{TP}_e+\\mathrm{FN}_e$ is target area.",
+    "The identity follows from $\\mathrm{TP}_e=U_eJ_e$ and $\\overline{UJ}=\\overline{U}\\,\\overline{J}+\\operatorname{Cov}(U,J)$.",
+    "It explains why a large erroneous foreground region can lower pooled IoU much more than the mean episode IoU: the error also increases its weight through $U_e$."
+  ],
+  [
+    "For CG-ICS on LVIS, the mean episode IoU is $55.19\\%$ and the class-pooled IoU is $47.44\\%$.",
+    "Averaging Eq.~\\ref{eq:pooling-covariance} using the same class/fold weights yields a $-7.75$-point gap: the target-area covariance term is $+3.82$ points and the false-positive covariance term is $-11.57$ points.",
+    "These are exact weighting components, not estimates of causal effects."
+  ]
+]

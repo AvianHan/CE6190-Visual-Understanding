@@ -1,0 +1,33 @@
+[
+  [
+    "Visual understanding requires both semantic recognition and spatial localization.",
+    "Vision Transformers represent images as patch tokens~\\cite{vit}, while self-supervised learning in DINO produces features that capture object structure without task-specific labels~\\cite{dino}.",
+    "DINOv2 and DINOv3 extend this representation approach at scale~\\cite{dinov2,dinov3}.",
+    "Their dense features support correspondence across images, providing a basis for transferring an annotated target from a reference to a query."
+  ],
+  [
+    "Promptable foundation models expose spatial and semantic information through a segmentation interface.",
+    "SAM predicts masks from spatial prompts~\\cite{sam}; SAM~2 extends this interface to video~\\cite{sam2}; and SAM~3 supports concept-level prompts~\\cite{sam3}.",
+    "CLIP connects visual representations with language through image--text alignment~\\cite{clip}, while models such as Qwen3-VL support multimodal reasoning~\\cite{qwen3vl}.",
+    "Together, these capabilities enable the two routes studied here: identifying a target through dense visual correspondence, or describing it semantically and grounding that description with a promptable segmenter."
+  ],
+  [
+    "Reference-conditioned segmentation builds on one-shot prediction~\\cite{oslsm}, support prototypes~\\cite{panet}, and dense support--query correspondence~\\cite{hsnet}.",
+    "Visual in-context learning broadens this idea by expressing tasks through image examples: visual prompting casts prediction as image completion~\\cite{visualprompt}, Painter learns across dense prediction tasks~\\cite{painter}, and SegGPT provides a general context-conditioned segmentation interface~\\cite{seggpt}.",
+    "These approaches establish the annotated example as a flexible specification of the desired output."
+  ],
+  [
+    "Recent methods differ in how they turn that example into a query mask.",
+    "SegIC turns foundation-model correspondences into geometric, visual, and meta instructions~\\cite{segic}; SINE introduces in-context interaction~\\cite{sine}; and VRP-SAM learns a reference-prompt encoder~\\cite{vrpsam}.",
+    "Frozen-model pipelines instead reuse pretrained representations and segmentation priors: PerSAM derives target-specific information from one example~\\cite{persam}, and Matcher links general feature matching to promptable segmentation~\\cite{matcher}.",
+    "INSID3 operates directly on DINOv3 features~\\cite{insid3}, whereas CG-ICS combines generated concepts, search, and visual exemplars~\\cite{cgics}.",
+    "We compare these last two complete inference systems and then examine their individual processing stages."
+  ],
+  [
+    "The chosen reference is itself a source of variation.",
+    "Good Examples studies example selection~\\cite{goodexamples}, UNICL-SAM addresses uncertainty in imperfect examples~\\cite{unicl}, and CG-ICS explicitly targets reference robustness~\\cite{cgics}.",
+    "Our reference study measures performance when the query is fixed and the supplied demonstration changes.",
+    "Cross-domain work provides a complementary perspective: RePRI uses transductive optimization~\\cite{repri}, while ABCDFSS adapts feature-processing layers at test time~\\cite{abcdfss}.",
+    "Their adaptation mechanisms differ from the frozen inference evaluated here, motivating a separate domain-transfer analysis."
+  ]
+]

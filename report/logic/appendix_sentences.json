@@ -1,0 +1,41 @@
+[
+  [
+    "Table~\\ref{tab:matrix-scope} records the first-batch scope.",
+    "Task counts resolve the shared controls used by seed experiments and parameter sweeps."
+  ],
+  [
+    "The first batch has 1,480 successful formal tasks and four failed reference tasks.",
+    "All 615,976 expected records, including four errors, are accounted for and verified against 532 output bindings.",
+    "The standard cohorts contain 3,975 COCO and 13,750 LVIS distinct query targets, on 3,820 and 9,051 distinct image hashes.",
+    "COCO and LVIS share 462 standard-cohort image hashes, so their results are reported separately."
+  ],
+  [
+    "Common manifests and original-resolution ground truth preserve source class memberships, while sampling and aggregation can differ from the author protocols.",
+    "Empty LVIS source masks are excluded before sampling; all classes and folds remain.",
+    "Pretraining-data overlap is not controlled, and intervals are not adjusted for multiple comparisons."
+  ],
+  [
+    "The executed INSID3 implementation estimates its positional basis from an ImageNet-normalized all-zero image; the paper describes Gaussian noise.",
+    "It retains original features for clustering and self-similarity and debiased features for cross-image matching.",
+    "The main route uses bilinear restoration without CRF refinement.",
+    "In CG-ICS, working images are size 512 before SAM~3's internal preprocessing, and nearest-neighbor restoration maps predictions to the original resolution.",
+    "The direct-concatenation control uses the implemented query-side instance union."
+  ],
+  [
+    "Fresh core queries exclude previous formal-query image hashes and canonical COCO image identifiers across both initial datasets.",
+    "The transfer scopes use the author-prepared merged SUIM pool and reorganized ISIC~2018 Task~1 training images.",
+    "SUIM's full source pool is checked before sampling, and image--mask pairs with mismatched dimensions are excluded without changing the source rasters.",
+    "All seven foreground classes and 1,000 unique queries are required; eligibility counts will accompany the results.",
+    "ISIC reference selection uses the supplied diagnostic strata; it is not a patient-disjoint clinical test or the official challenge-test evaluation."
+  ],
+  [
+    "The fixed-pool scoring study generates candidates once per input, then evaluates alternative ranking rules on the same evidence.",
+    "If the maximum combined score in the pool is below $10^{-6}$, all rules use the same visual fallback.",
+    "Random search policies use fixed probabilities rather than probabilities selected from the gate's realized search rate.",
+    "Staged always-search measures the extra initial probing cost."
+  ],
+  [
+    "Owned memory sums simultaneous samples from the runner and its language-model processes.",
+    "The language server's 0.85 utilization setting includes reserved/cache memory; these values therefore differ from minimum model-memory requirements and runner-only CUDA peaks."
+  ]
+]

@@ -1,0 +1,389 @@
+{
+  "result_schema_version": 2,
+  "run_id": "cgics_full-fcc484c5c920640c",
+  "experiment_id": "cgics_full",
+  "method": "cgics",
+  "variant": "full",
+  "protocol_id": "ce6190-unified-v1-coco-val-f0",
+  "evaluation_protocol": "unified_original_resolution",
+  "config_sha256": "7ee9ccfb109c94fd1119addd844e98c937666841f32ec45314d3159b710ddaf7",
+  "manifest_sha256": "540cfa2e8e620fca4ec82702b3b23aeea681ef73ca246b8a542e57e1cea159cf",
+  "episode_id": "coco-f0-q000702-23c946e741edb265-r000",
+  "dataset": "coco",
+  "dataset_version": "COCO2014-author-semantic-masks",
+  "split": "val",
+  "fold": 0,
+  "track": "semantic",
+  "concept_id": "48",
+  "reference_seed": 0,
+  "nshot": 1,
+  "query_image_sha256": "7cf527f1bd7e704bda8da6d1e30f7d8c9956aac6f88ae01ad0d1a7a26ddc0d41",
+  "query_mask_sha256": "abe18b3fc90783da9328738e2083cb8553f52686ea22921eee97d906cb536ede",
+  "reference_image_sha256": [
+    "a18dc08beb07a2b42b7b1d07e9cd2cddb7172170377d1b1ec491f8b7fcd41a81"
+  ],
+  "mask_semantics": "binary foreground union of prompted class; reference void=background",
+  "base_seed": 0,
+  "episode_seed": 4240896545,
+  "started_at": "2026-11-13T08:55:39.521681+00:00",
+  "shard_index": 2,
+  "num_shards": 4,
+  "status": "ok",
+  "counts": {
+    "tp": 0,
+    "fp": 4357,
+    "fn": 10505,
+    "tn": 152638,
+    "ignored": 0
+  },
+  "iou": 0.0,
+  "target_area_fraction": 0.06271641791044776,
+  "prediction_path": "predictions/4649c2c5397c37497fcfeac32b2ec37172ace4f6bd45890c49e70a86f064b5e8.png",
+  "prediction_sha256": "637d99d7579c82396e38f0d298e8ec054c3f59e148153054c07fe1210b93a551",
+  "inference_seconds": 5.773400497040711,
+  "cuda_memory": {
+    "0": {
+      "peak_allocated_bytes": 4668577280,
+      "peak_reserved_bytes": 5272240128,
+      "device_name": "NVIDIA L40S"
+    }
+  },
+  "memory_scope": "current Python process; excludes external MLLM server/other processes",
+  "telemetry": {
+    "sam_calls": 34,
+    "sam_image_encoder_calls": 3,
+    "sam_prompt_head_calls": 35,
+    "mllm_requests": 4,
+    "mllm_prompt_tokens": 4128,
+    "mllm_completion_tokens": 113,
+    "mllm_usage_missing_requests": 0,
+    "candidate_score_evaluations": 16,
+    "mllm_request_wall_s": 1.9417773641180247,
+    "cache_policy": "within_episode_only",
+    "mllm_server_gpu_memory_bytes": null,
+    "search_nodes": 15,
+    "search_restarts": 3,
+    "search_max_depth_reached": 0,
+    "search_reported_evaluations_excluding_rerank": 15,
+    "stages": {
+      "input_preprocessing_s": 0.11238659697119147,
+      "image_encoding_s": 0.3208140750648454,
+      "concept_reasoning_s": 5.037204641033895,
+      "visual_route_s": 0.25415470509324223,
+      "final_sam_and_restore_s": 0.04730599303729832
+    },
+    "adapter_wall_s": 5.772027194965631
+  },
+  "artifacts": {
+    "generation_events": [
+      {
+        "mode": "initial",
+        "parent": null,
+        "candidates": [
+          "salmon fillet",
+          "grilled salmon",
+          "pink fish",
+          "seafood piece",
+          "smoked salmon"
+        ]
+      },
+      {
+        "mode": "restart",
+        "parent": null,
+        "candidates": [
+          "salmon steak",
+          "pink salmon",
+          "seared salmon",
+          "salmon chunk",
+          "salmon medallion"
+        ]
+      },
+      {
+        "mode": "restart",
+        "parent": null,
+        "candidates": [
+          "fish slice",
+          "salmon patty",
+          "pink fish cake",
+          "grilled fish cube",
+          "fish medallion"
+        ]
+      },
+      {
+        "mode": "restart",
+        "parent": null,
+        "candidates": [
+          "salmon chunk",
+          "salmon steak",
+          "salmon fillet",
+          "salmon medallion",
+          "salmon patty"
+        ]
+      }
+    ],
+    "mllm_responses": [
+      {
+        "text": "1. salmon fillet\n2. grilled salmon\n3. pink fish\n4. seafood piece\n5. smoked salmon",
+        "request_seed": 0
+      },
+      {
+        "text": "1. salmon steak\n2. pink salmon\n3. seared salmon\n4. salmon chunk\n5. salmon medallion",
+        "request_seed": 1
+      },
+      {
+        "text": "1. fish slice\n2. salmon patty\n3. pink fish cake\n4. grilled fish cube\n5. fish medallion",
+        "request_seed": 2
+      },
+      {
+        "text": "1. salmon chunk\n2. salmon steak\n3. salmon fillet\n4. salmon medallion\n5. salmon patty",
+        "request_seed": 3
+      }
+    ],
+    "score_events": [
+      {
+        "prompt": "salmon fillet",
+        "ref_iou": 0.5824522972106934,
+        "query_score": 0.012937876395881176,
+        "combined_score": 0.007535695827808997
+      },
+      {
+        "prompt": "grilled salmon",
+        "ref_iou": 0.5835432410240173,
+        "query_score": 0.0019459696486592293,
+        "combined_score": 0.001135557435712975
+      },
+      {
+        "prompt": "pink fish",
+        "ref_iou": 0.05012102797627449,
+        "query_score": 0.043096501380205154,
+        "combined_score": 0.0021600409513568147
+      },
+      {
+        "prompt": "seafood piece",
+        "ref_iou": 0.437479168176651,
+        "query_score": 0.006193585228174925,
+        "combined_score": 0.0027095645136531593
+      },
+      {
+        "prompt": "smoked salmon",
+        "ref_iou": 0.5042370557785034,
+        "query_score": 0.05275605991482735,
+        "combined_score": 0.026601560325926865
+      },
+      {
+        "prompt": "salmon steak",
+        "ref_iou": 0.2926943898200989,
+        "query_score": 0.014378239400684834,
+        "combined_score": 0.0042084300080707515
+      },
+      {
+        "prompt": "pink salmon",
+        "ref_iou": 0.007639017887413502,
+        "query_score": 0.0015393771464005113,
+        "combined_score": 1.1759329556829058e-05
+      },
+      {
+        "prompt": "seared salmon",
+        "ref_iou": 0.5848902463912964,
+        "query_score": 0.005578464828431606,
+        "combined_score": 0.003262789667986543
+      },
+      {
+        "prompt": "salmon chunk",
+        "ref_iou": 0.5377199053764343,
+        "query_score": 0.0021282294765114784,
+        "combined_score": 0.0011443913527290905
+      },
+      {
+        "prompt": "salmon medallion",
+        "ref_iou": 0.4589747190475464,
+        "query_score": 0.2080564945936203,
+        "combined_score": 0.09549267115212423
+      },
+      {
+        "prompt": "fish slice",
+        "ref_iou": 0.0,
+        "query_score": 0.04973728582262993,
+        "combined_score": 0.0
+      },
+      {
+        "prompt": "salmon patty",
+        "ref_iou": 0.4740135073661804,
+        "query_score": 0.001578995492309332,
+        "combined_score": 0.0007484651914249352
+      },
+      {
+        "prompt": "pink fish cake",
+        "ref_iou": 0.2349376231431961,
+        "query_score": 0.00618168106302619,
+        "combined_score": 0.0014523094559766789
+      },
+      {
+        "prompt": "grilled fish cube",
+        "ref_iou": 0.3085165023803711,
+        "query_score": 0.0004768286889884621,
+        "combined_score": 0.0001471095193613381
+      },
+      {
+        "prompt": "fish medallion",
+        "ref_iou": 0.24542208015918732,
+        "query_score": 0.0018859825795516372,
+        "combined_score": 0.00046286176781755277
+      },
+      {
+        "prompt": "salmon medallion",
+        "ref_iou": 0.4589747190475464,
+        "query_score": 0.2080564945936203,
+        "combined_score": 0.09549267115212423
+      }
+    ],
+    "search_best_score": 0.09549267115212423,
+    "search_nodes": [
+      {
+        "prompt": "salmon fillet",
+        "score": 0.007535695827808997,
+        "ref_iou": 0.5824522972106934,
+        "query_presence": 0.012937876395881176,
+        "depth": 0,
+        "mode": "initial",
+        "parent": null
+      },
+      {
+        "prompt": "grilled salmon",
+        "score": 0.001135557435712975,
+        "ref_iou": 0.5835432410240173,
+        "query_presence": 0.0019459696486592293,
+        "depth": 0,
+        "mode": "initial",
+        "parent": null
+      },
+      {
+        "prompt": "pink fish",
+        "score": 0.0021600409513568147,
+        "ref_iou": 0.05012102797627449,
+        "query_presence": 0.043096501380205154,
+        "depth": 0,
+        "mode": "initial",
+        "parent": null
+      },
+      {
+        "prompt": "seafood piece",
+        "score": 0.0027095645136531593,
+        "ref_iou": 0.437479168176651,
+        "query_presence": 0.006193585228174925,
+        "depth": 0,
+        "mode": "initial",
+        "parent": null
+      },
+      {
+        "prompt": "smoked salmon",
+        "score": 0.026601560325926865,
+        "ref_iou": 0.5042370557785034,
+        "query_presence": 0.05275605991482735,
+        "depth": 0,
+        "mode": "initial",
+        "parent": null
+      },
+      {
+        "prompt": "salmon steak",
+        "score": 0.0042084300080707515,
+        "ref_iou": 0.2926943898200989,
+        "query_presence": 0.014378239400684834,
+        "depth": 0,
+        "mode": "restart",
+        "parent": null
+      },
+      {
+        "prompt": "pink salmon",
+        "score": 1.1759329556829058e-05,
+        "ref_iou": 0.007639017887413502,
+        "query_presence": 0.0015393771464005113,
+        "depth": 0,
+        "mode": "restart",
+        "parent": null
+      },
+      {
+        "prompt": "seared salmon",
+        "score": 0.003262789667986543,
+        "ref_iou": 0.5848902463912964,
+        "query_presence": 0.005578464828431606,
+        "depth": 0,
+        "mode": "restart",
+        "parent": null
+      },
+      {
+        "prompt": "salmon chunk",
+        "score": 0.0011443913527290905,
+        "ref_iou": 0.5377199053764343,
+        "query_presence": 0.0021282294765114784,
+        "depth": 0,
+        "mode": "restart",
+        "parent": null
+      },
+      {
+        "prompt": "salmon medallion",
+        "score": 0.09549267115212423,
+        "ref_iou": 0.4589747190475464,
+        "query_presence": 0.2080564945936203,
+        "depth": 0,
+        "mode": "restart",
+        "parent": null
+      },
+      {
+        "prompt": "fish slice",
+        "score": 0.0,
+        "ref_iou": 0.0,
+        "query_presence": 0.04973728582262993,
+        "depth": 0,
+        "mode": "restart",
+        "parent": null
+      },
+      {
+        "prompt": "salmon patty",
+        "score": 0.0007484651914249352,
+        "ref_iou": 0.4740135073661804,
+        "query_presence": 0.001578995492309332,
+        "depth": 0,
+        "mode": "restart",
+        "parent": null
+      },
+      {
+        "prompt": "pink fish cake",
+        "score": 0.0014523094559766789,
+        "ref_iou": 0.2349376231431961,
+        "query_presence": 0.00618168106302619,
+        "depth": 0,
+        "mode": "restart",
+        "parent": null
+      },
+      {
+        "prompt": "grilled fish cube",
+        "score": 0.0001471095193613381,
+        "ref_iou": 0.3085165023803711,
+        "query_presence": 0.0004768286889884621,
+        "depth": 0,
+        "mode": "restart",
+        "parent": null
+      },
+      {
+        "prompt": "fish medallion",
+        "score": 0.00046286176781755277,
+        "ref_iou": 0.24542208015918732,
+        "query_presence": 0.0018859825795516372,
+        "depth": 0,
+        "mode": "restart",
+        "parent": null
+      }
+    ],
+    "visual_query_instance_count_including_empty": 2,
+    "visual_nonempty_query_instance_count": 0,
+    "selected_concept": "salmon medallion",
+    "components": {
+      "concept": "search",
+      "visual": "boxes"
+    }
+  },
+  "episode_wall_seconds": 5.796731373062357,
+  "attempt_number": 1,
+  "finished_at": "2026-11-13T08:55:45.318436+00:00"
+}

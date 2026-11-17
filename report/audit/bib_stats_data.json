@@ -1,0 +1,301 @@
+{
+  "audit_date_sgt": "2026-11-17",
+  "scope": [
+    "coco",
+    "lvis",
+    "suim",
+    "isic",
+    "ham10000",
+    "branchynet",
+    "adaptiveinference",
+    "bootstrap",
+    "clusterbootstrap",
+    "kosub2019"
+  ],
+  "active_citation_occurrences": 10,
+  "records": [
+    {
+      "metadata": "Verified: Lin et al.; Microsoft COCO: Common Objects in Context; ECCV 2014, LNCS 8693, pp. 740–755; DOI 10.1007/978-3-319-10602-1_48.",
+      "sources": [
+        {
+          "url": "https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48",
+          "tool_ref": "turn100view0"
+        }
+      ],
+      "use": "Supports the underlying COCO dataset, not the COCO-20^i split by itself. The adjacent Matcher citation supports the one-shot fold protocol. Existing composite citation is supported but separating source and protocol citations would make attribution precise.",
+      "action": "Optional citation placement clarification only.",
+      "key": "coco",
+      "metadata_status": "VERIFIED",
+      "citation_uses": [
+        {
+          "file": "paper/sections/experiments.tex",
+          "line": 4,
+          "text": "We evaluate COCO-$20^i$ and LVIS-$92^i$ using the author-prepared class memberships, with four folds of 20 classes and ten folds of 92 classes, respectively~\\cite{coco,lvis,matcher}. The standard comparison contains 4,000 COCO and 23,000 LVIS episodes per system. A reference cohort varies the demonstration for fixed query targets. A separate component cohort contains 400 COCO and 1,000 LVIS query targets, with up to three references each (1,200 and 2,757 episodes per configuration). All methods within a comparison receive matched inputs."
+        }
+      ]
+    },
+    {
+      "metadata": "Verified: Gupta, Dollár, Girshick; LVIS: A Dataset for Large Vocabulary Instance Segmentation; CVPR 2019, pp. 5356–5364.",
+      "sources": [
+        {
+          "url": "https://openaccess.thecvf.com/content_CVPR_2019/html/Gupta_LVIS_A_Dataset_for_Large_Vocabulary_Instance_Segmentation_CVPR_2019_paper.html",
+          "tool_ref": "turn107search1"
+        },
+        {
+          "url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/4df9a5e6bad9e64ebcea453e031142bb-Paper-Conference.pdf",
+          "tool_ref": "turn122search26"
+        }
+      ],
+      "use": "Supports the underlying LVIS segmentation dataset. The 920 retained classes / ten 92-class folds come from Matcher, not the original LVIS article. Matcher paper section 4.1 confirms at least two images per class and 2,300 episodes per fold.",
+      "action": "Optional citation placement clarification only.",
+      "key": "lvis",
+      "metadata_status": "VERIFIED",
+      "citation_uses": [
+        {
+          "file": "paper/sections/experiments.tex",
+          "line": 4,
+          "text": "We evaluate COCO-$20^i$ and LVIS-$92^i$ using the author-prepared class memberships, with four folds of 20 classes and ten folds of 92 classes, respectively~\\cite{coco,lvis,matcher}. The standard comparison contains 4,000 COCO and 23,000 LVIS episodes per system. A reference cohort varies the demonstration for fixed query targets. A separate component cohort contains 400 COCO and 1,000 LVIS query targets, with up to three references each (1,200 and 2,757 episodes per configuration). All methods within a comparison receive matched inputs."
+        }
+      ]
+    },
+    {
+      "metadata": "Verified: Islam, Edge, Xiao, Luo, Mehtaz, Morse, Enan, Sattar; Semantic Segmentation of Underwater Imagery: Dataset and Benchmark; IROS 2020, pp. 1769–1776; DOI 10.1109/IROS45743.2020.9340821.",
+      "sources": [
+        {
+          "url": "https://arxiv.org/abs/2004.01241",
+          "tool_ref": "turn100view2"
+        },
+        {
+          "url": "https://ieeexplore.ieee.org/abstract/document/9340821/",
+          "tool_ref": "turn107search4"
+        },
+        {
+          "url": "https://experts.umn.edu/en/publications/semantic-segmentation-of-underwater-imagery-dataset-and-benchmark-2/",
+          "tool_ref": "turn110view4"
+        }
+      ],
+      "use": "Supports underwater semantic segmentation images and masks. The report correctly cites it as the transfer dataset; the custom merged pool, excluded malformed pairs, 1,000-query sampling, and seven foreground classes are implementation choices rather than the original benchmark protocol.",
+      "action": "Retain. Do not convert the proposed transfer study into a claim of standard SUIM benchmark reproduction.",
+      "key": "suim",
+      "metadata_status": "VERIFIED",
+      "citation_uses": [
+        {
+          "file": "paper/sections/extension.tex",
+          "line": 26,
+          "text": "The second batch evaluates four connected parts. A fixed-candidate-pool ablation compares ranking by $s_rs_q$, $s_r$, and $s_q$ using the same candidate evidence and final visual prompts. A fresh-query comparison tests the original full system, the single-concept route, and the one-initial-candidate setting. Domain transfer uses SUIM underwater images~\\cite{suim} and public ISIC~2018 Task~1 lesion images and masks~\\cite{isic,ham10000}. Finally, the agreement gate is compared with original full search, staged always-search, an initial-score gate, and random routing."
+        }
+      ]
+    },
+    {
+      "metadata": "Verified: Codella et al.; Skin Lesion Analysis Toward Melanoma Detection 2018: A Challenge Hosted by the International Skin Imaging Collaboration (ISIC); arXiv:1902.03368 submitted 2019. Current year=2019 is correct for the cited preprint; 2018 is the challenge year.",
+      "sources": [
+        {
+          "url": "https://arxiv.org/abs/1902.03368",
+          "tool_ref": "turn100view3"
+        },
+        {
+          "url": "https://challenge.isic-archive.com/data/",
+          "tool_ref": "turn107view0"
+        }
+      ],
+      "use": "Supports ISIC 2018 lesion segmentation Task 1 and the public challenge dataset. Official data source distinguishes Task 1 images/masks from Task 3 diagnostic labels. Report already states a reorganized Task 1 training-image evaluation rather than official held-out challenge test.",
+      "action": "Retain 2019 bibliography year and paired HAM10000 acknowledgment; do not relabel dataset as HAM10000 segmentation or patient-disjoint clinical evaluation.",
+      "key": "isic",
+      "metadata_status": "VERIFIED",
+      "citation_uses": [
+        {
+          "file": "paper/sections/extension.tex",
+          "line": 26,
+          "text": "The second batch evaluates four connected parts. A fixed-candidate-pool ablation compares ranking by $s_rs_q$, $s_r$, and $s_q$ using the same candidate evidence and final visual prompts. A fresh-query comparison tests the original full system, the single-concept route, and the one-initial-candidate setting. Domain transfer uses SUIM underwater images~\\cite{suim} and public ISIC~2018 Task~1 lesion images and masks~\\cite{isic,ham10000}. Finally, the agreement gate is compared with original full search, staged always-search, an initial-score gate, and random routing."
+        }
+      ]
+    },
+    {
+      "metadata": "Verified: Tschandl, Rosendahl, Kittler; The HAM10000 dataset, a large collection of multi-source dermatoscopic images of common pigmented skin lesions; Scientific Data 5, article 180161 (2018); DOI 10.1038/sdata.2018.161.",
+      "sources": [
+        {
+          "url": "https://www.nature.com/articles/sdata2018161",
+          "tool_ref": "turn107search2"
+        },
+        {
+          "url": "https://challenge.isic-archive.com/data/",
+          "tool_ref": "turn107view0"
+        }
+      ],
+      "use": "HAM10000 is primarily a diagnostic-classification dataset, so it alone would not substantiate the Task 1 segmentation-mask claim. However, the official ISIC 2018 dataset citation instructions explicitly request both Codella and Tschandl. Keeping this paired citation follows the dataset attribution guidance; it is not padding and does not assert that 10,015 HAM10000 records are the Task 1 mask pool.",
+      "action": "Retain the existing paired citation; record this distinction in audit, no extra defensive paragraph needed in the paper.",
+      "key": "ham10000",
+      "metadata_status": "VERIFIED",
+      "citation_uses": [
+        {
+          "file": "paper/sections/extension.tex",
+          "line": 26,
+          "text": "The second batch evaluates four connected parts. A fixed-candidate-pool ablation compares ranking by $s_rs_q$, $s_r$, and $s_q$ using the same candidate evidence and final visual prompts. A fresh-query comparison tests the original full system, the single-concept route, and the one-initial-candidate setting. Domain transfer uses SUIM underwater images~\\cite{suim} and public ISIC~2018 Task~1 lesion images and masks~\\cite{isic,ham10000}. Finally, the agreement gate is compared with original full search, staged always-search, an initial-score gate, and random routing."
+        }
+      ]
+    },
+    {
+      "metadata": "Verified: Teerapittayanon, McDanel, Kung; BranchyNet: Fast Inference via Early Exiting from Deep Neural Networks; ICPR 2016, pp. 2464–2469; DOI 10.1109/ICPR.2016.7900006. IEEE online addition in 2017 does not change conference year 2016.",
+      "sources": [
+        {
+          "url": "https://ieeexplore.ieee.org/abstract/document/7900006/authors",
+          "tool_ref": "turn105search3"
+        },
+        {
+          "url": "https://dash.harvard.edu/entities/publication/73120379-30e9-6bd4-e053-0100007fdf3b",
+          "tool_ref": "turn105search0"
+        }
+      ],
+      "use": "Supports the broad concept of input-dependent early exit / computation allocation. The report applies that principle to CG-ICS search; it does not claim BranchyNet uses the proposed mask-agreement gate or proves AGS improves accuracy.",
+      "action": "Retain as conceptual antecedent.",
+      "key": "branchynet",
+      "metadata_status": "VERIFIED",
+      "citation_uses": [
+        {
+          "file": "paper/sections/extension.tex",
+          "line": 3,
+          "text": "The component results motivate allocating search according to the input. Visual prompting reduces the observed marginal benefit of concept search, while the remaining search benefit varies across datasets and queries. We propose Agreement-Gated Search (AGS), which uses consistency between the initial text-only and visual-only predictions to decide whether to search further. AGS applies input-dependent computation allocation~\\cite{branchynet,adaptiveinference} to the concept-search stage of CG-ICS."
+        }
+      ]
+    },
+    {
+      "metadata": "Verified: Bolukbasi, Wang, Dekel, Saligrama; Adaptive Neural Networks for Efficient Inference; ICML 2017, PMLR 70, pp. 527–536.",
+      "sources": [
+        {
+          "url": "https://proceedings.mlr.press/v70/bolukbasi17a.html",
+          "tool_ref": "turn103view2"
+        }
+      ],
+      "use": "Supports choosing network components / networks depending on the input and computational cost. Properly used for the concept of input-dependent allocation; AGS is a new application hypothesis, not a theorem from this paper.",
+      "action": "Retain.",
+      "key": "adaptiveinference",
+      "metadata_status": "VERIFIED",
+      "citation_uses": [
+        {
+          "file": "paper/sections/extension.tex",
+          "line": 3,
+          "text": "The component results motivate allocating search according to the input. Visual prompting reduces the observed marginal benefit of concept search, while the remaining search benefit varies across datasets and queries. We propose Agreement-Gated Search (AGS), which uses consistency between the initial text-only and visual-only predictions to decide whether to search further. AGS applies input-dependent computation allocation~\\cite{branchynet,adaptiveinference} to the concept-search stage of CG-ICS."
+        }
+      ]
+    },
+    {
+      "metadata": "Verified: Efron; Bootstrap Methods: Another Look at the Jackknife; Annals of Statistics 7(1), 1–26 (1979); DOI 10.1214/aos/1176344552.",
+      "sources": [
+        {
+          "url": "https://blogs.helsinki.fi/bk-club/files/2012/05/Efron_Bootstrap_AS1979.pdf",
+          "tool_ref": "turn113view0"
+        },
+        {
+          "url": "https://projecteuclid.org/journals/annals-of-statistics/volume-7/issue-1/Bootstrap-Methods-Another-Look-at-the-Jackknife/10.1214/aos/1176344552.full",
+          "tool_ref": "turn110view0"
+        }
+      ],
+      "use": "Foundational support for bootstrap resampling and estimation of sampling distributions. Efron alone does not specifically justify treating repeated references as a cluster; the paired Field–Welsh citation supplies that distinction. Replicate counts and exploratory intervals are project design choices, not claimed to be prescribed by the cited article.",
+      "action": "Retain; do not claim guaranteed nominal coverage from the citation.",
+      "key": "bootstrap",
+      "metadata_status": "VERIFIED",
+      "citation_uses": [
+        {
+          "file": "paper/sections/experiments.tex",
+          "line": 23,
+          "text": "Confidence intervals resample whole query-image clusters, keeping their concepts and references together~\\cite{bootstrap,clusterbootstrap}. We report exploratory 95\\% intervals using 2,000 bootstrap replicates for main/component contrasts and 1,000 for parameter/area analyses. Reference sensitivity is the standard deviation across distinct references after averaging repeated executions of identical inputs. Failed predictions retain missing accuracy; paired contrasts use common successful inputs."
+        }
+      ]
+    },
+    {
+      "metadata": "Verified: C. A. Field and A. H. Welsh; Bootstrapping Clustered Data; JRSS Series B 69(3), 369–390 (2007); DOI 10.1111/j.1467-9868.2007.00593.x.",
+      "sources": [
+        {
+          "url": "https://rss.onlinelibrary.wiley.com/doi/pdf/10.1111/j.1467-9868.2007.00593.x",
+          "tool_ref": "turn113search0"
+        },
+        {
+          "url": "https://bemlar.ism.ac.jp/zhuang/Refs/Refs/field2007jrssb.pdf",
+          "tool_ref": "turn110view2"
+        },
+        {
+          "url": "https://academic.oup.com/jrsssb/article-abstract/69/3/369/7109361?login=true",
+          "tool_ref": "turn113search2"
+        }
+      ],
+      "use": "The original article, pp. 370–371, describes resampling entire clusters with replacement, preserving the dependent observations. That supports the report’s query-image cluster resampling with concepts/references held together. Its formal consistency results rely on model conditions; the report correctly says exploratory intervals and does not assert all dependencies between shared reference images vanish.",
+      "action": "Retain. An image-cluster CI is not a guarantee of fully independent data or complete finite-sample coverage.",
+      "key": "clusterbootstrap",
+      "metadata_status": "VERIFIED",
+      "citation_uses": [
+        {
+          "file": "paper/sections/experiments.tex",
+          "line": 23,
+          "text": "Confidence intervals resample whole query-image clusters, keeping their concepts and references together~\\cite{bootstrap,clusterbootstrap}. We report exploratory 95\\% intervals using 2,000 bootstrap replicates for main/component contrasts and 1,000 for parameter/area analyses. Reference sensitivity is the standard deviation across distinct references after averaging repeated executions of identical inputs. Failed predictions retain missing accuracy; paired contrasts use common successful inputs."
+        }
+      ]
+    },
+    {
+      "metadata": "Verified: Sven Kosub; A Note on the Triangle Inequality for the Jaccard Distance; Pattern Recognition Letters 120, 36–38 (2019); DOI 10.1016/j.patrec.2018.12.007. The arXiv preprint dates to 2016 but the journal citation year 2019 is correct.",
+      "sources": [
+        {
+          "url": "https://www.sciencedirect.com/science/article/pii/S0167865518309188",
+          "tool_ref": "turn105search1"
+        },
+        {
+          "url": "https://arxiv.org/abs/1612.02696",
+          "tool_ref": "turn110view3"
+        },
+        {
+          "url": "https://arxiv.org/pdf/1612.02696",
+          "tool_ref": "turn113view1"
+        }
+      ],
+      "use": "Supports Jaccard distance as a metric on finite sets. Applying reverse triangle inequality yields |J(Mt,G)-J(Mv,G)| <= 1-J(Mt,Mv), exactly as written. The bound constrains only the difference of the two probe accuracies; the report’s identical-wrong-mask counterexample and exclusion of the joint-prompt output are correct.",
+      "action": "Retain. Do not present this bound as proof that high agreement entails high absolute IoU or that AGS improves speed/accuracy.",
+      "key": "kosub2019",
+      "metadata_status": "VERIFIED",
+      "citation_uses": [
+        {
+          "file": "paper/sections/mathematical_appendix.tex",
+          "line": 7,
+          "text": "$d(X,Y)=1-J(X,Y)$ be Jaccard distance~\\cite{kosub2019}."
+        }
+      ]
+    }
+  ],
+  "proposed_changes": [
+    {
+      "file": "paper/sections/experiments.tex",
+      "priority": "optional attribution clarification",
+      "old": "We evaluate COCO-$20^i$ and LVIS-$92^i$ using the author-prepared class memberships, with four folds of 20 classes and ten folds of 92 classes, respectively~\\cite{coco,lvis,matcher}.",
+      "new": "We evaluate COCO-$20^i$ and LVIS-$92^i$, derived from COCO~\\cite{coco} and LVIS~\\cite{lvis}. We use the author-prepared class memberships, with four folds of 20 classes and ten folds of 92 classes, respectively~\\cite{matcher}.",
+      "reason": "Distinguishes original dataset credit from the later ICS evaluation split; numerical protocol is unchanged."
+    }
+  ],
+  "mathematical_checks": [
+    {
+      "item": "Agreement bound",
+      "verdict": "VALID",
+      "reason": "Jaccard distance is metric, reverse triangle inequality follows by applying triangle inequality in both directions. Nonempty-mask domain is sufficient. Agreement only bounds accuracy difference, not absolute accuracy or final fused prediction."
+    },
+    {
+      "item": "IoU aggregation identity",
+      "verdict": "VALID",
+      "reason": "For positive union sizes, sum(TP)/sum(U)=mean(UJ)/mean(U); subtract mean(J), expand population covariance, and use U=G+FP. It is descriptive weighting algebra, not a causal decomposition."
+    },
+    {
+      "item": "Gate cost and accuracy decomposition",
+      "verdict": "VALID UNDER THE STATED SHARED-PREFIX/COUNTERFACTUAL BRANCH DEFINITIONS",
+      "reason": "Subtract Cp+Cs from Cp+A*Ce+(1-A)*Cs; likewise select early vs search final IoU. E[A D]>E[H] is the exact expected-speed condition under these definitions, not measured AGS evidence. Any comparison with independently different random candidate streams needs matching or integration over randomness."
+    },
+    {
+      "item": "Search–visual interaction",
+      "verdict": "VALID DESCRIPTIVE FACTORIAL CONTRAST",
+      "reason": "The difference-in-differences expression is symmetric: it measures how search changes visual-prompt benefit and how visual prompts change search benefit. A negative cohort average establishes diminishing joint gains in that paired cohort, not a universal per-query or cross-domain causal law."
+    }
+  ],
+  "access_notes": [
+    "Direct CVF LVIS open returned 403; publisher-indexed search returned the official CVF metadata and abstract.",
+    "Nature DOI redirected to inaccessible identity endpoint; official Nature search indexed the full metadata and abstract.",
+    "OUP direct page blocked by CDN; official Wiley/OUP indexed pages plus the original article PDF hosted at ISM were used.",
+    "Project Euclid direct page returned only iframe; original Efron article PDF hosted by University of Helsinki was read, with its bibliographic cover and first article page.",
+    "ScienceDirect direct open returned 403; publisher indexed metadata and author arXiv full text were both checked.",
+    "No bibliography metadata errors were found in these ten entries. No main bib or TeX files edited."
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "installer_integration_tests": 7,
+  "cases": [
+    "fresh read-only plan and apply",
+    "known previous bytes backed up",
+    "idempotent reapply",
+    "unknown edits block all writes",
+    "tampered payload blocks all writes",
+    "target symlink blocks all writes",
+    "wrong repository and non-report payload blocked"
+  ],
+  "isolated_figure_regeneration": "PASS",
+  "method_schematics_regenerated": 2,
+  "result_figures_regenerated": 2,
+  "qualitative_prediction_masks_verified": 12,
+  "network_access_required_for_build": false,
+  "model_execution": false,
+  "server_changes": false,
+  "git_commit_push_actions": "none",
+  "final_zip_status": "NOT_BUILT_AWAITING_REVIEWED_PDF",
+  "scope": "report/ only",
+  "installer_sha256": "12df306521aac7409665b39193b7109ea96f7e4da2ed163ffe01a007b322d37c"
+}

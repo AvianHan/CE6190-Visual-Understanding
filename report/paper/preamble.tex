@@ -1,0 +1,128 @@
+% Two-column publication layout, coordinated with the supplied Group report.
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{times}
+\usepackage[letterpaper,left=0.8125in,right=0.8125in,top=1in,bottom=1in,footskip=20pt]{geometry}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{pict2e}
+\usepackage{booktabs,array,tabularx,longtable,threeparttable}
+\usepackage{adjustbox}
+\usepackage{enumitem}
+\usepackage{caption,subcaption}
+\usepackage{titlesec}
+\usepackage{placeins}
+\usepackage{balance}
+\usepackage{etoolbox}
+\usepackage[table]{xcolor}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{xurl}
+\usepackage[colorlinks=true,citecolor=ReportBlue,urlcolor=ReportBlue,linkcolor=black]{hyperref}
+
+\definecolor{ReportBlue}{HTML}{466F87}
+\definecolor{ReportCyan}{HTML}{78B6C8}
+\definecolor{ReportCoral}{HTML}{E48578}
+\definecolor{TableHeader}{HTML}{E9ECEF}
+\definecolor{TableTint}{HTML}{F2F6F8}
+\hypersetup{
+  pdftitle={Visual Correspondence and Concept Guidance for In-Context Segmentation},
+  pdfauthor={Han Shuangyue},
+  pdfsubject={CE6190 Individual Project},
+  pdfkeywords={in-context segmentation, reference sensitivity, concept search, INSID3, CG-ICS}
+}
+\graphicspath{{../figures/}{../qualitative/}{./}}
+\pagestyle{plain}
+\setlength{\parindent}{1em}
+\setlength{\parskip}{2pt plus .5pt minus .5pt}
+\setlength{\columnsep}{0.25in}
+\raggedbottom
+\setlength{\dbltextfloatsep}{12pt plus 2pt minus 2pt}
+\setlength{\dblfloatsep}{10pt plus 2pt minus 2pt}
+\renewcommand{\arraystretch}{1.13}
+\setlength{\tabcolsep}{5pt}
+\newcolumntype{L}[1]{>{\hsize=#1\hsize\linewidth=\hsize\raggedright\arraybackslash}X}
+\newcolumntype{R}[1]{>{\hsize=#1\hsize\linewidth=\hsize\raggedleft\arraybackslash}X}
+\setlength{\emergencystretch}{1em}
+\setlength{\textfloatsep}{13pt plus 3pt minus 2pt}
+\setlength{\floatsep}{11pt plus 2pt minus 2pt}
+\setlength{\intextsep}{11pt plus 2pt minus 2pt}
+\setlength{\abovedisplayskip}{7pt plus 2pt minus 2pt}
+\setlength{\belowdisplayskip}{7pt plus 2pt minus 2pt}
+\setlength{\abovedisplayshortskip}{4pt plus 1pt}
+\setlength{\belowdisplayshortskip}{5pt plus 2pt minus 2pt}
+\renewcommand{\topfraction}{0.95}
+\renewcommand{\dbltopfraction}{0.94}
+\renewcommand{\dblfloatpagefraction}{0.75}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\textfraction}{0.04}
+\renewcommand{\floatpagefraction}{0.75}
+\setcounter{topnumber}{3}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}
+\captionsetup{font=small,labelfont=bf,labelsep=period,skip=5pt,justification=justified,singlelinecheck=false}
+\captionsetup[table]{position=top}
+\setlist{nosep,leftmargin=1.6em,topsep=4pt}
+\titleformat{\section}{\fontsize{12}{14}\selectfont\bfseries}{\thesection.}{0.55em}{}
+\titleformat{\subsection}{\fontsize{11}{13}\selectfont\bfseries}{\thesubsection.}{0.55em}{}
+\titleformat{\paragraph}[runin]{\normalsize\bfseries}{}{0pt}{}[.]
+\titlespacing*{\section}{0pt}{14pt plus 2pt minus 2pt}{5pt}
+\titlespacing*{\subsection}{0pt}{10pt plus 2pt minus 1pt}{4pt}
+\titlespacing*{\paragraph}{0pt}{7pt plus 1pt minus 1pt}{0.5em}
+\setlength{\bibsep}{2pt plus 1pt}
+\renewcommand{\bibfont}{\small}
+\newcommand{\printprojectreferences}{%
+  \hypersetup{urlcolor=black}
+  \balance
+  \bibliographystyle{../paper/icscompact}%
+  \bibliography{../literature/references}%
+  \clearpage
+  \nobalance
+}
+
+\makeatletter
+% The balance package sizes columns by box height only. Include a small
+% depth allowance for final text descenders and displayed mathematics.
+\patchcmd{\@BAlancecol}
+  {\setbox\@leftcolumn=\vbox to \@tempdima}
+  {\advance\@tempdima by 3pt\setbox\@leftcolumn=\vbox to \@tempdima}
+  {}{\PackageError{icsstyle}{Cannot apply balanced-column depth allowance}{}}
+% Keep sparse float pages top-aligned instead of spreading tables far apart.
+\setlength{\@fptop}{0pt}
+\setlength{\@dblfptop}{0pt}
+\setlength{\@dblfpsep}{14pt}
+\setlength{\@dblfpbot}{0pt plus 1fil}
+\setlength{\@fpsep}{14pt}
+\setlength{\@fpbot}{0pt plus 1fil}
+% Match the Group report's compact matriculation-number / email-icon line.
+% Draw the envelope with TeX primitives so the source needs no icon fonts.
+\newcommand{\icsmailicon}{%
+  \begingroup\setlength{\unitlength}{1pt}%
+  \begin{picture}(7,5)
+    \linethickness{0.4pt}
+    \put(0,0){\framebox(7,5){}}
+    \put(0,5){\line(3,-2){3.5}}
+    \put(7,5){\line(-3,-2){3.5}}
+  \end{picture}%
+  \endgroup
+}
+\renewcommand{\maketitle}{%
+  \begin{center}
+    \vspace*{25pt}
+    {\fontsize{14.4}{18}\selectfont\bfseries\makebox[\linewidth][c]{\@title}\par}
+    \vspace{27pt}
+    {\fontsize{12}{13}\selectfont\@author\par}
+    \vspace{5pt}
+    {\fontsize{9}{11}\selectfont\ttfamily G2690005A\enspace
+      \href{mailto:hans0053@e.ntu.edu.sg}{\textcolor{black}{\icsmailicon}}\par}
+  \end{center}
+  \vspace{20pt}
+}
+\makeatother
+\renewenvironment{abstract}{%
+  \begin{center}\fontsize{12}{14}\selectfont\bfseries Abstract\end{center}
+  \vspace{2pt}\noindent\itshape\normalsize
+}{\par\normalfont\vspace{7pt}}
+\widowpenalty=10000
+\clubpenalty=10000
+\displaywidowpenalty=3000

@@ -1,0 +1,31 @@
+{
+  "manifest_path": "/scratch/prj0000000262_1/hansy/ce6190-ics-runtime/manifests/coco_fold2_standard.json",
+  "manifest_sha256": "dbd2103c6daae5aadaadc8399494086b2837f9867cddd5b6ab21f0419d01535b",
+  "manifest_index": 517,
+  "episode": {
+    "episode_id": "coco-f2-q000517-afdf01f663e37787-r000",
+    "dataset": "coco",
+    "dataset_version": "COCO2014-author-semantic-masks",
+    "split": "val",
+    "fold": 2,
+    "track": "semantic",
+    "concept_id": "62",
+    "reference_seed": 0,
+    "query": {
+      "image": "COCO2014/val2014/COCO_val2014_000000398158.jpg",
+      "image_sha256": "2aeb6446d671bc2b9da19951a60c69554b39442e9aae62cd24f5e616bbabb552",
+      "mask": "ics_generated_masks/coco/query/77079914a3db99bcd9e7447d03ff06f852740731ec308427d47531cf82bf6174.png",
+      "mask_sha256": "0819d8b216b4465df41b1cb10188ee163af1692e33617815d6a22cdb88ab18d3"
+    },
+    "references": [
+      {
+        "image": "COCO2014/val2014/COCO_val2014_000000179392.jpg",
+        "image_sha256": "aee6cea5432994df19687acca9a15157a02200658e62bed5dc641564b54ef422",
+        "mask": "ics_generated_masks/coco/reference/6a913a65f8a3ea74836f99bbf4dd3746e3df375c7a912bd0de58958eff9c07fd.png",
+        "mask_sha256": "59c197d00a33fca07466030213d14877bf5cf36bfd4c70772c47ff3e47b0effa"
+      }
+    ],
+    "mask_semantics": "binary foreground union of prompted class; reference void=background",
+    "ignore_label": null
+  }
+}

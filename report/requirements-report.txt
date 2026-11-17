@@ -1,0 +1,5 @@
+# Only needed for automated validation and figure regeneration.
+numpy
+matplotlib
+Pillow
+pypdf

@@ -1,0 +1,18 @@
+\section{Discussion}
+\subsection{System Trade-offs}
+The two systems offer different operating points. CG-ICS provides higher average accuracy and stronger small-target performance on the evaluated datasets, while INSID3 provides a much cheaper inference path. Reference sensitivity adds another dimension: CG-ICS improves worst-reference accuracy on both datasets but has greater reference variation on LVIS. Choosing a system therefore depends on the importance of accuracy, latency, resource availability, and consistency across demonstrations.
+
+The encoder matrix and within-system ablations explain why the complete-system ranking cannot be reduced to a backbone ranking. DINOv3 leads the tested feature-processing matrix, yet CG-ICS achieves higher complete-system accuracy through a different combination of language, prompting, and decoding. INSID3 processing also improves every tested trunk. The representation and the procedure that converts it into a mask should therefore be evaluated together.
+
+\subsection{Marginal Value of Search}
+The strongest motivation for selective search is the difference between an average gain and an input-specific gain. With visual boxes, full search improves reference-averaged IoU for 194 of 400 COCO queries and 535 of 1,000 LVIS queries; it decreases IoU for 196 and 403, respectively. A positive dataset mean therefore does not imply that every query benefits. The observed search--prompt interaction further shows that the value of one component changes when another is already present.
+
+These interactions describe the executed paired-input cohort. Requiring all four configurations to share a recorded GPU model leaves H200 subsets of 100 queries per dataset. The interaction is $+0.66$ points on COCO (95\% CI $[-1.67,3.01]$) and $-3.47$ on LVIS ($[-6.57,-0.60]$). The LVIS direction persists, while the COCO estimate is inconclusive. These subsets also change the fold and input composition, so the comparison does not isolate a hardware effect.
+
+The appropriate next test is whether an observable signal can allocate search effectively on fresh inputs. The proposed gate makes this question explicit: saved branch computation must exceed the extra probing cost, and accepted inputs determine the accuracy change.
+
+\subsection{Scope and Extensions}
+The study combines system comparison, paired component analysis, and inspected pixel-level failures under a common protocol. Reference dependence is handled through query-level aggregation and image-cluster uncertainty. Broader generalization will be assessed through the separate transfer scopes, while the tiny-reference failures motivate foreground-preserving preprocessing. The main remaining question is whether agreement can predict low-value search reliably across domains; the second batch is designed to answer it.
+
+\section{Conclusion}
+Visual correspondence and concept guidance yield distinct accuracy--cost trade-offs in training-free in-context segmentation. CG-ICS is more accurate on the two initial benchmarks, while INSID3 is substantially faster. Component analysis attributes useful gains to feature processing, semantic concepts, and visual prompts, and reveals a dataset-dependent marginal return from additional search. Reference sensitivity and small-target failures provide further distinctions beyond mean accuracy. These findings motivate AGS, whose formulation makes the required computation savings and accuracy trade-off explicit. Its ongoing controlled evaluation will determine whether the observed opportunities translate into a useful adaptive system.

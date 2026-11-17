@@ -1,0 +1,16 @@
+[
+  [
+    "Let $A=1$ mean that the gate accepts the initial concept.",
+    "After a shared prefix of cost $C_p$, let $C_e$ and $C_s$ be the remaining costs of the early and search branches, including their final segmentation calls.",
+    "The gated and staged always-search costs satisfy"
+  ],
+  [
+    "Writing $D=C_s-C_e$ and denoting the corresponding final-mask IoUs by $J_e$ and $J_s$ gives"
+  ],
+  [
+    "The first identity measures computation avoided on accepted inputs; the second measures the accuracy change on those same inputs.",
+    "If $H=C_{\\mathrm{st}}-C_{\\mathrm{full}}$ is the staging overhead relative to original CG-ICS, the gate is faster in expectation precisely when $\\mathbb{E}[A D]>\\mathbb{E}[H]$.",
+    "Consequently, an acceptance rate alone does not establish a speedup: the saved branch costs must exceed the probe overhead.",
+    "The staged always-search and random-routing controls separate this overhead from the value of the agreement signal."
+  ]
+]

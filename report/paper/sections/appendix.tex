@@ -1,0 +1,107 @@
+\appendix
+\twocolumn[{
+\section*{Appendix}
+\section{Protocol Details}
+\label{app:protocol}
+Table~\ref{tab:matrix-scope} records the first-batch scope. Task counts resolve the shared controls used by seed experiments and parameter sweeps.
+
+\begin{minipage}{\textwidth}
+    \centering
+    \small
+    \captionsetup{hypcap=false}
+    \captionof{table}{\textbf{Research matrix.} 36 unique configurations across 1,484 formal tasks.}
+    \label{tab:matrix-scope}
+    \begin{tabularx}{\textwidth}{@{}lXr@{}}
+        \toprule
+        \rowcolor{TableHeader}
+        Study & Question and design & Formal tasks \\
+        \midrule
+        E1 & Two complete systems on standard inputs & 112 \\
+        E2 & Fixed-query reference variation; seed study reuses E4 & 896 \\
+        E3 & Debias $2\times$ aggregation $3$, plus debiased similarity & 98 \\
+        E4 & Concept route $3\times$ visual boxes $2$, visual-only, concatenation, two extra seeds & 140 \\
+        E5 & DINOv3/DINOv2/SAM~3 trunk $\times$ similarity/full processing & 84 \\
+        E6 & Eleven single-factor sweep configurations; controls reused & 154 \\
+        E7 & Target scale, inference cost, and qualitative failures; existing outputs reused & 0 new \\
+        \bottomrule
+    \end{tabularx}
+\end{minipage}
+\vspace{12pt}
+}]
+
+
+\subsection{Coverage and Sampling}
+The first batch has 1,480 successful formal tasks and four failed reference tasks. All 615,976 expected records, including four errors, are accounted for and verified against 532 output bindings. The standard cohorts contain 3,975 COCO and 13,750 LVIS distinct query targets, on 3,820 and 9,051 distinct image hashes. COCO and LVIS share 462 standard-cohort image hashes, so their results are reported separately.
+
+Common manifests and original-resolution ground truth preserve source class memberships, while sampling and aggregation can differ from the author protocols. Empty LVIS source masks are excluded before sampling; all classes and folds remain. Pretraining-data overlap is not controlled, and intervals are not adjusted for multiple comparisons.
+
+\subsection{Implementation Details}
+The executed INSID3 implementation estimates its positional basis from an ImageNet-normalized all-zero image; the paper describes Gaussian noise. It retains original features for clustering and self-similarity and debiased features for cross-image matching. The main route uses bilinear restoration without CRF refinement. In CG-ICS, working images are size 512 before SAM~3's internal preprocessing, and nearest-neighbor restoration maps predictions to the original resolution. The direct-concatenation control uses the implemented query-side instance union. 
+
+\subsection{Transfer Protocol}
+Fresh core queries exclude previous formal-query image hashes and canonical COCO image identifiers across both initial datasets. The transfer scopes use the author-prepared merged SUIM pool and reorganized ISIC~2018 Task~1 training images. SUIM's full source pool is checked before sampling, and image--mask pairs with mismatched dimensions are excluded without changing the source rasters. All seven foreground classes and 1,000 unique queries are required; eligibility counts will accompany the results. ISIC reference selection uses the supplied diagnostic strata; it is not a patient-disjoint clinical test or the official challenge-test evaluation.
+
+The fixed-pool scoring study generates candidates once per input, then evaluates alternative ranking rules on the same evidence. If the maximum combined score in the pool is below $10^{-6}$, all rules use the same visual fallback. Random search policies use fixed probabilities rather than probabilities selected from the gate's realized search rate. Staged always-search measures the extra initial probing cost. 
+
+
+
+\section{Additional Results}
+\label{app:cost}
+% Source: report_inputs_audit/cost_memory_scope.md; task-equal medians.
+\begin{table*}[t]
+    \centering
+    \small
+    \caption{\textbf{Startup and memory.} Standard-task medians of startup and sampled owned-process memory; CG-ICS memory includes its managed language-model process.}
+    \label{tab:memory}
+    \begin{tabularx}{\textwidth}{@{}L{1}L{.8}L{.8}R{.6}R{1.4}R{1.2}R{1.2}@{}}
+        \toprule
+        \rowcolor{TableHeader}
+        Method & Dataset & Runner & Tasks & Owned peak GiB & MLLM start s & Runner load s \\
+        \midrule
+        CG-ICS & COCO & L40S & 16 & 42.39 & 70.42 & 21.47 \\
+        CG-ICS & LVIS & H200 & 11 & 123.92 & 58.25 & 16.80 \\
+        CG-ICS & LVIS & L40S & 29 & 43.19 & 70.52 & 21.85 \\
+        INSID3 & COCO & H200 & 3 & 3.16 & -- & 10.12 \\
+        INSID3 & COCO & L40S & 13 & 2.73 & -- & 15.26 \\
+        INSID3 & LVIS & H200 & 28 & 3.16 & -- & 9.47 \\
+        INSID3 & LVIS & L40S & 12 & 2.73 & -- & 17.22 \\
+        \bottomrule
+    \end{tabularx}
+\end{table*}
+
+Owned memory sums simultaneous samples from the runner and its language-model processes. The language server's 0.85 utilization setting includes reserved/cache memory; these values therefore differ from minimum model-memory requirements and runner-only CUDA peaks.
+
+\begin{table*}[t]
+    \centering
+    \small
+    \caption{\textbf{Parameter sensitivity.} Effects relative to the component default (equal-query IoU points; image-cluster 95\% confidence intervals).}
+    \label{tab:sweeps}
+    \begin{tabularx}{\textwidth}{@{}Xrr@{}}
+        \toprule
+        \rowcolor{TableHeader}
+        Change from default & COCO effect [95\% CI] & LVIS effect [95\% CI] \\
+        \midrule
+        INSID3 threshold $0.6\rightarrow0.5$ & $-1.76$ [$-3.12,-0.50$] & $-5.31$ [$-6.29,-4.38$] \\
+        INSID3 threshold $0.6\rightarrow0.7$ & $-1.53$ [$-2.61,-0.46$] & $+1.85$ [$1.03,2.70$] \\
+        INSID3 basis rank $500\rightarrow250$ & $-0.29$ [$-0.99,0.37$] & $-0.16$ [$-0.58,0.25$] \\
+        INSID3 image size $1024\rightarrow768$ & $-0.88$ [$-1.76,0.16$] & $-2.25$ [$-2.98,-1.47$] \\
+        CG-ICS candidates $5\rightarrow1$ & $-0.16$ [$-1.08,0.76$] & $-0.82$ [$-1.56,0.03$] \\
+        CG-ICS search loops $3\rightarrow1$ & $+0.25$ [$-0.07,0.59$] & $-0.75$ [$-1.23,-0.23$] \\
+        \bottomrule
+    \end{tabularx}
+\end{table*}
+
+% Source-facts ledger for editor/reviewer (not printed):
+% Main headline and paired CI: full_analysis/e1_e2_analysis.{md,json}.
+% Reference SD/worst, seed sensitivity: same; ignore obsolete binding-limit fields
+% because report_inputs_audit/metadata_completion{,_validation}.json supersedes them.
+% Component contrasts and trunk matrix: full_analysis/components_analysis.{md,json}.
+% Same-input single/full timing: components_analysis.json paired_contrasts,
+% question="Search beyond single concept, with visual boxes".
+% Sweeps and area: full_analysis/parameter_cost_size.{md,json}.
+% Cost and startup: report_inputs_audit/cost_completion.md/cost_memory_scope.md.
+% Cross-dataset image overlap: report_inputs_audit/cross_dataset_overlap.json.
+% Cases and error mechanism: report_inputs_audit/qualitative_observations.md,
+% independent_pixel_review.md. Exact 36 PNG metric matches apply only to selected cases.
+% Proposal parameters/counts: batch2_20261116/repo/docs/BATCH2_20261116.md;
+% no realized second-batch execution/coverage/performance is implied.

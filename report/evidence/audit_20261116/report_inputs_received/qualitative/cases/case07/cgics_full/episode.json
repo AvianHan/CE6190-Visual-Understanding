@@ -1,0 +1,284 @@
+{
+  "result_schema_version": 2,
+  "run_id": "cgics_full-fcc484c5c920640c",
+  "experiment_id": "cgics_full",
+  "method": "cgics",
+  "variant": "full",
+  "protocol_id": "ce6190-unified-v1-coco-val-f0",
+  "evaluation_protocol": "unified_original_resolution",
+  "config_sha256": "7ee9ccfb109c94fd1119addd844e98c937666841f32ec45314d3159b710ddaf7",
+  "manifest_sha256": "540cfa2e8e620fca4ec82702b3b23aeea681ef73ca246b8a542e57e1cea159cf",
+  "episode_id": "coco-f0-q000002-d75f435832d43c80-r000",
+  "dataset": "coco",
+  "dataset_version": "COCO2014-author-semantic-masks",
+  "split": "val",
+  "fold": 0,
+  "track": "semantic",
+  "concept_id": "48",
+  "reference_seed": 0,
+  "nshot": 1,
+  "query_image_sha256": "0bbeadc90a426514de31cc414a5dfcabdd2bc64f7b4fc0c3447867e79753e353",
+  "query_mask_sha256": "2fe08493c51eee8c334325e6682e4410b678c2226c0ea4d9677082dd14af362e",
+  "reference_image_sha256": [
+    "0e2d84319b490882f9191d41af765e47c35a76a8aca66dc86a2889b849dfd49e"
+  ],
+  "mask_semantics": "binary foreground union of prompted class; reference void=background",
+  "base_seed": 0,
+  "episode_seed": 1246862578,
+  "started_at": "2026-11-13T08:39:11.175399+00:00",
+  "shard_index": 2,
+  "num_shards": 4,
+  "status": "ok",
+  "counts": {
+    "tp": 0,
+    "fp": 9185,
+    "fn": 44493,
+    "tn": 331602,
+    "ignored": 0
+  },
+  "iou": 0.0,
+  "target_area_fraction": 0.11548224667774086,
+  "prediction_path": "predictions/3744affacea0974777b1185b1ca0af63e24a9cb588cb3321180a3b07fc05611d.png",
+  "prediction_sha256": "165da0e0bb3c197733a59fb4418cecb96a53b1d6044f074f94667ca77315873f",
+  "inference_seconds": 8.412482118001208,
+  "cuda_memory": {
+    "0": {
+      "peak_allocated_bytes": 4557629952,
+      "peak_reserved_bytes": 4783603712,
+      "device_name": "NVIDIA L40S"
+    }
+  },
+  "memory_scope": "current Python process; excludes external MLLM server/other processes",
+  "telemetry": {
+    "sam_calls": 24,
+    "sam_image_encoder_calls": 3,
+    "sam_prompt_head_calls": 25,
+    "mllm_requests": 2,
+    "mllm_prompt_tokens": 1995,
+    "mllm_completion_tokens": 51,
+    "mllm_usage_missing_requests": 0,
+    "candidate_score_evaluations": 11,
+    "mllm_request_wall_s": 5.3700808139983565,
+    "cache_policy": "within_episode_only",
+    "mllm_server_gpu_memory_bytes": null,
+    "search_nodes": 10,
+    "search_restarts": 0,
+    "search_max_depth_reached": 1,
+    "search_reported_evaluations_excluding_rerank": 10,
+    "stages": {
+      "input_preprocessing_s": 0.07054081803653389,
+      "image_encoding_s": 0.9027487890562043,
+      "concept_reasoning_s": 7.186500780982897,
+      "visual_route_s": 0.14874816697556525,
+      "final_sam_and_restore_s": 0.09731209592428058
+    },
+    "adapter_wall_s": 8.406072888989002
+  },
+  "artifacts": {
+    "generation_events": [
+      {
+        "mode": "initial",
+        "parent": null,
+        "candidates": [
+          "sandwich loaf",
+          "bread roll",
+          "hamburger bun",
+          "sliced bread",
+          "burger base"
+        ]
+      },
+      {
+        "mode": "child",
+        "parent": "sliced bread",
+        "candidates": [
+          "burger bun",
+          "sandwich roll",
+          "hot dog bun",
+          "dinner roll",
+          "sub roll"
+        ]
+      }
+    ],
+    "mllm_responses": [
+      {
+        "text": "1. sandwich loaf\n2. bread roll\n3. hamburger bun\n4. sliced bread\n5. burger base",
+        "request_seed": 0
+      },
+      {
+        "text": "1. burger bun\n2. sandwich roll\n3. hot dog bun\n4. dinner roll\n5. sub roll",
+        "request_seed": 1
+      }
+    ],
+    "score_events": [
+      {
+        "prompt": "sandwich loaf",
+        "ref_iou": 0.7459468245506287,
+        "query_score": 0.08082503825426102,
+        "combined_score": 0.06029118062994909
+      },
+      {
+        "prompt": "bread roll",
+        "ref_iou": 0.871829628944397,
+        "query_score": 0.5025712847709656,
+        "combined_score": 0.4381565367199798
+      },
+      {
+        "prompt": "hamburger bun",
+        "ref_iou": 0.8708060383796692,
+        "query_score": 0.05419418215751648,
+        "combined_score": 0.04719262106781308
+      },
+      {
+        "prompt": "sliced bread",
+        "ref_iou": 0.8475397229194641,
+        "query_score": 0.9375587105751038,
+        "combined_score": 0.7946182497815535
+      },
+      {
+        "prompt": "burger base",
+        "ref_iou": 0.24494291841983795,
+        "query_score": 0.004417254123836756,
+        "combined_score": 0.0010819751164946392
+      },
+      {
+        "prompt": "burger bun",
+        "ref_iou": 0.8304986357688904,
+        "query_score": 0.0019106714753434062,
+        "combined_score": 0.001586810053675232
+      },
+      {
+        "prompt": "sandwich roll",
+        "ref_iou": 0.8741798400878906,
+        "query_score": 0.08896496146917343,
+        "combined_score": 0.07777137579054738
+      },
+      {
+        "prompt": "hot dog bun",
+        "ref_iou": 0.8733540177345276,
+        "query_score": 0.056216686964035034,
+        "combined_score": 0.04909706942376424
+      },
+      {
+        "prompt": "dinner roll",
+        "ref_iou": 0.8725168704986572,
+        "query_score": 0.047583237290382385,
+        "combined_score": 0.041517177288799445
+      },
+      {
+        "prompt": "sub roll",
+        "ref_iou": 0.8794876933097839,
+        "query_score": 0.009022112004458904,
+        "combined_score": 0.007934836475584073
+      },
+      {
+        "prompt": "sliced bread",
+        "ref_iou": 0.8475397229194641,
+        "query_score": 0.9375587105751038,
+        "combined_score": 0.7946182497815535
+      }
+    ],
+    "search_best_score": 0.7946182497815535,
+    "search_nodes": [
+      {
+        "prompt": "sandwich loaf",
+        "score": 0.06029118062994909,
+        "ref_iou": 0.7459468245506287,
+        "query_presence": 0.08082503825426102,
+        "depth": 0,
+        "mode": "initial",
+        "parent": null
+      },
+      {
+        "prompt": "bread roll",
+        "score": 0.4381565367199798,
+        "ref_iou": 0.871829628944397,
+        "query_presence": 0.5025712847709656,
+        "depth": 0,
+        "mode": "initial",
+        "parent": null
+      },
+      {
+        "prompt": "hamburger bun",
+        "score": 0.04719262106781308,
+        "ref_iou": 0.8708060383796692,
+        "query_presence": 0.05419418215751648,
+        "depth": 0,
+        "mode": "initial",
+        "parent": null
+      },
+      {
+        "prompt": "sliced bread",
+        "score": 0.7946182497815535,
+        "ref_iou": 0.8475397229194641,
+        "query_presence": 0.9375587105751038,
+        "depth": 0,
+        "mode": "initial",
+        "parent": null
+      },
+      {
+        "prompt": "burger base",
+        "score": 0.0010819751164946392,
+        "ref_iou": 0.24494291841983795,
+        "query_presence": 0.004417254123836756,
+        "depth": 0,
+        "mode": "initial",
+        "parent": null
+      },
+      {
+        "prompt": "burger bun",
+        "score": 0.001586810053675232,
+        "ref_iou": 0.8304986357688904,
+        "query_presence": 0.0019106714753434062,
+        "depth": 1,
+        "mode": "child",
+        "parent": "sliced bread"
+      },
+      {
+        "prompt": "sandwich roll",
+        "score": 0.07777137579054738,
+        "ref_iou": 0.8741798400878906,
+        "query_presence": 0.08896496146917343,
+        "depth": 1,
+        "mode": "child",
+        "parent": "sliced bread"
+      },
+      {
+        "prompt": "hot dog bun",
+        "score": 0.04909706942376424,
+        "ref_iou": 0.8733540177345276,
+        "query_presence": 0.056216686964035034,
+        "depth": 1,
+        "mode": "child",
+        "parent": "sliced bread"
+      },
+      {
+        "prompt": "dinner roll",
+        "score": 0.041517177288799445,
+        "ref_iou": 0.8725168704986572,
+        "query_presence": 0.047583237290382385,
+        "depth": 1,
+        "mode": "child",
+        "parent": "sliced bread"
+      },
+      {
+        "prompt": "sub roll",
+        "score": 0.007934836475584073,
+        "ref_iou": 0.8794876933097839,
+        "query_presence": 0.009022112004458904,
+        "depth": 1,
+        "mode": "child",
+        "parent": "sliced bread"
+      }
+    ],
+    "visual_query_instance_count_including_empty": 2,
+    "visual_nonempty_query_instance_count": 1,
+    "selected_concept": "sliced bread",
+    "components": {
+      "concept": "search",
+      "visual": "boxes"
+    }
+  },
+  "episode_wall_seconds": 8.458054187009111,
+  "attempt_number": 1,
+  "finished_at": "2026-11-13T08:39:19.633491+00:00"
+}

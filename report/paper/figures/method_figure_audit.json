@@ -1,0 +1,201 @@
+{
+  "audited_at": "2026-11-17",
+  "drawing_type": "Original vector schematics with exact archived input/output raster thumbnails",
+  "primary_figures": [
+    {
+      "method": "INSID3",
+      "paper_url": "https://arxiv.org/html/2603.28480v1",
+      "figure_url": "https://arxiv.org/html/2603.28480v1/method.png",
+      "figure_number": 3,
+      "visually_inspected": true,
+      "local_asset": {
+        "path": "report_revision_20261116/method_sources/insid3_original_figure.png",
+        "bytes": 469892,
+        "sha256": "66f56205f9c9069ecad619c042345848647c4ef738752ef092004d4de3f39103"
+      }
+    },
+    {
+      "method": "CG-ICS",
+      "paper_url": "https://arxiv.org/pdf/2606.28149",
+      "figure_number": 2,
+      "pdf_page_one_based": 5,
+      "visually_inspected": true,
+      "retrieval": "Direct HTTPS PDF download succeeded; prior search-tool open failed",
+      "local_pdf": {
+        "path": "report_revision_20261116/method_sources/cgics_original.pdf",
+        "bytes": 8278338,
+        "sha256": "f8478bdb95d8b938af4e3fe108c11b88e865e8bdaa806f027007e486c665be61"
+      },
+      "local_render": {
+        "path": "report_revision_20261116/method_sources/cgics_page5.png",
+        "bytes": 491430,
+        "sha256": "c787ed002e3433a4745edf1247a428b467e6b74d42902958cdd86da57156ffb0"
+      }
+    }
+  ],
+  "pinned_sources": [
+    {
+      "repository": "upstream-insid3",
+      "commit": "0c165a10cf52ab91f335883d06260de86854adbe",
+      "path": "batch2_20261116/upstream-insid3/models/insid3.py",
+      "bytes": 15888,
+      "sha256": "bab5cda135d80532581337c853b4a537b8692aa0dc15ad37f1673f98161652fc"
+    },
+    {
+      "repository": "upstream-insid3",
+      "commit": "0c165a10cf52ab91f335883d06260de86854adbe",
+      "path": "batch2_20261116/upstream-insid3/utils/clustering.py",
+      "bytes": 1374,
+      "sha256": "3742712bd8edc13d09e0fd135a902526c82c26cc5cec373391154e145e311fe8"
+    },
+    {
+      "repository": "upstream-cgics",
+      "commit": "8da845743f15c18ec490567fbd86dba58c8a388f",
+      "path": "batch2_20261116/upstream-cgics/main.py",
+      "bytes": 16916,
+      "sha256": "4de6eaba79f96dffca0c3df159aac643e9ee9226de65504053377728aedc57ec"
+    },
+    {
+      "repository": "upstream-cgics",
+      "commit": "8da845743f15c18ec490567fbd86dba58c8a388f",
+      "path": "batch2_20261116/upstream-cgics/model/tree_search.py",
+      "bytes": 22923,
+      "sha256": "5b306cbca1e2a44bec19fab60c9089549174cbcd0fe283b2ace5b9f768473313"
+    },
+    {
+      "repository": "upstream-cgics",
+      "commit": "8da845743f15c18ec490567fbd86dba58c8a388f",
+      "path": "batch2_20261116/upstream-cgics/model/sam3.py",
+      "bytes": 6210,
+      "sha256": "3550f45f024c39af1f38298ba6c49f5926d7a4fb1b58cc9e8067b333f884e9b5"
+    },
+    {
+      "repository": "upstream-cgics",
+      "commit": "8da845743f15c18ec490567fbd86dba58c8a388f",
+      "path": "batch2_20261116/upstream-cgics/model/mllm.py",
+      "bytes": 14834,
+      "sha256": "2dfbf2a2d712ca7394f891df18784ab3083285dcb548f8d7f3685285d3fe200c"
+    }
+  ],
+  "figures": [
+    {
+      "name": "insid3_pipeline",
+      "files": [
+        {
+          "path": "paper/figures/insid3_pipeline.pdf",
+          "bytes": 38757,
+          "sha256": "36891b8a106cfea2b5d58ec90f9c40e965b53c875e21bef610e4cfe89b7943e0"
+        },
+        {
+          "path": "paper/figures/insid3_pipeline.svg",
+          "bytes": 53904,
+          "sha256": "33a2d234afab60fafd7d4f731b73dea54912845b58c1af41bd2847f37a59844a"
+        },
+        {
+          "path": "paper/figures/insid3_pipeline.png",
+          "bytes": 205839,
+          "sha256": "7e5b45ebe7a50b32627a3c945bfe54aac7b012d03d1703cb1c8ec3fa8b9c0f23"
+        }
+      ],
+      "width_inches": 6.875,
+      "height_inches": 3.0,
+      "minimum_font_pt": 8.0,
+      "maximum_font_pt": 9.4,
+      "text_outside_canvas": [],
+      "text_count": 22,
+      "raster_inputs": "Exact archived case06 images and predictions",
+      "vector_elements": "All text, arrows, panels, feature/cluster icons, and module outlines",
+      "schematic_not_measured": "Feature grids and query-box icon",
+      "pdf_pages": 1,
+      "raster_images": 1,
+      "embedded_font_names": [
+        "CZRBLR+STIXGeneral-Regular",
+        "FTXWZA+STIXGeneral-Italic",
+        "FWBXUE+STIXGeneral-Bold",
+        "GYKUUQ+STIXSizeTwoSym-Regular"
+      ],
+      "final_png_visually_inspected": true,
+      "visual_review": "260dpi PNG: no clipped text or labels; directed routes clear; exact archived masks colorized blue on white."
+    },
+    {
+      "name": "cgics_pipeline",
+      "files": [
+        {
+          "path": "paper/figures/cgics_pipeline.pdf",
+          "bytes": 67103,
+          "sha256": "949190598d8f0a0503f26105d707adcb5ce78cf41fb1aeccc44b34b82d4faa74"
+        },
+        {
+          "path": "paper/figures/cgics_pipeline.svg",
+          "bytes": 95386,
+          "sha256": "130d1a73088e73540350aa492f2d9b1976675500244c2ad73134239b8efc9c72"
+        },
+        {
+          "path": "paper/figures/cgics_pipeline.png",
+          "bytes": 438831,
+          "sha256": "50a0f2b0acd1b87e7c2d6dae8dc51febe5e4eff5438894e111b0ef95aff5fc78"
+        }
+      ],
+      "width_inches": 6.875,
+      "height_inches": 3.0,
+      "minimum_font_pt": 7.8,
+      "maximum_font_pt": 9.4,
+      "text_outside_canvas": [],
+      "text_count": 24,
+      "raster_inputs": "Exact archived case06 images and predictions",
+      "vector_elements": "All text, arrows, panels, feature/cluster icons, and module outlines",
+      "schematic_not_measured": "Feature grids and query-box icon",
+      "pdf_pages": 1,
+      "raster_images": 2,
+      "embedded_font_names": [
+        "CZRBLR+STIXGeneral-Regular",
+        "FTXWZA+STIXGeneral-Italic",
+        "FWBXUE+STIXGeneral-Bold",
+        "GYKUUQ+STIXSizeTwoSym-Regular"
+      ],
+      "final_png_visually_inspected": true,
+      "visual_review": "260dpi PNG: no clipped text or labels; directed routes clear; exact archived masks colorized blue on white."
+    }
+  ],
+  "captions": {
+    "insid3_pipeline": "INSID3: visual features, reference correspondence, and seed-guided region aggregation.",
+    "cgics_pipeline": "CG-ICS: concept guidance and visual transfer provide complementary prompts to the final SAM 3 prediction."
+  },
+  "claim_checks": {
+    "insid3_original_features_for_clustering_and_seed_affinity": true,
+    "insid3_debiased_features_for_cross_matching": true,
+    "reference_mask_bypasses_encoder": true,
+    "seed_still_thresholded": true,
+    "query_presence_is_model_score_not_query_gt_iou": true,
+    "visual_masks_converted_to_boxes": true,
+    "no_query_ground_truth_in_inference": true,
+    "logical_branches_not_claim_of_execution_concurrency": true,
+    "original_artwork_not_copied": true,
+    "experimental_images_not_fabricated": true
+  },
+  "generator": {
+    "path": "paper/build_method_figures.py",
+    "sha256": "640b71e5a6dc1ed01539342c78bad163b77d7b2f8e47dc121f6087e61232d8b0"
+  },
+  "style_revision": {
+    "date": "2026-11-17",
+    "reference": "User-supplied group_07_report_project2.pdf Figure 1",
+    "palette": {
+      "blue": "#466F87",
+      "cyan": "#78B6C8",
+      "gold": "#F2D98E",
+      "coral": "#E48578",
+      "olive": "#98AF1E"
+    },
+    "font_family": "STIXGeneral",
+    "intended_include_scale": 1,
+    "changes": [
+      "Soft panel grouping and coherent reading order",
+      "Actual reference/query/mask examples",
+      "Small original feature and prompt icons",
+      "Compact serif typography and selective accents"
+    ],
+    "scientific_changes": []
+  },
+  "example_provenance": "paper/figures/assets/example_provenance.json"
+}

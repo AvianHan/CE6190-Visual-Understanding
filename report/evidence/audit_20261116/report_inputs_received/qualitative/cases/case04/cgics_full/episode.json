@@ -1,0 +1,359 @@
+{
+  "result_schema_version": 2,
+  "run_id": "cgics_full-e6e7e813a298f5cd",
+  "experiment_id": "cgics_full",
+  "method": "cgics",
+  "variant": "full",
+  "protocol_id": "ce6190-unified-v1-coco-val-f2",
+  "evaluation_protocol": "unified_original_resolution",
+  "config_sha256": "7ee9ccfb109c94fd1119addd844e98c937666841f32ec45314d3159b710ddaf7",
+  "manifest_sha256": "dbd2103c6daae5aadaadc8399494086b2837f9867cddd5b6ab21f0419d01535b",
+  "episode_id": "coco-f2-q000517-afdf01f663e37787-r000",
+  "dataset": "coco",
+  "dataset_version": "COCO2014-author-semantic-masks",
+  "split": "val",
+  "fold": 2,
+  "track": "semantic",
+  "concept_id": "62",
+  "reference_seed": 0,
+  "nshot": 1,
+  "query_image_sha256": "2aeb6446d671bc2b9da19951a60c69554b39442e9aae62cd24f5e616bbabb552",
+  "query_mask_sha256": "0819d8b216b4465df41b1cb10188ee163af1692e33617815d6a22cdb88ab18d3",
+  "reference_image_sha256": [
+    "aee6cea5432994df19687acca9a15157a02200658e62bed5dc641564b54ef422"
+  ],
+  "mask_semantics": "binary foreground union of prompted class; reference void=background",
+  "base_seed": 0,
+  "episode_seed": 3032057282,
+  "started_at": "2026-11-13T09:50:38.824411+00:00",
+  "shard_index": 1,
+  "num_shards": 4,
+  "status": "ok",
+  "counts": {
+    "tp": 14279,
+    "fp": 121,
+    "fn": 338,
+    "tn": 258542,
+    "ignored": 0
+  },
+  "iou": 0.9688560184556928,
+  "target_area_fraction": 0.05348726580796253,
+  "prediction_path": "predictions/876937fb57c02b7a7cf3ab011941bb75f4c1fe712c0f6484767f264d9bbc62e2.png",
+  "prediction_sha256": "6682c05e77b867c2d14492dbda68f1afc556dc754fb57372df9c164259d232ee",
+  "inference_seconds": 4.136197824962437,
+  "cuda_memory": {
+    "0": {
+      "peak_allocated_bytes": 4673822720,
+      "peak_reserved_bytes": 5140119552,
+      "device_name": "NVIDIA L40S"
+    }
+  },
+  "memory_scope": "current Python process; excludes external MLLM server/other processes",
+  "telemetry": {
+    "sam_calls": 32,
+    "sam_image_encoder_calls": 3,
+    "sam_prompt_head_calls": 33,
+    "mllm_requests": 3,
+    "mllm_prompt_tokens": 2740,
+    "mllm_completion_tokens": 77,
+    "mllm_usage_missing_requests": 0,
+    "candidate_score_evaluations": 15,
+    "mllm_request_wall_s": 1.3470216980203986,
+    "cache_policy": "within_episode_only",
+    "mllm_server_gpu_memory_bytes": null,
+    "search_nodes": 14,
+    "search_restarts": 0,
+    "search_max_depth_reached": 1,
+    "search_reported_evaluations_excluding_rerank": 14,
+    "stages": {
+      "input_preprocessing_s": 0.03428739996161312,
+      "image_encoding_s": 0.32732615794520825,
+      "concept_reasoning_s": 3.5530011269729584,
+      "visual_route_s": 0.131405366002582,
+      "final_sam_and_restore_s": 0.08938826597295702
+    },
+    "adapter_wall_s": 4.135549215017818
+  },
+  "artifacts": {
+    "generation_events": [
+      {
+        "mode": "initial",
+        "parent": null,
+        "candidates": [
+          "computer monitor",
+          "laptop screen",
+          "display screen",
+          "monitor frame",
+          "screen bezel"
+        ]
+      },
+      {
+        "mode": "child",
+        "parent": "computer monitor",
+        "candidates": [
+          "screen panel",
+          "display unit",
+          "monitor bezel",
+          "screen frame",
+          "LCD panel"
+        ]
+      },
+      {
+        "mode": "child",
+        "parent": "display screen",
+        "candidates": [
+          "monitor screen",
+          "display panel",
+          "computer monitor",
+          "screen surface",
+          "monitor display"
+        ]
+      }
+    ],
+    "mllm_responses": [
+      {
+        "text": "1. computer monitor\n2. laptop screen\n3. display screen\n4. monitor frame\n5. screen bezel",
+        "request_seed": 0
+      },
+      {
+        "text": "1. screen panel\n2. display unit\n3. monitor bezel\n4. screen frame\n5. LCD panel",
+        "request_seed": 1
+      },
+      {
+        "text": "1. monitor screen\n2. display panel\n3. computer monitor\n4. screen surface\n5. monitor display",
+        "request_seed": 2
+      }
+    ],
+    "score_events": [
+      {
+        "prompt": "computer monitor",
+        "ref_iou": 0.8934898376464844,
+        "query_score": 0.5836429595947266,
+        "combined_score": 0.5214790532118059
+      },
+      {
+        "prompt": "laptop screen",
+        "ref_iou": 0.8467906713485718,
+        "query_score": 0.014264685101807117,
+        "combined_score": 0.012079202273935219
+      },
+      {
+        "prompt": "display screen",
+        "ref_iou": 0.8486540913581848,
+        "query_score": 0.8674451112747192,
+        "combined_score": 0.7361608427119464
+      },
+      {
+        "prompt": "monitor frame",
+        "ref_iou": 0.05835970491170883,
+        "query_score": 0.28205159306526184,
+        "combined_score": 0.016460447741166062
+      },
+      {
+        "prompt": "screen bezel",
+        "ref_iou": 0.058503661304712296,
+        "query_score": 0.6321156024932861,
+        "combined_score": 0.03698107711369136
+      },
+      {
+        "prompt": "screen panel",
+        "ref_iou": 0.8925183415412903,
+        "query_score": 0.337690144777298,
+        "combined_score": 0.3013946479714722
+      },
+      {
+        "prompt": "display unit",
+        "ref_iou": 0.8937917351722717,
+        "query_score": 0.7993890643119812,
+        "combined_score": 0.7144873388691444
+      },
+      {
+        "prompt": "monitor bezel",
+        "ref_iou": 0.05842044577002525,
+        "query_score": 0.328754723072052,
+        "combined_score": 0.019205997470870484
+      },
+      {
+        "prompt": "screen frame",
+        "ref_iou": 0.058166369795799255,
+        "query_score": 0.62941974401474,
+        "combined_score": 0.03661106158713867
+      },
+      {
+        "prompt": "LCD panel",
+        "ref_iou": 0.8844008445739746,
+        "query_score": 0.4560799300670624,
+        "combined_score": 0.40335747534454924
+      },
+      {
+        "prompt": "monitor screen",
+        "ref_iou": 0.893534243106842,
+        "query_score": 0.8020758628845215,
+        "combined_score": 0.7166822490567881
+      },
+      {
+        "prompt": "display panel",
+        "ref_iou": 0.8937914967536926,
+        "query_score": 0.785661518573761,
+        "combined_score": 0.7022175846278209
+      },
+      {
+        "prompt": "screen surface",
+        "ref_iou": 0.8789739608764648,
+        "query_score": 0.7102652192115784,
+        "combined_score": 0.6243046330031916
+      },
+      {
+        "prompt": "monitor display",
+        "ref_iou": 0.8934107422828674,
+        "query_score": 0.9018001556396484,
+        "combined_score": 0.8056779464408237
+      },
+      {
+        "prompt": "monitor display",
+        "ref_iou": 0.8934107422828674,
+        "query_score": 0.9018001556396484,
+        "combined_score": 0.8056779464408237
+      }
+    ],
+    "search_best_score": 0.8056779464408237,
+    "search_nodes": [
+      {
+        "prompt": "computer monitor",
+        "score": 0.5214790532118059,
+        "ref_iou": 0.8934898376464844,
+        "query_presence": 0.5836429595947266,
+        "depth": 0,
+        "mode": "initial",
+        "parent": null
+      },
+      {
+        "prompt": "laptop screen",
+        "score": 0.012079202273935219,
+        "ref_iou": 0.8467906713485718,
+        "query_presence": 0.014264685101807117,
+        "depth": 0,
+        "mode": "initial",
+        "parent": null
+      },
+      {
+        "prompt": "display screen",
+        "score": 0.7361608427119464,
+        "ref_iou": 0.8486540913581848,
+        "query_presence": 0.8674451112747192,
+        "depth": 0,
+        "mode": "initial",
+        "parent": null
+      },
+      {
+        "prompt": "monitor frame",
+        "score": 0.016460447741166062,
+        "ref_iou": 0.05835970491170883,
+        "query_presence": 0.28205159306526184,
+        "depth": 0,
+        "mode": "initial",
+        "parent": null
+      },
+      {
+        "prompt": "screen bezel",
+        "score": 0.03698107711369136,
+        "ref_iou": 0.058503661304712296,
+        "query_presence": 0.6321156024932861,
+        "depth": 0,
+        "mode": "initial",
+        "parent": null
+      },
+      {
+        "prompt": "screen panel",
+        "score": 0.3013946479714722,
+        "ref_iou": 0.8925183415412903,
+        "query_presence": 0.337690144777298,
+        "depth": 1,
+        "mode": "child",
+        "parent": "computer monitor"
+      },
+      {
+        "prompt": "display unit",
+        "score": 0.7144873388691444,
+        "ref_iou": 0.8937917351722717,
+        "query_presence": 0.7993890643119812,
+        "depth": 1,
+        "mode": "child",
+        "parent": "computer monitor"
+      },
+      {
+        "prompt": "monitor bezel",
+        "score": 0.019205997470870484,
+        "ref_iou": 0.05842044577002525,
+        "query_presence": 0.328754723072052,
+        "depth": 1,
+        "mode": "child",
+        "parent": "computer monitor"
+      },
+      {
+        "prompt": "screen frame",
+        "score": 0.03661106158713867,
+        "ref_iou": 0.058166369795799255,
+        "query_presence": 0.62941974401474,
+        "depth": 1,
+        "mode": "child",
+        "parent": "computer monitor"
+      },
+      {
+        "prompt": "LCD panel",
+        "score": 0.40335747534454924,
+        "ref_iou": 0.8844008445739746,
+        "query_presence": 0.4560799300670624,
+        "depth": 1,
+        "mode": "child",
+        "parent": "computer monitor"
+      },
+      {
+        "prompt": "monitor screen",
+        "score": 0.7166822490567881,
+        "ref_iou": 0.893534243106842,
+        "query_presence": 0.8020758628845215,
+        "depth": 1,
+        "mode": "child",
+        "parent": "display screen"
+      },
+      {
+        "prompt": "display panel",
+        "score": 0.7022175846278209,
+        "ref_iou": 0.8937914967536926,
+        "query_presence": 0.785661518573761,
+        "depth": 1,
+        "mode": "child",
+        "parent": "display screen"
+      },
+      {
+        "prompt": "screen surface",
+        "score": 0.6243046330031916,
+        "ref_iou": 0.8789739608764648,
+        "query_presence": 0.7102652192115784,
+        "depth": 1,
+        "mode": "child",
+        "parent": "display screen"
+      },
+      {
+        "prompt": "monitor display",
+        "score": 0.8056779464408237,
+        "ref_iou": 0.8934107422828674,
+        "query_presence": 0.9018001556396484,
+        "depth": 1,
+        "mode": "child",
+        "parent": "display screen"
+      }
+    ],
+    "visual_query_instance_count_including_empty": 2,
+    "visual_nonempty_query_instance_count": 1,
+    "selected_concept": "monitor display",
+    "components": {
+      "concept": "search",
+      "visual": "boxes"
+    }
+  },
+  "episode_wall_seconds": 4.1714284520130605,
+  "attempt_number": 1,
+  "finished_at": "2026-11-13T09:50:42.995855+00:00"
+}

@@ -1,0 +1,18 @@
+\paragraph{Search--prompt interaction}
+Let $J_u(s,v)$ denote reference-averaged IoU for query target $u$, with
+$s\in\{0,1\}$ selecting a single concept or full search and
+$v\in\{0,1\}$ indicating visual boxes. The interaction contrast is
+\begin{equation}
+  \begin{aligned}
+  \Gamma=\frac{1}{|U|}\sum_{u\in U}\bigl[&J_u(1,1)-J_u(1,0)\\
+                              &-J_u(0,1)+J_u(0,0)\bigr].
+  \end{aligned}
+  \label{eq:search-visual-interaction}
+\end{equation}
+This measures how much search changes the marginal benefit of visual
+prompting. The observed interaction is $-2.85$ percentage points on COCO
+(95\% CI $[-4.29,-1.48]$) and $-3.00$ on LVIS
+($[-4.09,-1.95]$). Thus, on the full matched input cohort, the two additions
+have diminishing joint gains: visual boxes help at both search levels,
+but help more when only the initial concept is used.
+
