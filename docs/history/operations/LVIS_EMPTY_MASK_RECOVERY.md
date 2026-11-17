@@ -18,7 +18,7 @@ preflight 已成功生成并验证 LVIS fold4 standard 的 2,300 episodes，SHA-
 ValueError: Selected source mask is empty: /scratch/prj0000000262_1/hansy/ce6190-ics-runtime/data/LVIS/coco/train2017/000000578055.jpg
 ```
 
-失败发生在 reference mask 构造；日志没有提供该 image／concept 的实际 pickle 内容，所以不能断言空标注产生的原因。preflight 时间戳为 `1793622940.253583`–`1793624697.7603624`，对应新加坡时间 **11 月 2 日 20:35:40–21:04:57**；11 月 4 日是证据回传日期。全部历史证据保存在 [项目维护记录](../CE6190_ICS_PROJECT_LOG.md) 的 2.13。
+失败发生在 reference mask 构造；日志没有提供该 image／concept 的实际 pickle 内容，所以不能断言空标注产生的原因。preflight 时间戳为 `1793622940.253583`–`1793624697.7603624`，对应新加坡时间 **11 月 2 日 20:35:40–21:04:57**；11 月 4 日是证据回传日期。全部历史证据保存在 [项目维护记录](../PROJECT_LOG_before_cleanup.md) 的 2.13。
 
 ## 修复与实验协议
 

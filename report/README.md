@@ -19,7 +19,9 @@ outcomes are included only after a separate result audit.
   previews, figure-generation audits, and exact method-diagram raster inputs.
 - `literature/`: bibliography and supporting reference records.
 - `audit/`: current reference/use and style audits.
-- `logic/`: Chinese paper-to-sentence logic map for content review.
+- `logic/`: earlier Chinese paper-to-sentence logic map for historical content review.
+- `review/front_logic_ZH.md`: current introduction/method positioning logic review.
+- `review/batch2_integration_checklist.md`: conditions for integrating second-batch results.
 - `math/`: computed analysis and the original recomputation script.
 - `evidence/`: exact six-case qualitative inputs and the component-effect summary,
   sufficient to regenerate the report figures. This is not an experiment backup.

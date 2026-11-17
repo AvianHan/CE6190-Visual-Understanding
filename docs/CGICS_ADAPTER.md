@@ -1,8 +1,8 @@
 # CG-ICS adapter: components, protocol, and provenance
 
-Status: implemented wrapper + synthetic/tensor tests; **no SAM3/Qwen checkpoint
-inference has been run in this workspace**. A server smoke test is required before
-interpreting performance. This document is part of the CE6190 source package.
+This document describes the wrapper contract and its differences from the pinned
+upstream implementation. Experiment acceptance is recorded in the current report
+and `results_summary/`; synthetic tests alone do not establish model performance.
 
 ## Input and output
 

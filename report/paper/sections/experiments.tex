@@ -1,7 +1,7 @@
 \section{Experimental Results}
 \subsection{Experimental Setup}
 \label{sec:setup}
-We evaluate COCO-$20^i$ and LVIS-$92^i$, derived from COCO~\cite{coco} and LVIS~\cite{lvis}. We use the author-prepared class memberships, with four folds of 20 classes and ten folds of 92 classes, respectively~\cite{matcher}. The standard comparison contains 4,000 COCO and 23,000 LVIS episodes per system. A reference cohort varies the demonstration for fixed query targets. A separate component cohort contains 400 COCO and 1,000 LVIS query targets, with up to three references each (1,200 and 2,757 episodes per configuration). All methods within a comparison receive matched inputs.
+The evaluation uses COCO-$20^i$ and LVIS-$92^i$, derived from COCO~\cite{coco} and LVIS~\cite{lvis}. The author-prepared class memberships comprise four folds of 20 classes and ten folds of 92 classes, respectively~\cite{matcher}. The standard comparison contains 4,000 COCO and 23,000 LVIS episodes per system. A reference cohort varies the demonstration for fixed query targets. A separate component cohort contains 400 COCO and 1,000 LVIS query targets, with up to three references each (1,200 and 2,757 episodes per configuration). All methods within a comparison receive matched inputs.
 
 For each episode, foreground IoU is evaluated at the original query resolution:
 \begin{equation}
@@ -14,30 +14,30 @@ The headline metric pools counts within each class, averages classes within each
     {\sum_{e\in E_c}(\mathrm{TP}_e+\mathrm{FP}_e+\mathrm{FN}_e)}.
     \label{eq:pooled}
 \end{equation}
-For paired comparisons, we first average planned episodes within each query target $u$ (query image, target mask, and concept), then average the method difference:
+Paired comparisons average episodes within each query target $u$ (query image, target mask, and concept), then average the method difference:
 \begin{equation}
     \Delta_q=\frac{1}{|U|}\sum_{u\in U}
     \left(\overline J_{u,B}-\overline J_{u,A}\right).
     \label{eq:paired}
 \end{equation}
-Confidence intervals resample whole query-image clusters, keeping their concepts and references together~\cite{bootstrap,clusterbootstrap}. We report exploratory 95\% intervals using 2,000 bootstrap replicates for main/component contrasts and 1,000 for parameter/area analyses. Reference sensitivity is the standard deviation across distinct references after averaging repeated executions of identical inputs. Failed predictions retain missing accuracy; paired contrasts use common successful inputs.
+Confidence intervals resample whole query-image clusters, keeping their concepts and references together~\cite{bootstrap,clusterbootstrap}. Exploratory 95\% intervals use 2,000 bootstrap replicates for main/component contrasts and 1,000 for parameter/area analyses. Reference sensitivity is the standard deviation across distinct references after averaging repeated executions of identical inputs. Failed predictions retain missing accuracy; paired contrasts use common successful inputs.
 
-The completed first batch covers 36 configurations and 615,976 episode records, including four preprocessing failures. All expected episode identities and shard assignments have been verified. We report each dataset separately and use the executed common protocol for comparative analysis. Protocol details and the full research matrix are in Appendix~\ref{app:protocol}.
+The study covers 36 configurations under a common protocol. Appendix~\ref{app:protocol} gives the full research matrix and implementation details. In comparison tables, bold blue identifies the better value for each metric. In effect tables, blue and coral identify positive and negative effects whose 95\% intervals exclude zero.
 
 \subsection{Accuracy and Efficiency}
 % Source: e1_e2_analysis.md, standard cohort and paired comparisons.
 \begin{table*}[t]
     \centering
     \small
-    \caption{\textbf{Complete-system accuracy.} Mean-fold class-pooled IoU (\%) and paired equal-query effects (percentage points; 95\% confidence intervals).}
+    \caption{\textbf{Complete-system accuracy.} Class-pooled IoU (\%) and paired equal-query gains (pp; 95\% CI).}
     \label{tab:main}
     \begin{tabularx}{\textwidth}{@{}L{.75}R{.9}R{.6}R{.65}R{2.1}@{}}
         \toprule
-        \rowcolor{TableHeader}
+        \rowcolor{ReportBlue!12}
         Dataset & Episodes/system & INSID3 & CG-ICS & Paired query effect [95\% CI] \\
         \midrule
-        COCO-$20^i$ & 4,000 & 57.65 & \textbf{72.17} & $+14.01$ [$13.16,14.82$] \\
-        LVIS-$92^i$ & 23,000 & 40.77 & \textbf{47.44} & $+16.22$ [$15.65,16.82$] \\
+        COCO-$20^i$ & 4,000 & 57.65 & \textbf{\textcolor{ReportBlue}{72.17}} & $+14.01$ [$13.16,14.82$] \\
+        LVIS-$92^i$ & 23,000 & 40.77 & \textbf{\textcolor{ReportBlue}{47.44}} & $+16.22$ [$15.65,16.82$] \\
         \bottomrule
     \end{tabularx}
 \end{table*}
@@ -50,16 +50,16 @@ This accuracy advantage has a substantial computational cost. On exact inputs ma
 \begin{table*}[t]
     \centering
     \small
-    \caption{\textbf{Accuracy--latency trade-off.} Identical inputs matched by runner GPU. CG-ICS additionally uses a dedicated language-model GPU.}
+    \caption{\textbf{Accuracy--latency trade-off.} Matched-input inference; CG-ICS uses an additional language-model GPU.}
     \label{tab:cost}
     \begin{tabularx}{\textwidth}{@{}L{.65}L{.65}R{.65}R{1.35}R{.7}R{2}@{}}
         \toprule
-        \rowcolor{TableHeader}
+        \rowcolor{ReportBlue!12}
         Dataset & Runner & Pairs & \shortstack{Mean seconds\\INSID3 / CG-ICS} & Ratio & \shortstack{Episode IoU (\%)\\INSID3 / CG-ICS} \\
         \midrule
-        COCO & L40S & 3,095 & 0.454 / 4.654 & $10.25\times$ & 56.72 / 71.43 \\
-        LVIS & H200 & 3,450 & 0.352 / 2.595 & $7.37\times$ & 41.97 / 52.28 \\
-        LVIS & L40S & 4,025 & 0.439 / 4.661 & $10.63\times$ & 40.48 / 54.90 \\
+        COCO & L40S & 3,095 & \textbf{\textcolor{ReportBlue}{0.454}} / 4.654 & $10.25\times$ & 56.72 / \textbf{\textcolor{ReportBlue}{71.43}} \\
+        LVIS & H200 & 3,450 & \textbf{\textcolor{ReportBlue}{0.352}} / 2.595 & $7.37\times$ & 41.97 / \textbf{\textcolor{ReportBlue}{52.28}} \\
+        LVIS & L40S & 4,025 & \textbf{\textcolor{ReportBlue}{0.439}} / 4.661 & $10.63\times$ & 40.48 / \textbf{\textcolor{ReportBlue}{54.90}} \\
         \bottomrule
     \end{tabularx}
 \end{table*}
@@ -71,15 +71,15 @@ The operation counts explain much of this cost: CG-ICS averages 3.43--3.50 langu
 \begin{table*}[t]
     \centering
     \small
-    \caption{\textbf{Reference sensitivity.} Mean within-query IoU standard deviation and worst-reference IoU (\%).}
+    \caption{\textbf{Reference sensitivity.} Within-query SD ($\downarrow$) and worst-reference IoU ($\uparrow$), in \%.}
     \label{tab:reference}
     \begin{tabularx}{\textwidth}{@{}L{.8}R{1.2}R{.8}R{.8}R{1.2}R{1.2}@{}}
         \toprule
-        \rowcolor{TableHeader}
+        \rowcolor{ReportBlue!12}
         Dataset & Eligible queries & \shortstack{SD\\INSID3} & \shortstack{SD\\CG-ICS} & \shortstack{Worst IoU\\INSID3} & \shortstack{Worst IoU\\CG-ICS} \\
         \midrule
-        COCO & 2,000 & 16.33 & 13.26 & 14.75 & 26.53 \\
-        LVIS & 4,308 & 13.10 & 18.79 & 13.97 & 18.34 \\
+        COCO & 2,000 & 16.33 & \textbf{\textcolor{ReportBlue}{13.26}} & 14.75 & \textbf{\textcolor{ReportBlue}{26.53}} \\
+        LVIS & 4,308 & \textbf{\textcolor{ReportBlue}{13.10}} & 18.79 & 13.97 & \textbf{\textcolor{ReportBlue}{18.34}} \\
         \bottomrule
     \end{tabularx}
 \end{table*}
@@ -88,7 +88,7 @@ The complete-system accuracy ranking does not determine the variability ranking.
 
 The same direction appears in H200-only subsets: the CG-ICS minus INSID3 reference-SD interval is $[-3.71,-2.69]$ points on COCO and $[5.03,5.98]$ on LVIS. Reference robustness is therefore dataset-dependent, and reduced variability should be interpreted alongside the achieved accuracy.
 
-A three-seed study fixes the component inputs and yields mean per-input CG-ICS SDs of 2.23 points on COCO and 3.65 on LVIS. Prediction hashes are identical across all three seeds for 263/1,200 and 694/2,757 inputs. Because some runs use different GPU models, we interpret these as run-sensitivity measurements rather than an isolated seed effect.
+A three-seed study fixes the component inputs and yields mean per-input CG-ICS SDs of 2.23 points on COCO and 3.65 on LVIS. Prediction hashes are identical across all three seeds for 263/1,200 and 694/2,757 inputs. These measurements capture sensitivity across executions, including seed and GPU variation.
 
 \subsection{Component Ablations}
 INSID3's gains are not explained by the feature trunk alone. Removing debiasing from the full processing route reduces equal-query IoU by 2.38 points on COCO and 2.26 on LVIS. Replacing self-plus-cross aggregation with seed-only output reduces it by 9.24 and 4.06 points, respectively. The full processing route improves over debiased simple similarity by 19.23 and 11.94 points. These contrasts indicate that both the representation adjustment and the use of clustered spatial structure matter.
@@ -99,18 +99,19 @@ For CG-ICS, language and visual prompts provide complementary information. Addin
 \begin{table*}[t]
     \centering
     \small
-    \caption{\textbf{Component effects.} Paired contrasts on the shared component cohort (equal-query IoU points; 95\% confidence intervals).}
+    \caption{\textbf{Component effects.} Paired equal-query IoU effects (pp; 95\% CI).}
     \label{tab:components}
     \begin{tabularx}{\textwidth}{@{}Xrr@{}}
         \toprule
-        \rowcolor{TableHeader}
+        \rowcolor{ReportBlue!12}
         Intervention & COCO effect [95\% CI] & LVIS effect [95\% CI] \\
         \midrule
-        INSID3: add debiasing to self/cross & $+2.38$ [$1.25,3.55$] & $+2.26$ [$1.57,2.95$] \\
-        INSID3: self/cross instead of seed-only & $+9.24$ [$7.19,11.25$] & $+4.06$ [$3.02,5.18$] \\
-        CG-ICS: visual boxes with one concept & $+5.39$ [$3.80,7.00$] & $+4.78$ [$3.63,6.02$] \\
-        CG-ICS: search beyond scored candidates, with boxes & $-0.07$ [$-0.78,0.65$] & $+1.45$ [$0.67,2.25$] \\
-        CG-ICS: full search beyond one concept, with boxes & $+0.22$ [$-0.81,1.29$] & $+2.30$ [$1.38,3.25$] \\
+        INSID3: add debiasing to self/cross & \textcolor{ReportBlue}{\textbf{+2.38}} [$1.25,3.55$] & \textcolor{ReportBlue}{\textbf{+2.26}} [$1.57,2.95$] \\
+        INSID3: self/cross instead of seed-only & \textcolor{ReportBlue}{\textbf{+9.24}} [$7.19,11.25$] & \textcolor{ReportBlue}{\textbf{+4.06}} [$3.02,5.18$] \\
+        CG-ICS: visual boxes with one concept & \textcolor{ReportBlue}{\textbf{+5.39}} [$3.80,7.00$] & \textcolor{ReportBlue}{\textbf{+4.78}} [$3.63,6.02$] \\
+        CG-ICS: search beyond scored candidates, with boxes & $-0.07$ [$-0.78,0.65$] & \textcolor{ReportBlue}{\textbf{+1.45}} [$0.67,2.25$] \\
+        \rowcolor{TableTint}
+        CG-ICS: full search beyond one concept, with boxes & $+0.22$ [$-0.81,1.29$] & \textcolor{ReportBlue}{\textbf{+2.30}} [$1.38,3.25$] \\
         \bottomrule
     \end{tabularx}
 \end{table*}
@@ -122,41 +123,42 @@ With visual boxes, full search adds 0.22 points beyond a single concept on COCO,
 \begin{figure*}[t]
     \centering
     \includegraphics[width=\linewidth]{figures/component_effects.pdf}
-    \caption{\textbf{Sources of segmentation accuracy.} Paired gains from feature processing, visual prompts at one concept, and full search beyond one concept with visual prompts. Bars show image-cluster 95\% confidence intervals.}
+    \caption{\textbf{Component gains.} Equal-query IoU effects with 95\% image-cluster confidence intervals.}
     \label{fig:components}
 \end{figure*}
 
-The single-concept route is also much cheaper. Full search takes 4.17 times as long on 300 matched COCO/H200 inputs and 4.37--4.56 times as long on matched LVIS subsets. The accuracy changes on those same timing subsets are $-0.54$ points for COCO, $+1.53$ for LVIS/L40S, and $+3.67$ for LVIS/H200. These paired observations motivate testing conditional search on fresh inputs (Section~\ref{sec:extension}).
+The single-concept route is also much cheaper. Full search takes 4.17 times as long on 300 matched COCO/H200 inputs and 4.37--4.56 times as long on matched LVIS subsets. The accuracy changes on those same timing subsets are $-0.54$ points for COCO, $+1.53$ for LVIS/L40S, and $+3.67$ for LVIS/H200. These paired observations motivate input-dependent search (Section~\ref{sec:extension}).
 
-The current candidate-stage comparison changes both candidate generation and selection; the full-search comparison also includes restarts. The next batch therefore adds a fixed-pool experiment to isolate the scoring terms in Eq.~\ref{eq:cg-score}.
+The candidate-stage comparison combines generation and selection, while full search also includes restarts. A fixed-pool ablation can isolate the scoring terms in Eq.~\ref{eq:cg-score}; this control forms part of the evaluation design in Section~\ref{sec:extension}.
 
 \subsection{Feature Backbones}
 % Source: components_analysis.md E5 mean-fold mIoU; common1008 input.
 \begin{table*}[t]
     \centering
     \small
-    \caption{\textbf{Representation and processing.} Feature trunks at input size 1008 (mean-fold class-pooled IoU, \%). Simple similarity includes debiasing.}
+    \caption{\textbf{Representation and processing.} Class-pooled IoU (\%) at input size 1008; similarity includes debiasing.}
     \label{tab:matrix}
     \begin{tabularx}{\textwidth}{@{}L{1}R{1}R{1}R{1}R{1}@{}}
         \toprule
-        \rowcolor{TableHeader}
+        \rowcolor{ReportBlue!12}
          & \multicolumn{2}{c}{COCO} & \multicolumn{2}{c}{LVIS} \\
-        \rowcolor{TableHeader}
+        \rowcolor{ReportBlue!12}
         Trunk & Similarity & INSID3 processing & Similarity & INSID3 processing \\
         \midrule
-        DINOv3 & 40.17 & 57.46 & 29.66 & 39.58 \\
+        \rowcolor{TableTint}
+        DINOv3 & \textbf{\textcolor{ReportBlue}{40.17}} & \textbf{\textcolor{ReportBlue}{57.46}} & \textbf{\textcolor{ReportBlue}{29.66}} & \textbf{\textcolor{ReportBlue}{39.58}} \\
         DINOv2 & 18.46 & 31.50 & 18.90 & 29.77 \\
         SAM~3 trunk & 7.50 & 26.35 & 10.63 & 21.45 \\
         \bottomrule
     \end{tabularx}
 \end{table*}
 
-INSID3 processing improves all three feature trunks (Table~\ref{tab:matrix}). DINOv3 remains strongest under both processing routes, while equal-query processing gains span 15.49--19.39 points on COCO and 11.17--11.95 on LVIS. Representation quality and mask-construction strategy therefore make distinct contributions. The SAM~3 entry is a trunk adapted to the feature interface, separate from its full promptable decoder; the comparison uses a common recipe rather than separately optimized settings for each backbone.
+INSID3 processing improves all three feature trunks (Table~\ref{tab:matrix}). DINOv3 remains strongest under both processing routes, while equal-query processing gains span 15.49--19.39 points on COCO and 11.17--11.95 on LVIS. Representation quality and mask-construction strategy therefore make distinct contributions. The comparison applies one processing recipe to all trunks; the SAM~3 entry uses its feature trunk without the promptable decoder.
 
 \begin{figure*}[t]
     \centering
-    \includegraphics[width=\linewidth]{figures/qualitative.pdf}
-    \caption{\textbf{Complementary successes and failures.} The same reference and query are evaluated by both systems. Colors distinguish true positives, false positives, and false negatives.}
+    \includegraphics[width=0.92\linewidth]{figures/qualitative.pdf}
+    \caption{\textbf{Complementary successes and failures.} Matched reference--query examples; colors indicate true positives, false positives, and false negatives.}
     \label{fig:qualitative}
 \end{figure*}
 
@@ -174,6 +176,6 @@ The examples in Figure~\ref{fig:qualitative} reveal complementary failure modes.
 
 Other inspected cases connect semantic specificity to the predicted region: \emph{floor unit} selects the floor rather than a vacuum cleaner, \emph{buttered bread} covers bread rather than the small butter target, and \emph{vehicle} includes a bus outside the prompted car regions. These cases motivate testing concept quality as well as mask quality.
 
-The four execution errors arise earlier, during preprocessing. Three distinct reference masks contain only one or five foreground pixels, which disappear when resized to $512\times512$ by legacy nearest-neighbor sampling. CG-ICS then stops before model inference. A foreground-preserving resize is a concrete future improvement, to be tested on both these failures and independent small-reference examples. The 20-case inspection recomputed all 36 available prediction masks and reproduced their saved pixel counts and IoUs; six cases are shown here.
+Four additional failures occur during reference preprocessing. Three distinct reference masks contain only one or five foreground pixels, which disappear when resized to $512\times512$ by legacy nearest-neighbor sampling. CG-ICS then stops before model inference. These failures motivate foreground-preserving resizing. Together, the variable search gains, latency gap, and semantic errors suggest allocating concept search according to the input rather than applying the same search budget uniformly.
 
 

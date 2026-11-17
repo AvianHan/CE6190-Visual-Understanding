@@ -1,0 +1,146 @@
+{
+  "status": "PASS",
+  "created_at_utc": "2026-11-17T13:16:09.487785+00:00",
+  "counts": {
+    "inventory_files": 37213,
+    "inventory_bytes": 595282995,
+    "prior_plans": 2,
+    "prior_bindings": 532,
+    "prior_manifests": 42,
+    "passed_shards": 224,
+    "episodes": 16800,
+    "outputs": 56
+  },
+  "error_count": 0,
+  "errors": [],
+  "code_sha256": "d1b287269ef2100b4bc2bc3096ba45c83d3f2552789d4efd70fbe15c3b4e5b3a",
+  "prior_unique_image_hashes": 12409,
+  "prior_unique_source_ids": 12409,
+  "cohorts": [
+    {
+      "manifest": "batch2_coco_fold0_fresh",
+      "episodes": 300,
+      "unique_queries": 100,
+      "represented_classes": 20,
+      "class_universe_count": 20
+    },
+    {
+      "manifest": "batch2_coco_fold1_fresh",
+      "episodes": 300,
+      "unique_queries": 100,
+      "represented_classes": 20,
+      "class_universe_count": 20
+    },
+    {
+      "manifest": "batch2_coco_fold2_fresh",
+      "episodes": 300,
+      "unique_queries": 100,
+      "represented_classes": 18,
+      "class_universe_count": 20
+    },
+    {
+      "manifest": "batch2_coco_fold3_fresh",
+      "episodes": 300,
+      "unique_queries": 100,
+      "represented_classes": 20,
+      "class_universe_count": 20
+    },
+    {
+      "manifest": "batch2_lvis_fold0_fresh",
+      "episodes": 300,
+      "unique_queries": 100,
+      "represented_classes": 29,
+      "class_universe_count": 92
+    },
+    {
+      "manifest": "batch2_lvis_fold1_fresh",
+      "episodes": 300,
+      "unique_queries": 100,
+      "represented_classes": 38,
+      "class_universe_count": 92
+    },
+    {
+      "manifest": "batch2_lvis_fold2_fresh",
+      "episodes": 300,
+      "unique_queries": 100,
+      "represented_classes": 35,
+      "class_universe_count": 92
+    },
+    {
+      "manifest": "batch2_lvis_fold3_fresh",
+      "episodes": 300,
+      "unique_queries": 100,
+      "represented_classes": 31,
+      "class_universe_count": 92
+    },
+    {
+      "manifest": "batch2_lvis_fold4_fresh",
+      "episodes": 300,
+      "unique_queries": 100,
+      "represented_classes": 37,
+      "class_universe_count": 92
+    },
+    {
+      "manifest": "batch2_lvis_fold5_fresh",
+      "episodes": 300,
+      "unique_queries": 100,
+      "represented_classes": 36,
+      "class_universe_count": 92
+    },
+    {
+      "manifest": "batch2_lvis_fold6_fresh",
+      "episodes": 300,
+      "unique_queries": 100,
+      "represented_classes": 35,
+      "class_universe_count": 92
+    },
+    {
+      "manifest": "batch2_lvis_fold7_fresh",
+      "episodes": 300,
+      "unique_queries": 100,
+      "represented_classes": 41,
+      "class_universe_count": 92
+    },
+    {
+      "manifest": "batch2_lvis_fold8_fresh",
+      "episodes": 300,
+      "unique_queries": 100,
+      "represented_classes": 31,
+      "class_universe_count": 92
+    },
+    {
+      "manifest": "batch2_lvis_fold9_fresh",
+      "episodes": 300,
+      "unique_queries": 100,
+      "represented_classes": 37,
+      "class_universe_count": 92
+    }
+  ],
+  "per_config_episodes": {
+    "batch2_cgics_bon1": 4200,
+    "batch2_cgics_full": 4200,
+    "batch2_cgics_single": 4200,
+    "batch2_insid3_full": 4200
+  },
+  "configurations": [
+    "batch2_cgics_bon1",
+    "batch2_cgics_full",
+    "batch2_cgics_single",
+    "batch2_insid3_full"
+  ],
+  "recorded_provenance_sha256_by_config": {
+    "batch2_cgics_bon1": "4668af546b1fc411a935442e575235884339e6bc3d9c4639be7a20bbf2eab23d",
+    "batch2_cgics_full": "4668af546b1fc411a935442e575235884339e6bc3d9c4639be7a20bbf2eab23d",
+    "batch2_cgics_single": "4668af546b1fc411a935442e575235884339e6bc3d9c4639be7a20bbf2eab23d",
+    "batch2_insid3_full": "7bf9c9bce568644ba4a31e78ab74d4bb75fc7c5054b85cc51f5e13451eb49fb1"
+  },
+  "unique_query_images": 1400,
+  "export_created_at_utc": "2026-11-17T13:09:24.091164+00:00",
+  "boundaries": [
+    "The audit verifies recorded identities, hash-bound source code, manifests, history and paired configuration coverage.",
+    "Raw query/reference RGB images, reference masks, model weights and original dataset metadata are absent; their bytes and upstream GT conversion cannot be independently reverified.",
+    "The four configurations share the exact same 14 manifest bytes and 4200 query-reference episodes; no MLLM, SAM or INSID3 inference is rerun.",
+    "Recorded upstream/model hashes are consistent across all folds per configuration and across the three CG-ICS variants; this is not a new hash of absent model files.",
+    "PNG pixel and query-GT checks are separately recorded in pixel_audit.json."
+  ]
+}

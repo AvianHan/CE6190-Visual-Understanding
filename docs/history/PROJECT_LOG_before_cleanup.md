@@ -237,7 +237,7 @@ $ICS_RUNTIME/python/cpython-3.12.15-linux-x86_64-gnu/bin/python3.12
 fix: preserve virtualenv Python paths and precheck data dependencies
 ```
 
-完整 Orion 恢复命令见 [docs/PYTHON_ENV_RECOVERY.md](docs/PYTHON_ENV_RECOVERY.md)，实际聊天交付同时直接给可复制命令，不把阅读该文件作为前置要求。恢复包含 pull、检查 `resource_profile` 中普通 worker 与 MLLM 的环境路径、仅在正确 insid3 缺少时安装 `gdown>=5,<6`、只读依赖检查，以及启动上述新 run；这些操作尚未取得用户的实际执行输出。
+完整 Orion 恢复命令见 [docs/PYTHON_ENV_RECOVERY.md](operations/PYTHON_ENV_RECOVERY.md)，实际聊天交付同时直接给可复制命令，不把阅读该文件作为前置要求。恢复包含 pull、检查 `resource_profile` 中普通 worker 与 MLLM 的环境路径、仅在正确 insid3 缺少时安装 `gdown>=5,<6`、只读依赖检查，以及启动上述新 run；这些操作尚未取得用户的实际执行输出。
 
 ### 2.11 修复已部署，新 run 已启动（2026-11-02）
 
@@ -343,7 +343,7 @@ preflight 传递并核对 manifest 的策略／协议身份；旧 sidecar 未声
 fix: audit empty LVIS masks and isolate recovery manifests
 ```
 
-随后 Orion `git pull --ff-only`，用新 suite 启动 **`$ICS_RUNTIME/runs/ics-initial-20261104-lvisfix`**。完整可复制命令见 [docs/LVIS_EMPTY_MASK_RECOVERY.md](docs/LVIS_EMPTY_MASK_RECOVERY.md)，聊天交付同时直接提供命令，不要求先打开说明。旧两轮 run 的 frozen source、状态和日志保留；不手改 BLOCKED／FAIL，不在旧终态 run 上重复 start。交付时尚未取得用户应用／push／Orion 启动证据；用户随后已回传 pull 和新 run 启动输出，见 2.15。
+随后 Orion `git pull --ff-only`，用新 suite 启动 **`$ICS_RUNTIME/runs/ics-initial-20261104-lvisfix`**。完整可复制命令见 [docs/LVIS_EMPTY_MASK_RECOVERY.md](operations/LVIS_EMPTY_MASK_RECOVERY.md)，聊天交付同时直接提供命令，不要求先打开说明。旧两轮 run 的 frozen source、状态和日志保留；不手改 BLOCKED／FAIL，不在旧终态 run 上重复 start。交付时尚未取得用户应用／push／Orion 启动证据；用户随后已回传 pull 和新 run 启动输出，见 2.15。
 
 ### 2.15 LVIS 修复已部署，新 run 返回 STARTING（2026-11-04）
 
@@ -448,7 +448,7 @@ fix: audit empty LVIS masks and isolate recovery manifests
 fix: harden queue lifecycle and validate recovery paths
 ```
 
-服务器下一步仅 pull 和只读诊断：从更新后的 clone 调用 `scripts/diagnose_queue.py --run-dir` 读取**原 lvisfix run**，汇集新版只读 status、manager.log、data／preflight marker／日志及 sacct，并遮蔽常见凭据形式。交付直接给一条 terminal 命令，不再要求用户粘贴长 heredoc；完整命令见 [docs/MANAGER_AUDIT_2026-11-04.md](docs/MANAGER_AUDIT_2026-11-04.md)。pull 不会修改旧 `source/`；同名 start 仍采用旧冻结代码，所以不把本次 pull 当作已将新 manager 逻辑部署进现有 run。当前不修改冻结源码、不 reset、不新建 run、不重跑 data、不立即 start；等真实日志明确后再决定适用的恢复方式。此处是技术诊断顺序，不是撤回用户已给出的实验执行授权。
+服务器下一步仅 pull 和只读诊断：从更新后的 clone 调用 `scripts/diagnose_queue.py --run-dir` 读取**原 lvisfix run**，汇集新版只读 status、manager.log、data／preflight marker／日志及 sacct，并遮蔽常见凭据形式。交付直接给一条 terminal 命令，不再要求用户粘贴长 heredoc；完整命令见 [docs/MANAGER_AUDIT_2026-11-04.md](operations/MANAGER_AUDIT_2026-11-04.md)。pull 不会修改旧 `source/`；同名 start 仍采用旧冻结代码，所以不把本次 pull 当作已将新 manager 逻辑部署进现有 run。当前不修改冻结源码、不 reset、不新建 run、不重跑 data、不立即 start；等真实日志明确后再决定适用的恢复方式。此处是技术诊断顺序，不是撤回用户已给出的实验执行授权。
 
 ## 3. 怎样拆组件，才能回答问题
 

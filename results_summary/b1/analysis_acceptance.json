@@ -1,0 +1,19 @@
+{
+  "status": "OUTPUT_AUDIT_PASS",
+  "source_archive": "CE6190_ICS_B1_Results_20261117.zip",
+  "source_archive_sha256": "005a47b5be47a53fb01e222686adc0a68578375a996cdabdd8480b7acdf90347",
+  "scope": "B1 fixed-pool ranking only",
+  "unique_query_images": 1400,
+  "episodes": 4200,
+  "predictions": 12600,
+  "provenance_audit": "provenance_audit.json",
+  "pixel_audit": "pixel_audit.json",
+  "statistics": "statistics.json",
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "pillow": "13.0.0",
+    "matplotlib": "3.10.8"
+  },
+  "limitations": "Recorded provenance and exported GT/predictions audited; raw images, reference masks, model weights and original dataset annotations not independently reverified."
+}

@@ -1,0 +1,19 @@
+{
+  "status": "ACCEPTED_EXPORTED_OUTPUTS",
+  "original_archive_sha256": "c4209affdd03535f00104eaa73532190cc252e378bdcaf552b65f8165510add5",
+  "formal_tasks": 224,
+  "outputs": 56,
+  "episodes": 16800,
+  "unique_queries": 1400,
+  "dataset_queries": {
+    "coco": 400,
+    "lvis": 1000
+  },
+  "provenance": "PASS",
+  "pixels": "PASS",
+  "statistical_crosscheck": "PASS",
+  "report_page_id": "page_c664a0bd2f888191ad6268cb8dc7474f",
+  "report_page_url": "https://chatgpt.com/space/page_c664a0bd2f888191ad6268cb8dc7474f",
+  "report_page_sequence": null,
+  "scientific_scope": "Four frozen configurations, one model seed, observed three-reference fresh-query cohort; full-run raw images/weights not re-executed. B4 and B3 not accepted by this audit."
+}

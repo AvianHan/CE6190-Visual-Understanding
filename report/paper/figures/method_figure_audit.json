@@ -83,78 +83,58 @@
       "files": [
         {
           "path": "paper/figures/insid3_pipeline.pdf",
-          "bytes": 38757,
-          "sha256": "36891b8a106cfea2b5d58ec90f9c40e965b53c875e21bef610e4cfe89b7943e0"
+          "bytes": 38698,
+          "sha256": "7c0ff1b6afddfd55f8dea0800608328f667b29aa88d06cb1211001eb183d64dd"
         },
         {
           "path": "paper/figures/insid3_pipeline.svg",
-          "bytes": 53904,
-          "sha256": "33a2d234afab60fafd7d4f731b73dea54912845b58c1af41bd2847f37a59844a"
+          "bytes": 53814,
+          "sha256": "cb2253f31f3d340d629581ec1d90eeb29a1512c05cd0256037002218f6e08b56"
         },
         {
           "path": "paper/figures/insid3_pipeline.png",
-          "bytes": 205839,
-          "sha256": "7e5b45ebe7a50b32627a3c945bfe54aac7b012d03d1703cb1c8ec3fa8b9c0f23"
+          "bytes": 205812,
+          "sha256": "c4f45f145f147d8028a8c9eb323be15489a583492021b6f529ae73f793d2ffd4"
         }
       ],
       "width_inches": 6.875,
       "height_inches": 3.0,
-      "minimum_font_pt": 8.0,
-      "maximum_font_pt": 9.4,
+      "minimum_font_pt": 7.1,
+      "maximum_font_pt": 8.5,
       "text_outside_canvas": [],
-      "text_count": 22,
+      "text_count": 26,
       "raster_inputs": "Exact archived case06 images and predictions",
       "vector_elements": "All text, arrows, panels, feature/cluster icons, and module outlines",
-      "schematic_not_measured": "Feature grids and query-box icon",
-      "pdf_pages": 1,
-      "raster_images": 1,
-      "embedded_font_names": [
-        "CZRBLR+STIXGeneral-Regular",
-        "FTXWZA+STIXGeneral-Italic",
-        "FWBXUE+STIXGeneral-Bold",
-        "GYKUUQ+STIXSizeTwoSym-Regular"
-      ],
-      "final_png_visually_inspected": true,
-      "visual_review": "260dpi PNG: no clipped text or labels; directed routes clear; exact archived masks colorized blue on white."
+      "schematic_not_measured": "Feature grids and query-box icon"
     },
     {
       "name": "cgics_pipeline",
       "files": [
         {
           "path": "paper/figures/cgics_pipeline.pdf",
-          "bytes": 67103,
-          "sha256": "949190598d8f0a0503f26105d707adcb5ce78cf41fb1aeccc44b34b82d4faa74"
+          "bytes": 57112,
+          "sha256": "027a63de5af052891afa6cd5b1b6577d68006a8957d82a85afebc30a36fdfb17"
         },
         {
           "path": "paper/figures/cgics_pipeline.svg",
-          "bytes": 95386,
-          "sha256": "130d1a73088e73540350aa492f2d9b1976675500244c2ad73134239b8efc9c72"
+          "bytes": 81317,
+          "sha256": "e4358ad099ea81698887990ecc013c19d94be9fb93b8bb34ae000bd3ee0956a4"
         },
         {
           "path": "paper/figures/cgics_pipeline.png",
-          "bytes": 438831,
-          "sha256": "50a0f2b0acd1b87e7c2d6dae8dc51febe5e4eff5438894e111b0ef95aff5fc78"
+          "bytes": 369980,
+          "sha256": "ef563c4174915904c70ad0531013890ccb71dfbe643c3972e55cbdc4a55b0777"
         }
       ],
       "width_inches": 6.875,
       "height_inches": 3.0,
-      "minimum_font_pt": 7.8,
-      "maximum_font_pt": 9.4,
+      "minimum_font_pt": 7.1,
+      "maximum_font_pt": 8.5,
       "text_outside_canvas": [],
-      "text_count": 24,
+      "text_count": 28,
       "raster_inputs": "Exact archived case06 images and predictions",
       "vector_elements": "All text, arrows, panels, feature/cluster icons, and module outlines",
-      "schematic_not_measured": "Feature grids and query-box icon",
-      "pdf_pages": 1,
-      "raster_images": 2,
-      "embedded_font_names": [
-        "CZRBLR+STIXGeneral-Regular",
-        "FTXWZA+STIXGeneral-Italic",
-        "FWBXUE+STIXGeneral-Bold",
-        "GYKUUQ+STIXSizeTwoSym-Regular"
-      ],
-      "final_png_visually_inspected": true,
-      "visual_review": "260dpi PNG: no clipped text or labels; directed routes clear; exact archived masks colorized blue on white."
+      "schematic_not_measured": "Feature grids and query-box icon"
     }
   ],
   "captions": {
@@ -175,11 +155,11 @@
   },
   "generator": {
     "path": "paper/build_method_figures.py",
-    "sha256": "640b71e5a6dc1ed01539342c78bad163b77d7b2f8e47dc121f6087e61232d8b0"
+    "sha256": "dae16389b83d77818932bd7bf21aa27e4d8e3c67b5ff3e6d5e7c417e2844a4de"
   },
   "style_revision": {
     "date": "2026-11-17",
-    "reference": "User-supplied group_07_report_project2.pdf Figure 1",
+    "reference": "User-supplied group_07_report_project2(2).pdf Figure 1",
     "palette": {
       "blue": "#466F87",
       "cyan": "#78B6C8",
@@ -195,7 +175,10 @@
       "Small original feature and prompt icons",
       "Compact serif typography and selective accents"
     ],
-    "scientific_changes": []
+    "scientific_changes": [
+      "Made the original query-feature seed-affinity dependency explicit; no algorithm or result changed",
+      "Separated SAM 3 scoring from the concept-search controller"
+    ]
   },
   "example_provenance": "paper/figures/assets/example_provenance.json"
 }
